@@ -9,4 +9,7 @@ class Post(models.Model):
     Title = models.TextField(max_length=100)
     #i dont remember what status is 
     Description = models.TextField(max_length=1000)
-     
+    
+    def __str__(self):
+        return self.__str__()
+    

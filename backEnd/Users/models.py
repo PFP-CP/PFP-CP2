@@ -12,6 +12,8 @@ class User(models.Model):
     Password = models.TextField()
     Rating = models.FloatField(default=5)
 
+    def __str__(self):
+        return self.__str__()
 class Contact(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     Phone_Number = models.SmallIntegerField(default=0)
@@ -35,5 +37,7 @@ class location(models.Model):
     State = models.TextField(max_length=100)
     #Country
     Country = models.TextField(max_length=100)
-#as for location we can use geodjango alogn with geojson to store the coordinates of the house which can be got through the google API 
-#w shall discuss with the team
+    #coords
+    Longitude = models.FloatField()
+    Latitude = models.FloatField()
+  
