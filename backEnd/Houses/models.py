@@ -4,13 +4,11 @@ from django.db.models.functions import Extract
 
 
 class AllowedPeople(models.TextChoices):
-    People_Allowed_To_Rent = {
-        "AL" : "All People",
-        "FA" : "Families only",
-        "NM" : "Doesnt Allow Males only",
-        "NC" : "Doesnt Allow Couples",
-        "NP" : "No Pets",
-    }
+    ALL = 'AL', 'All People'
+    FAMILY = 'FA', 'Families only'
+    NO_MALES = 'NM', 'Doesnt Allow Males only'
+    NO_COUPLES = 'NC', 'Doesnt Allow Couples'
+    NO_PETS = 'NP', 'No Pets'
 
 class House(models.Model):
     Price = models.IntegerField(default=0)
@@ -19,27 +17,28 @@ class House(models.Model):
     Description = models.TextField(max_length=1000)
     Created_at = models.DateTimeField(auto_now_add=True)
     Updated_at = models.DateTimeField(auto_now=True)
-    Types_of_Renters = models.CharField(max_length=2 ,choices=AllowedPeople.People_Allowed_To_Rent ,default="AL")
-
+    Types_of_Renters = models.CharField(max_length=2 ,choices=AllowedPeople.choices,default=AllowedPeople.ALL)
+    def Creation_time(self):
+        return self.Created_at
 
 class Pictures(models.Model):
-    blank_house_image =  https://images.template.net/465793/Blank-House-Clipart-edit-online.png
+    blank_house_image =  "https://images.template.net/465793/Blank-House-Clipart-edit-online.png"
     house = models.ForeignKey(House,on_delete=models.CASCADE)
     URL = models.URLField(max_length=200,default=blank_house_image,blank=True)
     time_stamp = models.DateTimeField(auto_now_add=True)
 
-class FeatureList():
+class FeatureList(models.Model):
     feature = models.CharField(max_length=75 , unique=True)
 
     def __str__(self):
         return self.feature
 
-class Features():
+class Features(models.Model):
     models.ForeignKey(House,on_delete=models.CASCADE)
     featues = models.ManyToManyField(FeatureList , blank=True)
 
 class AvalabilityCalendar(models.Model):
-    Start_at = models.DateTimeField(default=House.created_at)
+    Start_at = models.DateTimeField(default=House.Creation_time)
     end_at = models.DateTimeField()
     #make a function that make a array/list of the days from start to end modulo months and mark each day as available or not
     # then save those days into a json to either update or just print

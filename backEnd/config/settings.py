@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Users.apps.UsersConfig',
+    'Posts.apps.PostsConfig',
+    'Houses.apps.HousesConfig',
 ]
 
 MIDDLEWARE = [
@@ -74,8 +77,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        "NAME": "postgres",
+        "USER": "postgres.tmjkzyaakkllyyyxpvne",
+        "PASSWORD": "(nook).DBpassword",
+        "HOST": "aws-1-eu-west-1.pooler.supabase.com",
+        "PORT": "5432",
     }
 }
 

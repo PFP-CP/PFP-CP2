@@ -1,5 +1,5 @@
 from django.db import models
-
+from Posts.models import Post
 # Create your models here.
 
 class User(models.Model):
@@ -15,15 +15,15 @@ class User(models.Model):
     def __str__(self):
         return self.__str__()
 class Contact(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
     Phone_Number = models.SmallIntegerField(default=0)
     Email = models.EmailField()
-    WhatsApp = models.SmallIntegerField(default=0)
+    WhatsApp = models.SmallIntegerField(default=0 ,blank = True)
     Facebook = models.URLField(blank=True) 
 
 class Comment(models.Model):
     commenter = models.ForeignKey(User,on_delete=models.CASCADE)
-    post = models.ForeignKey("""Post""",on_delete=models.CASCADE)
+    post = models.ForeignKey(Post,on_delete=models.CASCADE)
     Body = models.TextField(max_length=1000 , blank=True)
     Rating = models.SmallIntegerField(default=5)
     Created_at = models.DateTimeField(auto_now_add=True)
