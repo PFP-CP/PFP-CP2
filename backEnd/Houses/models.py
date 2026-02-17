@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.functions import Extract 
+#from django.db.models.functions import Extract 
 # Create your models here.
 
 
@@ -18,6 +18,11 @@ class House(models.Model):
     Created_at = models.DateTimeField(auto_now_add=True)
     Updated_at = models.DateTimeField(auto_now=True)
     Types_of_Renters = models.CharField(max_length=2 ,choices=AllowedPeople.choices,default=AllowedPeople.ALL)
+    
+
+    def __str__(self):
+        return self.Description
+    
     def Creation_time(self):
         return self.Created_at
 

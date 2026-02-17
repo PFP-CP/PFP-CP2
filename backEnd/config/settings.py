@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Users.apps.UsersConfig',
+    'Accounts.apps.AccountsConfig',
     'Posts.apps.PostsConfig',
     'Houses.apps.HousesConfig',
 ]
@@ -79,7 +79,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         "NAME": "postgres",
-        "USER": "postgres.tmjkzyaakkllyyyxpvne",
+        "USER": "postgres.kvdzitosbvrnzuqcwoye",
         "PASSWORD": "(nook).DBpassword",
         "HOST": "aws-1-eu-west-1.pooler.supabase.com",
         "PORT": "5432",
