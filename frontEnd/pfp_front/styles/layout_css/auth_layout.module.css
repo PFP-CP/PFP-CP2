@@ -1,0 +1,51 @@
+.auth_container{
+  min-height: 100vh;
+  max-width: 718px;
+  border-top-right-radius: 90px;
+  border-bottom-right-radius: 90px;
+  background: linear-gradient(180deg, #634AAD 0%, #FFFFFF 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.body_background{
+  background-image:Url(/auth_background_img/auth_background.png);
+  background-repeat:no-repeat;
+  background-size:cover;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  overflow: scroll;
+}
+
+
+@keyframes slide_up {
+  0%{
+    transform: translateY(200px);
+    opacity: 0;
+  }to{
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width:1440px) {
+  .auth_container{
+  min-height: 100vh;
+  max-width: 490px;
+  border-top-right-radius: 90px;
+  border-bottom-right-radius: 90;
+
+}
+}
+
+@media (max-width:720px) {
+  .auth_container{
+  min-height: 100vh;
+  max-width: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+}

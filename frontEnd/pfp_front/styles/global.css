@@ -1,0 +1,70 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  height: 100%;
+  background-color: var(--color-btn-hover);
+}
+
+
+:root{
+  --primary-color:#220E67;
+  --secondary-color:#9D84E4;
+
+  --color-btn-hover:#4D369A;
+
+  /* font variables */
+  --font-s-20:20px;
+  --font-s-25:25px;
+  --font-s-38:38px;
+
+  /* form ui heights, widths, border-radius -> we use these for: buttons an inputs*/
+  --input-width: 400px;
+  --input-height: 78px;
+  --input-radius:70px  
+}
+@font-face {
+    font-family: 'sansation-700';
+    src: url('/fonts/Sansation/Sansation-Bold.woff2');
+  }
+@font-face{
+  font-family: 'sansation-400';
+  src: url('/fonts/Sansation/Sansation-Light.woff2');
+}
+
+
+/* date picker style */
+.react-datepicker__input-container input{
+  width: 100%;
+  min-width: 200px;
+  max-height: var(--input-height);
+  border-radius: var(--input-radius);
+  border: none;
+  transition: outline 300ms ease-out;
+  padding-left:39px;
+  font-family: 'sansation-700';
+  font-size: var(--font-s-25);
+  color: var(--primary-color);
+  line-height: 78px;
+  background-color: #E4E4E4;
+}
+
+.react-datepicker__input-container input::placeholder{
+  color: rgb(0, 0, 0,0.5);
+  font-family: 'sansation-400';
+  font-size: var(--font-s-25);
+  opacity: 1;
+  transition: opacity 300ms ease-out ;
+  line-height: 78px;
+}
+
+.react-datepicker__input-container input:focus::placeholder{
+  opacity: 0;
+}
+
+.react-datepicker__input-container input:focus{
+  outline: 4px solid var(--primary-color);
+}
