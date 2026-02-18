@@ -3,7 +3,6 @@ import {useRef} from 'react'
 import styles from '@/styles/ui_css/form_input.module.css'
 import { FormType } from '../abstract_components/auth_form';
 import {z} from "zod"
-import Image from 'next/image';
 
 
 
@@ -82,13 +81,12 @@ function validate(errors:{full_name:string,email:string,password:string},setErro
       return;
   }
 
-  //animations
   if(!result.success){
     const message = JSON.parse(result.error)[0].message;
     setErrors({...errors,[inpt_type]:message});
     setIsValid(false);
   }else{
-    let new_errors = {...errors,[inpt_type]:""}; 
+    const new_errors = {...errors,[inpt_type]:""}; 
     setErrors({...errors,[inpt_type]:""});
     if (!new_errors.email && !new_errors.full_name && !new_errors.password) {
       setIsValid(true);
@@ -105,13 +103,12 @@ function validate(errors:{full_name:string,email:string,password:string},setErro
 
 
 
-//will add isLogin to differentiate between login and sign up authentication
 export default function FormInput({type,name,placeHolder, required, value,setValue,setIsValid,isValid, test, errors,setErrors}:inputType){
   let labelExists = true;
   const firstBlur = useRef(false);
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
-    let name = e.currentTarget.name;
-    let new_value = e.currentTarget.value;
+    const name = e.currentTarget.name;
+    const new_value = e.currentTarget.value;
     setValue((prev)=>({...prev, [name]:new_value})); 
     if((test && errors && setErrors && setIsValid && isValid !==undefined) && firstBlur.current){
       validate(errors,setErrors,isValid,setIsValid,name,e.currentTarget.value);

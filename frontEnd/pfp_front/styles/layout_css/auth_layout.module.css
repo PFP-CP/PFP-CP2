@@ -35,10 +35,10 @@
   .auth_container{
   min-height: 100vh;
   max-width: 490px;
-  border-top-right-radius: 90px;
-  border-bottom-right-radius: 90;
-
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
+
 }
 
 @media (max-width:720px) {

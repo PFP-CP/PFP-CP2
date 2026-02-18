@@ -43,8 +43,8 @@ export default function SignUp_auth({setIsLogin}:{setIsLogin:React.Dispatch<Reac
     }
 
 
-    let errorList:string[]=[];
-    Object.keys(errors).map((key, keyIndex)=>{
+    const errorList:string[]=[];
+    Object.keys(errors).map((key)=>{
             if(errors[key as keyValues]!=="") errorList.push(errors[key as keyValues]) 
           })
 
