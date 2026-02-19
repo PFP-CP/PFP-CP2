@@ -54,3 +54,12 @@
   align-items: center;
 }
 
+
+
+@media (max-width:1440px) {
+  .custom_radio{
+    min-height: 60px;
+    font-size: var(--font-s-20);
+}  
+
+}

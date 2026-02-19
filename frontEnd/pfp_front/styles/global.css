@@ -68,3 +68,16 @@ body{
 .react-datepicker__input-container input:focus{
   outline: 4px solid var(--primary-color);
 }
+
+
+@media (max-width:1440px) {
+  .react-datepicker__input-container input{
+    max-height: 60px;
+    font-size: var(--font-s-20);
+  }
+  .react-datepicker__input-container input::placeholder{
+    font-size: var(--font-s-20);
+  }
+  
+
+}
