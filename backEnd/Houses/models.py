@@ -17,11 +17,11 @@ class House(models.Model):
     Description = models.TextField(max_length=1000)
     Created_at = models.DateTimeField(auto_now_add=True)
     Updated_at = models.DateTimeField(auto_now=True)
-    Types_of_Renters = models.CharField(max_length=2 ,choices=AllowedPeople.choices,default=AllowedPeople.ALL)
+    Types_of_Renters = models.CharField(max_length=2 ,choices=AllowedPeople.choices,default=AllowedPeople.All)
     
 
     def __str__(self):
-        return self.Description
+        return str(self.Description)
     
     def Creation_time(self):
         return self.Created_at
