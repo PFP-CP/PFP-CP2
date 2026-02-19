@@ -55,7 +55,7 @@ export default function Login_auth({setIsLogin}:{setIsLogin:React.Dispatch<React
               <FormInput setErrors={setErrors} errors={errors} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="password" name="password" placeHolder="Password" required={true}></FormInput>
               <button type="button" onClick={()=>setIsForget(!isForget)} className={`${styles.btn_anchor} ${styles.forgot_pass}`} >Forgot password</button>
              </>:
-             <p>Please enter the email address you&aposd like your<br/>
+             <p>Please enter the email address you'd like your<br/>
                 password reset information sent to
              </p>
              }
