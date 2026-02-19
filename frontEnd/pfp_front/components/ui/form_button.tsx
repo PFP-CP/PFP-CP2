@@ -1,12 +1,13 @@
 import styles from '@/styles/ui_css/form_button.module.css'
 
 type buttonType = {
-  btnType?:'button' | 'submit' | 'reset',
-  btnContent: string
+  btnType?:'button' | 'submit' | 'reset';
+  btnContent: string;
+  ref:any;
 }
 
-export default function FormButton({btnType='button',btnContent}:buttonType){
+export default function FormButton({btnType='button',btnContent, ref}:buttonType){
   return(
-    <button className={styles.form_button} type={btnType || 'button'}>{btnContent}</button>
+    <button ref={ref} className={styles.form_button} type={btnType || 'button'}>{btnContent}</button>
   )
 }

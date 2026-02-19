@@ -5,15 +5,15 @@
   background-color: transparent;
   padding: 1rem;
   border-radius: 50px;
-  animation: slide_up forwards 500ms linear;
+  /* animation: slide_up forwards 500ms linear; */
 
+  
 }
 .auth_img_container{
   position: relative;
   width: 100%;
   height: 100%;
   max-height: 243px;
-  animation: slide_up forwards 500ms linear;
   min-height: 200px;
 }
 
@@ -132,7 +132,7 @@
 }
 
 .fade_in{
-  animation: fade_in forwards 300ms linear;
+  animation: fade_in forwards 600ms linear;
 }
 
 .fade_out{

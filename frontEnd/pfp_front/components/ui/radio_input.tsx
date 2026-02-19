@@ -14,7 +14,7 @@ export default function RadioButton({value, setValue}:radio){
      <div className={styles.left_container}> 
       <input onClick={()=>setValue({...value,gender:"male"})} className={styles.custom_radio} type="radio" defaultChecked={value.gender==="male"?true:false} name="Gender" id="Male"/>
       <label className={styles.label_left} htmlFor="Male">Male</label>
-      </div>
+    </div>
      <div className={styles.right_container}> 
       <input onClick={()=>setValue({...value,gender:"female"})} className={styles.custom_radio} type="radio" defaultChecked={value.gender==="female"?true:false} name="Gender" id="Female"/>
       <label className={styles.label_right} htmlFor="Female">Female</label>

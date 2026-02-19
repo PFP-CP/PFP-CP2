@@ -45,6 +45,7 @@
   min-width: 200px;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .right_container{
@@ -52,6 +53,7 @@
   min-width: 200px;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 
