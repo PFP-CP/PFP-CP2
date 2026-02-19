@@ -4,11 +4,11 @@ from django.db import models
 
 
 class AllowedPeople(models.TextChoices):
-    ALL = 'AL', 'All People'
-    FAMILY = 'FA', 'Families only'
-    NO_MALES = 'NM', 'Doesnt Allow Males only'
-    NO_COUPLES = 'NC', 'Doesnt Allow Couples'
-    NO_PETS = 'NP', 'No Pets'
+    All= 'AL', 'All People'
+    Family = 'FA', 'Families only'
+    No_males = 'NM', 'Doesnt Allow Males only'
+    No_couples= 'NC', 'Doesnt Allow Couples'
+    No_pets = 'NP', 'No Pets'
 
 class House(models.Model):
     Price = models.IntegerField(default=0)

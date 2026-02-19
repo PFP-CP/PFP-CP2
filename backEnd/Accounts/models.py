@@ -1,6 +1,9 @@
 from django.db import models
 
 # Create your models here.
+#status of a user aka banned and such
+class Account_status(models.TextChoices):
+    Banned = "BN" , "Account banned"
 
 class Account(models.Model):
     Default_profile_picture = "https://i.pinimg.com/1200x/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg"
@@ -12,6 +15,7 @@ class Account(models.Model):
     #we gotta hash the password aka secure it before adding it
     Password = models.TextField()
     Rating = models.FloatField(default=5 , blank=True)
+    Verified = models.BooleanField()
 
     def __str__(self):
         return self.Name
