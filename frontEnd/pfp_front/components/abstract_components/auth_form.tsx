@@ -1,5 +1,5 @@
 "use client"
-import {useState} from "react"
+import React, {useState , useRef, useLayoutEffect, ChangeEvent} from "react"
 import styles from "@/styles/layout_css/auth_layout.module.css"
 
 import FormButton  from "@/components/ui/form_button"
@@ -80,8 +80,34 @@ export default function AuthForm(){
   const [isValid, setIsValid] = useState(true);
   const [errors, setErrors] = useState({full_name:"",email:"", password:""})
   const [handledate, setDate] = useState<Date|null>(null);
-
   
+  const ref = useRef<HTMLDivElement>(null);
+const prevRect = useRef<DOMRect | null>(null);
+
+   const getRect= ()=>{
+     prevRect.current=ref.current?.getBoundingClientRect() || null;
+   }
+
+  // useLayoutEffect(()=>{
+  //   let new_pos = ref.current.getBoundingClientRect();
+  //   if(!new_pos) return;
+    
+  //   let dy = prevRect.current?.top- new_pos.top ;
+
+  //   ref.current.style.transition = `transform 0s`
+  //   ref.current.style.transform = `translate(0,${dy}px)`;
+
+  //   ref.current.getBoundingClientRect();
+
+
+  //   requestAnimationFrame(()=>{
+  //     ref.current.style.transition = `transform 300ms`;
+  //     ref.current.style.transform = `translate(0,0)`;
+  //   })
+
+  //   prevRect.current = new_pos;
+
+  // })
 
   const errorList:string[]=[];
   Object.keys(errors).map((key)=>{
@@ -94,23 +120,30 @@ export default function AuthForm(){
   }
   
 
-    
+   const handleSubmition= (e:React.SubmitEvent<HTMLFormElement>)=>{
+    if(isLogin && !isForget){
+      handle_auth_submit(e,"login",form)
+    }else if(isLogin && isForget){
+      handle_auth_submit(e,"forget",form)
+    }else if(!isLogin){
+      handle_auth_submit(e,"signup",form)
+
+    }
+   } 
 
   return(
 
     
     <div key={isLogin? 1:2} className={styles.auth_container}>
-
-      {isLogin?<>
-      {/* if at login show this */}
-      
-    <div className={styles2.auth_img_container}>
+      <div className={styles2.auth_img_container}>
             <Image src="/logo/logo.svg" alt="logo_picture" fill style={{objectFit:'cover'}}/>
     </div>
-    <form onSubmit={!isForget?(e)=>handle_auth_submit(e,"login",form):(e)=>handle_auth_submit(e,"forget",form)} className={styles2.auth_form}>
+      {/* if at login show this */}
 
+    <form onSubmit={(e)=>handleSubmition(e)} className={styles2.auth_form}>
+        {isLogin?<>
         <div className={!isForget?styles2.input_container:styles2.input_container_forgot}>
-        <FormInput   isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="email" name="email" placeHolder="Enter address" required={true}></FormInput>
+        <FormInput isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="email" name="email" placeHolder="Enter address" required={true}></FormInput>
           <div className={!isForget ? styles2.pass_container:styles2.pass_container_forgot}>
             {!isForget ?<>
               <FormInput   isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="password" name="password" placeHolder="Password" required={true}></FormInput>
@@ -122,31 +155,21 @@ export default function AuthForm(){
              }
           </div>
         </div>
-        {!isValid&&<div className={styles2.error_popup}></div>}
         <div className={styles2.sign_in_btn_container}>
           <FormButton btnType="submit" btnContent={isForget?"Request reset link":"Sign up"}></FormButton>
           {!isForget?
           <div className={styles2.have_an_account}>
             <h1>Have you an account?</h1>
-            <button className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=> {setIsLogin(false);resetFields()}}>Sign up</button>
+            <button className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=> {getRect();setIsLogin(false);resetFields();}}>Sign up</button>
           </div>:
-          <button  className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=> {setIsLogin(true);setIsForget(false);resetFields()}}>Back to sign in</button>
+          <button  className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=> {getRect();setIsLogin(true);setIsForget(false);resetFields();}}>Back to sign in</button>
           }
         </div>
-
-        
-    </form>
-    
-
-    </>:      
-    <>
+        </>:
+        <>
     {/* if at signup show this */}
-
-    <div className={styles2.auth_img_container}>
       
-            <Image src="/logo/logo.svg" alt="logo_picture" fill style={{objectFit:'cover'}}/>
-      </div>
-      <form onSubmit={(e)=>handle_auth_submit(e,"signup",form)} className={styles2.auth_form}>
+        
       <FormInput setErrors={setErrors} errors={errors} test={true} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="text" name="full_name" placeHolder="Full Name" ></FormInput>
         <DatePicker
          preventOpenOnFocus={false}
@@ -156,7 +179,7 @@ export default function AuthForm(){
       
       <FormInput setErrors={setErrors} errors={errors} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="text" name="location" placeHolder="Location" ></FormInput>   
       <RadioButton setValue={setForm} value={form} ></RadioButton>
-      <FormInput  setErrors={setErrors} errors={errors} test={true} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="email" name="email" placeHolder="Enter address" ></FormInput>
+      <FormInput setErrors={setErrors} errors={errors} test={true} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="email" name="email" placeHolder="Enter address" ></FormInput>
       <FormInput setErrors={setErrors} errors={errors} test={true} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="password" name="password" placeHolder="Enter password" ></FormInput>
       {!isValid&&<div className={styles2.error_popup}>
         <ul>
@@ -168,10 +191,10 @@ export default function AuthForm(){
   
       <div className={styles2.sign_up_btn_container}>
         <FormButton btnType="submit" btnContent="Sign up"></FormButton>
-        <button  className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=>{setIsLogin(true);resetFields()}}>Back to sign in</button>
+        <button  className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=>{getRect();setIsLogin(true);resetFields();}}>Back to sign in</button>
       </div>
+      </>}
     </form>
-    </>}
 
     </div>
   )

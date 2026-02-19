@@ -5,8 +5,9 @@
   background-color: transparent;
   padding: 1rem;
   border-radius: 50px;
-  animation: slide_up forwards 500ms linear;
+  /* animation: slide_up forwards 500ms linear; */
 
+  
 }
 .auth_img_container{
   position: relative;
