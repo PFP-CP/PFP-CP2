@@ -42,6 +42,10 @@
 }
 
 @media (max-width:720px) {
+  .body_background{
+    background-image: none;
+    background-color: var(--primary-color);
+  }
   .auth_container{
   max-width: none;
   border-top-right-radius: 0;
