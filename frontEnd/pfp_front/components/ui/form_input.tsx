@@ -1,7 +1,7 @@
 'use client'
 import {useRef} from 'react'
 import styles from '@/styles/ui_css/form_input.module.css'
-import { FormType } from '../abstract_components/auth_form';
+import { inputType, valueKeys } from '@/types/types'
 import {z} from "zod"
 
 
@@ -9,22 +9,8 @@ import {z} from "zod"
 
 
 
-type valueKeys = "email" | "gender" | "password" | "full_name" | "location" | "birth_date";
 
-type inputType = {
-  type: string;
-  name:string;
-  placeHolder?:string;
-  required?:boolean;
-  value:FormType;
-  setValue:React.Dispatch<React.SetStateAction<FormType>>;
-  setIsValid?:React.Dispatch<React.SetStateAction<boolean>>;
-  isValid?:boolean;
-  errors?:{full_name:string,email:string,password:string};
-  setErrors?:React.Dispatch<React.SetStateAction<{full_name:string,email:string,password:string}>>;
-  test?:boolean;
-  input_ref?:any;
-}
+
 
 function validate(errors:{full_name:string,email:string,password:string},setErrors:React.Dispatch<React.SetStateAction<{full_name:string,email:string,password:string}>>,isValid:boolean,setIsValid:React.Dispatch<React.SetStateAction<boolean>>,inpt_type:string,inpt_value:string){
   

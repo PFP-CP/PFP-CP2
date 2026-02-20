@@ -3,7 +3,7 @@ import styles from '@/styles/ui_css/form_button.module.css'
 type buttonType = {
   btnType?:'button' | 'submit' | 'reset';
   btnContent: string;
-  ref:any;
+  ref?:any;
 }
 
 export default function FormButton({btnType='button',btnContent, ref}:buttonType){

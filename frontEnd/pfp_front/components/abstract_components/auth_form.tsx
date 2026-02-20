@@ -10,9 +10,8 @@ import Image from 'next/image'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import RadioButton from "../ui/radio_input";
-import { error } from "console"
-import { isValid } from "react-datepicker/dist/dist/date_utils.js"
-type keyValues = "email" | "full_name" | "password";
+import {keyValues, setForm, setDate, animate, FormType} from "@/types/types"
+
 
 export const errMap= new Map([
   ["Email: Must be of the form some@thing.ext",1],
@@ -23,14 +22,8 @@ export const errMap= new Map([
   ["Full name: Only spaces,dashes and ' are allowed.",6]
 ]);
 
-export type FormType = {
-  full_name: string;
-  email: string;
-  password: string;
-  gender: string;
-  location: string;
-  birth_date: string;
-}
+
+
 
 const handle_auth_submit =(type:string, form:FormType)=>{
       
@@ -68,7 +61,7 @@ const handle_auth_submit =(type:string, form:FormType)=>{
     }
 
 
-    const handleDatePicker = (date:Date|null, form:FormType,setForm:React.Dispatch<React.SetStateAction<FormType>>,setDate:React.Dispatch<React.SetStateAction<Date|null>>)=>{
+    const handleDatePicker = (date:Date|null, form:FormType,setForm:setForm,setDate:setDate)=>{
     let date_to_string = date?.toISOString().split("T")[0];
     if(!date_to_string) date_to_string="";
     setForm({...form, birth_date:date_to_string})
@@ -84,6 +77,8 @@ export default function AuthForm(){
   const [errors, setErrors] = useState({full_name:"",email:"", password:""})
   const [handledate, setDate] = useState<Date|null>(null);
   
+  
+
   const button_ref = useRef<HTMLDivElement>(null);
   const inpt_ref = useRef<HTMLDivElement>(null);
   const logo_ref = useRef<HTMLDivElement>(null);
@@ -197,7 +192,7 @@ export default function AuthForm(){
              </p>
     }else if(!isForget && isLogin){
       return <> <FormInput isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="password" name="password" placeHolder="Password" required={true}></FormInput>
-              <button type="button" onClick={()=>{setIsForget(!isForget);resetFields()}} className={`${styles2.btn_anchor} ${styles2.forgot_pass}`} >Forgot password</button></>
+              <button type="button" onClick={()=>{getRect();setIsForget(!isForget);resetFields()}} className={`${styles2.btn_anchor} ${styles2.forgot_pass}`} >Forgot password</button></>
     }
     return <FormInput errors={errors} setErrors={setErrors} test={true} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="password" name="password" placeHolder="Password" required={true}></FormInput>
    }
@@ -243,8 +238,8 @@ export default function AuthForm(){
           })}
         </ul>
         </div>}
-        <div className={styles2.sign_in_btn_container}>
-          <FormButton ref={button_ref} btnType="submit" btnContent={handleSubmitButton() || ""}></FormButton>
+        <div ref={button_ref} className={styles2.sign_in_btn_container}>
+          <FormButton  btnType="submit" btnContent={handleSubmitButton() || ""}></FormButton>
           {handleAuthNavigation()}
         </div>
     </form>
