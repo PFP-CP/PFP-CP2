@@ -1,10 +1,6 @@
 import styles from "@/styles/ui_css/radio.module.css"
-import { FormType } from "../abstract_components/auth_form"
+import { radio} from "@/types/types"
 
-type radio={
-  value:FormType;
-  setValue:React.Dispatch<React.SetStateAction<FormType>>;
-}
 
 export default function RadioButton({value, setValue}:radio){
 
