@@ -15,7 +15,7 @@ class Account(models.Model):
     #we gotta hash the password aka secure it before adding it
     Password = models.TextField()
     Rating = models.FloatField(default=5 , blank=True)
-    Verified = models.BooleanField()
+    Verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.Name
