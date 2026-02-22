@@ -1,26 +1,20 @@
 "use client"
-import React, {useState , useRef, useLayoutEffect, ChangeEvent} from "react"
+import React, {useState , useRef, useLayoutEffect, ChangeEvent, RefObject} from "react"
 import styles from "@/styles/layout_css/auth_layout.module.css"
 
 import FormButton  from "@/components/ui/form_button"
 import FormInput from "@/components/ui/form_input"
+import Select from "@/components/ui/select_input"
 import styles2 from "@/styles/structure_css/auth_form.module.css"
 import Image from 'next/image'
 
-import DatePicker from "react-datepicker";
+import { wilayas_string_only } from "@/data/auth_data/data"
 import "react-datepicker/dist/react-datepicker.css";
 import RadioButton from "../ui/radio_input";
-import {keyValues, setForm, setDate, animate, FormType} from "@/types/types"
+import {setForm, setDate, FormType, keyValues_errors} from "@/types/types"
+import { errMap, wilayas } from "@/data/auth_data/data"
 
 
-export const errMap= new Map([
-  ["Email: Must be of the form some@thing.ext",1],
-  ["Password: Must be at least 8 characters",2],
-  ["Password: Must contain uppercase letter",3],
-  ["Password: Must contain number",4],
-  ["Password: Must contain special character",5],
-  ["Full name: Only spaces,dashes and ' are allowed.",6]
-]);
 
 
 
@@ -46,7 +40,7 @@ const handle_auth_submit =(type:string, form:FormType)=>{
           break;
 
           case "signup":
-            fetch('https://webhook.site/837ffb73-9b65-418d-8664-51417e8f843d',{
+            fetch('https://webhook.site/b71a27ef-56a2-4a18-bda8-5163a4b49358',{
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form),
@@ -74,11 +68,11 @@ export default function AuthForm(){
   const [form,setForm] = useState<FormType>({full_name:"",email:"",password:"",gender:"",location:"",birth_date:""})
   const [isForget, setIsForget] = useState(false);
   const [isValid, setIsValid] = useState(true);
-  const [errors, setErrors] = useState({full_name:"",email:"", password:""})
+  const [errors, setErrors] = useState({full_name:"",email:"", password:"", birth_date:""})
   const [handledate, setDate] = useState<Date|null>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   
-  
-
+  // Must be automized {
   const button_ref = useRef<HTMLDivElement>(null);
   const inpt_ref = useRef<HTMLDivElement>(null);
   const logo_ref = useRef<HTMLDivElement>(null);
@@ -135,16 +129,17 @@ export default function AuthForm(){
 
 
   },[isLogin])
+  // }
 
   const errorList:string[]=[];
   Object.keys(errors).map((key)=>{
-    if(errors[key as keyValues]!=="") errorList.push(errors[key as keyValues]) 
+    if(errors[key as keyValues_errors]!=="") errorList.push(errors[key as keyValues_errors]) 
   })
 
   const resetFields=()=>{
     setForm({full_name:"",email:"",password:"",gender:"",location:"",birth_date:""});
     setDate(null);
-    setErrors({full_name:"",email:"",password:""});
+    setErrors({full_name:"",email:"",password:"",birth_date:""});
     setIsValid(true);
   }
   
@@ -176,12 +171,14 @@ export default function AuthForm(){
 
    const handleAuthNavigation = ()=>{
     if(isLogin && !isForget){
-      return <div className={styles2.have_an_account}>
+      return (
+      <div className={styles2.have_an_account}>
         <h1>Have you an account?</h1>
-        <button className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=> {getRect();setIsLogin(false);resetFields();}}>Sign up</button>
+        <button className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=> { bodyRef.current?.scrollTo(0,0);getRect();setIsLogin(false);resetFields();}}>Sign up</button>
       </div>
+      )
     }else{
-      return <button  className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=> {getRect();setIsLogin(true);setIsForget(false);resetFields();}}>Back to sign in</button>
+      return <button  className={`${styles2.btn_anchor} ${styles2.back_to_sign_in}`} onClick={()=> {bodyRef.current?.scrollTo(0,0);getRect();setIsLogin(true);setIsForget(false);resetFields();}}>Back to sign in</button>
     }
    }
 
@@ -201,7 +198,8 @@ export default function AuthForm(){
 
 
   return(
-    <div key={isLogin? 1:2} className={styles.auth_container}>
+    <div ref={bodyRef} className={styles.body_background}>
+    <div className={styles.auth_container}>
       <div ref={logo_ref} className={styles2.auth_img_container}>
             <Image src="/logo/logo.svg" alt="logo_picture" fill style={{objectFit:'cover'}}/>
     </div>
@@ -214,18 +212,14 @@ export default function AuthForm(){
           gap:"inherit",
         }}>
       <FormInput setErrors={setErrors} errors={errors} test={true} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="text" name="full_name" placeHolder="Full Name" ></FormInput>
-        <DatePicker
-         preventOpenOnFocus={false}
-         placeholderText="Date of birth" 
-         selected={handledate} 
-         onChange={(date:Date|null)=>handleDatePicker(date,form,setForm,setDate)}/>
-      
-      <FormInput setErrors={setErrors} errors={errors} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="text" name="location" placeHolder="Location" ></FormInput>   
+      <FormInput setErrors={setErrors} errors={errors} isValid={isValid} test={true} setIsValid={setIsValid} setValue={setForm} value={form} type="date" name="birth_date" ></FormInput>   
+        
+      <Select value={form} setValue={setForm} options={wilayas_string_only} name={"location"} defaultValue={"Adrar"}/>
       <RadioButton setValue={setForm} value={form} ></RadioButton>
       </div>}
       <div ref={inpt_ref}>
       <div  className={!isForget?styles2.input_container:styles2.input_container_forgot}>
-        <FormInput errors={errors} setErrors={setErrors} test={true} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="email" name="email" placeHolder="Enter address" required={true}></FormInput>
+        <FormInput errors={errors} setErrors={setErrors} test={isLogin?false:true} isValid={isValid} setIsValid={setIsValid} setValue={setForm} value={form} type="email" name="email" placeHolder="Enter address" required={true}></FormInput>
           <div  className={!isForget ? styles2.pass_container:styles2.pass_container_forgot}>
             {handleForgetDisplay()}
           </div>
@@ -244,6 +238,7 @@ export default function AuthForm(){
         </div>
     </form>
 
+    </div>
     </div>
   )
 }

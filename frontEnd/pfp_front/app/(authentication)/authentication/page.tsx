@@ -13,6 +13,7 @@ export default function AuthenticationPage(){
   return(
     <>
       <AuthForm></AuthForm>
+
     </>
   )
 }

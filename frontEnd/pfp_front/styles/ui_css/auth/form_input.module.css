@@ -7,8 +7,6 @@
 }
 .form_input{
   width:100%;
-  min-width: 200px;
-  max-height: var(--input-height);
   border-radius: var(--input-radius);
   border: none;
   transition: outline 300ms ease-out;
@@ -18,7 +16,7 @@
   color: var(--primary-color);
   line-height: 78px;
   background-color: #E4E4E4;
-box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 
