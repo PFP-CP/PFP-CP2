@@ -19,6 +19,8 @@
   height: 100vh;
   flex-direction: column;
   overflow: scroll;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 
