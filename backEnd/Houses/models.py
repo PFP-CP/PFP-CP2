@@ -41,7 +41,7 @@ class FeatureList(models.Model):
 
 class Features(models.Model):
     models.ForeignKey(House,on_delete=models.CASCADE)
-    featues = models.ManyToManyField(FeatureList , blank=True)
+    features = models.ManyToManyField(FeatureList , blank=True)
 
 class AvalabilityCalendar(models.Model):
     Start_at = models.DateTimeField(default=House.Creation_time)
