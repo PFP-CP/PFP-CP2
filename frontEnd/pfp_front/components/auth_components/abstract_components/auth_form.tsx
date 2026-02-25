@@ -1,11 +1,11 @@
 "use client"
 import React, {useState , useRef, useLayoutEffect, ChangeEvent, RefObject} from "react"
-import styles from "@/styles/layout_css/auth_layout.module.css"
+import styles from "@/styles/auth_styles/layout_css/auth_layout.module.css"
 
-import FormButton  from "@/components/ui/form_button"
-import FormInput from "@/components/ui/form_input"
-import Select from "@/components/ui/select_input"
-import styles2 from "@/styles/structure_css/auth_form.module.css"
+import FormButton  from "@/components/auth_components/ui/form_button"
+import FormInput from "@/components/auth_components/ui/form_input"
+import Select from "@/components/auth_components/ui/select_input"
+import styles2 from "@/styles/auth_styles/structure_css/auth_form.module.css"
 import Image from 'next/image'
 
 import { wilayas_string_only } from "@/data/auth_data/data"

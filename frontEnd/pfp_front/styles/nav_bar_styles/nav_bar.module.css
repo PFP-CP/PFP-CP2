@@ -1,0 +1,84 @@
+
+
+#navbar{
+  height: 98px;
+  background-color: rgba(99, 74, 173, 0.85);
+
+  display: flex;
+  align-items: center;
+
+  padding-right: 4rem;
+}
+
+#navbar #logo_container{
+  height: 50px;
+  display: flex;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+#navbar #logo_container #nav_logo{
+  background-color: red;
+  height: 40px;
+  width: 50px;
+}
+
+#navbar #navigation{
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+  flex-grow: 4;
+}
+
+#navbar #navigation .nav_test{
+  color: white;
+  font-size: 20px;
+}
+
+#navbar #navigation .nav_search{
+  width: 215px;
+  height: 3rem;
+  background-color: rgb(34, 14, 103, 1);
+  display: flex;
+  border-radius: 23px;
+  padding-left: 1rem;
+  gap: 1rem;
+  cursor:pointer;
+
+}
+
+#navbar #navigation .nav_search .find_retals_h3_container{
+  background-color: transparent;
+  height: 100%;
+  display: flex;
+  color: white;
+  font-size: 20px;
+}
+
+#navbar #navigation .nav_search .find_retals_h3{
+  position: absolute;
+  align-self: center;
+  justify-self: center;
+}
+
+#navbar  #navigation .nav_search .search_logo_container{
+  display: flex;
+}
+
+#navbar #navigation .nav_search .search_logo{
+  height: 20px;
+  width: 20px;
+  align-self: center;
+}
+
+#navbar #user_controls{
+  display: flex;
+  gap: 1.5rem;
+  flex-grow: 2;
+  
+  justify-content: end;
+}
+
+#navbar #user_controls .settings,#navbar #user_controls .user_profile{
+  cursor: pointer;
+}

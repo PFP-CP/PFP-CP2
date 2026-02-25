@@ -1,4 +1,4 @@
-import styles from "@/styles/ui_css/auth/radio.module.css"
+import styles from "@/styles/auth_styles/ui_css/auth/radio.module.css"
 import { radio} from "@/types/types"
 
 

@@ -1,4 +1,4 @@
-import styles from '@/styles/ui_css/auth/form_button.module.css'
+import styles from '@/styles/auth_styles/ui_css/auth/form_button.module.css'
 
 type buttonType = {
   btnType?:'button' | 'submit' | 'reset';
