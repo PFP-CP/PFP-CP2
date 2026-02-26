@@ -1,6 +1,6 @@
 'use client'
 import {useRef} from 'react'
-import styles from '@/styles/ui_css/auth/form_input.module.css'
+import styles from '@/styles/auth_styles/ui_css/auth/form_input.module.css'
 import { inputType, keyValues_input,setErrors,errors } from '@/types/types'
 import { z} from "zod"
 

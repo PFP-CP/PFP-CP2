@@ -1,5 +1,5 @@
 'use client'
-import style from '@/styles/ui_css/auth/select_inpt.module.css'
+import style from '@/styles/auth_styles/ui_css/auth/select_inpt.module.css'
 import { ChangeEvent, useState } from "react";
 import { select } from "@/types/types";
 
