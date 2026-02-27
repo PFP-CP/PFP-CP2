@@ -1,5 +1,4 @@
-import type { Metadata } from "next";
-
+import '../styles/global.css'
 export default function RootLayout({
   children,
 }: Readonly<{
