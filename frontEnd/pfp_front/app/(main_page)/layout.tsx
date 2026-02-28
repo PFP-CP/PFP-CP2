@@ -1,5 +1,6 @@
 'use client'
 import {motion} from 'motion/react'
+import Link from 'next/link';
 import style from '@/styles/nav_bar_styles/nav_bar.module.css'
 import { useState,useRef,useEffect,useLayoutEffect, RefObject } from "react";
 import { usePathname } from "next/navigation";
@@ -50,7 +51,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [current_page,set_current_page]=  useState('home'); 
+  const [current_page,set_current_page]=  useState(getPathName()); 
   const nav_links_refs = {
     home: useRef(null),
     mynooks: useRef(null),
@@ -103,10 +104,10 @@ export default function RootLayout({
           </div>
           <div id={style.navigation}>
             <div ref={nav_links_container} id={style.navigation_links}>
-              <div ref={nav_links_refs.home} onClick={()=>set_current_page('home')} className={style.nav_text} >Home</div>
-              <div ref={nav_links_refs.mynooks} onClick={()=>set_current_page('mynooks')} className={style.nav_text} >My Nooks</div>
-              <div ref={nav_links_refs.myreservations} onClick={()=>set_current_page('myreservations')} className={style.nav_text} >My Reservations</div>
-              <div ref={nav_links_refs.myfavorites} onClick={()=>set_current_page('myfavorites')} className={style.nav_text} >My Favorites</div>
+              <div ref={nav_links_refs.home} onClick={()=>set_current_page('home')} className={style.nav_text} ><Link href={'/home'}> Home </Link></div>
+              <div ref={nav_links_refs.mynooks} onClick={()=>set_current_page('mynooks')} className={style.nav_text} ><Link href={'/mynooks'}> My Nooks </Link></div>
+              <div ref={nav_links_refs.myreservations} onClick={()=>set_current_page('myreservations')} className={style.nav_text} ><Link href={'/myreservations'}> My Reservations </Link></div>
+              <div ref={nav_links_refs.myfavorites} onClick={()=>set_current_page('myfavorites')} className={style.nav_text} ><Link href={'/myfavorites'}> My Favorites </Link></div>
               <motion.div transition={{ duration: .3, ease: "linear" }} layout ref={indicator} className={style.nav_indicator}></motion.div>
             </div>
             <div className={style.nav_search} >

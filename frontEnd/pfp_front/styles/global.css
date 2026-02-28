@@ -26,6 +26,12 @@ body{
   --input-height: 78px;
   --input-radius:70px  
 }
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
 @font-face {
     font-family: 'sansation-700';
     src: url('/fonts/Sansation/Sansation-Bold.woff2');

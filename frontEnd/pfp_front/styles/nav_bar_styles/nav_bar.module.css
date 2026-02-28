@@ -56,7 +56,6 @@ body {
 #navbar #navigation .nav_indicator{
   grid-area: indicator;
   height: 4px;
-  /* position: absolute; */
   background-color: white;
   bottom: -.2rem;
   width: 100%;
