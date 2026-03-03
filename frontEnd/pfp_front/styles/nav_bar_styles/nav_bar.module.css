@@ -6,7 +6,7 @@ body {
 
 
 #navbar{
-  min-width: 100vw;
+  min-width: 100%;
   height: 98px;
   background-color: rgba(99, 74, 173, 0.85);
 
@@ -50,7 +50,7 @@ body {
   color: white;
   font-size: 20px;
   cursor: pointer;
-  font-family: "sansation-700";
+  font-family: "sansation-400";
 }
 
 #navbar #navigation .nav_indicator{
@@ -61,8 +61,8 @@ body {
   width: 100%;
 }
 
-#navbar #navigation .nav_search{
-  width: 215px;
+#navbar .nav_search{
+  min-width: 215px;
   height: 3rem;
   background-color: rgb(34, 14, 103, 1);
   display: flex;
@@ -73,7 +73,7 @@ body {
 
 }
 
-#navbar #navigation .nav_search .find_retals_h3_container{
+#navbar .nav_search .find_retals_h3_container{
   background-color: transparent;
   height: 100%;
   display: flex;
@@ -81,18 +81,18 @@ body {
   font-size: 20px;
 }
 
-#navbar #navigation .nav_search .find_retals_h3{
+#navbar .nav_search .find_retals_h3{
   position: absolute;
   align-self: center;
   justify-self: center;
   font-family: "sansation-700";
 }
 
-#navbar  #navigation .nav_search .search_logo_container{
+#navbar .nav_search .search_logo_container{
   display: flex;
 }
 
-#navbar #navigation .nav_search .search_logo{
+#navbar .nav_search .search_logo{
   height: 20px;
   width: 20px;
   align-self: center;
