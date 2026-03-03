@@ -1,0 +1,78 @@
+.post_showcase{
+	width: 100%;
+	background-color: white;
+  padding: 1rem;
+}
+.showcase_header{
+  display: flex;
+  justify-content: space-between;
+}
+
+.post_actions{
+  display: flex;
+  gap: 2rem;
+  font-size: 30px;
+  font-family: "sansation-700";
+
+}
+
+
+.save_container,.copy_link_container,.title_container{
+  display: flex;
+  gap: .8rem;
+  align-items: center;
+}
+
+.title_logo,.copy_link_logo,.save_logo{
+  display: flex;
+  align-items: center;
+}
+
+.title_logo{
+  height: 40px;
+  width: 40px;
+}
+
+.copy_link_container{
+  cursor: pointer;
+}
+
+.copy_link_logo{
+  height: 33px;
+  width: 33px;
+}
+
+
+.save_container{
+  cursor: pointer;
+}
+
+.save_logo{
+  height: 20px;
+  width: 20px;
+}
+/* handling hover when save is or is not active */
+.save_container .save_logo svg.save_inactive{
+  fill: rgba(254, 26, 26, 0);
+  transition: fill .3s linear;
+}
+
+.save_container:hover .save_logo svg.save_inactive{
+  fill: rgba(254, 26, 26, 1);
+}
+
+.save_container .save_logo svg.save_active{
+  fill: rgba(254, 26, 26, 1);
+  transition: fill .3s linear;
+}
+
+.save_container:hover .save_logo svg.save_active{
+  fill: rgba(254, 26, 26, 0);
+}
+/* ^^^ handling hover when save is or is not active */
+
+
+.title_container .title{
+  font-size: 40px;
+  font-family: "sansation-700";
+}
