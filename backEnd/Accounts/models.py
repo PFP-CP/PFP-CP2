@@ -1,6 +1,33 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import BaseUserManager
 
+
+class AccountManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("Email is required")
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+
+        user.set_password(password)
+        user.save(using=self._db)
+
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, password, **extra_fields)    
 
 # Create your models here.
 #status of a user aka banned and such
@@ -9,7 +36,16 @@ class Account_status(models.TextChoices):
 
 class Account(AbstractUser):
     Default_profile_picture = "https://i.pinimg.com/1200x/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg"
-    
+    username = None  # Remove username field
+    email = models.EmailField(unique=True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []  # No additional required fields
+
+    objects = AccountManager()
+
+    first_name = None
+    last_name = None
+    full_name = models.TextField(max_length=150)
     gender = models.BooleanField(default=True)
     date_of_birth = models.DateField(default='2000-01-01' , null = True , blank = True)
     profile_picture = models.URLField(default=Default_profile_picture, blank=True)
@@ -17,7 +53,7 @@ class Account(AbstractUser):
     verified = models.BooleanField(default=False)
     
     def __str__(self):
-        return self.username
+        return self.full_name or self.email
     
     groups = models.ManyToManyField(
         Group,
@@ -43,14 +79,14 @@ class Contact(models.Model):
 
 
 class location(models.Model):
-    Account = models.ForeignKey(Account,on_delete=models.CASCADE)
+    Account = models.OneToOneField(Account,on_delete=models.CASCADE)
     #BALADIA
-    County = models.TextField(max_length=100)
+    County = models.TextField(max_length=100 ,blank=True)
     #Wilaya
-    State = models.TextField(max_length=100)
+    State = models.TextField(max_length=100,blank=True)
     #Country
     Country = models.TextField(max_length=100)
     #coords
-    Longitude = models.FloatField()
-    Latitude = models.FloatField()
+    Longitude = models.FloatField(default=0 ,blank=True)
+    Latitude = models.FloatField(default= 0 ,blank=True)
   
