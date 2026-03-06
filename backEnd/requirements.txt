@@ -7,22 +7,18 @@ contextlib2==21.6.0
 cryptography==46.0.5
 Django==6.0.2
 django-ninja==1.5.3
-<<<<<<< Updated upstream
 django-ninja-extra==0.31.0
 django-ninja-jwt==5.4.4
-idna==3.11
-injector==0.24.0
-=======
 django-stubs==5.2.9
 django-stubs-ext==5.2.9
-librt==0.8.1
+idna==3.11
+injector==0.24.0
 mypy==1.19.1
 mypy_extensions==1.1.0
 pathspec==1.0.4
->>>>>>> Stashed changes
 psycopg2==2.9.11
 pycparser==3.0
-pydantic==2.12.5
+pydantic==2.12.1
 pydantic-settings==2.13.1
 pydantic_core==2.41.5
 PyJWT==2.11.0
