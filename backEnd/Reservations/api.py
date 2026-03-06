@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja.errors import HttpError
+from ninja_jwt.authentication import JWTAuth
 
 from Accounts.models import Account, Contact
 from Houses.models import Location, Pictures
@@ -56,9 +57,9 @@ def _reservation_to_dict(r: Reservation) -> dict:
     }
 
 
-@router.get("/", response=list[ReservationOut])
-def list_reservations(request, user_id: int):
-    user = Account.objects.get(pk=user_id)  # we will use this until auth is wired in
+@router.get("/", response=list[ReservationOut], auth=JWTAuth())
+def list_reservations(request):
+    user: Account = request.user
 
     reservations = (
         Reservation.objects.filter(post__Poster=user)  # only this host's listings
@@ -73,9 +74,13 @@ def list_reservations(request, user_id: int):
     return [_reservation_to_dict(r) for r in reservations]
 
 
-@router.post("/", response={201: ReservationOut})
-def create_reservation(request, payload: ReservationIn, user_id: int):
-    user = Account.objects.get(pk=user_id)
+@router.post(
+    "/",
+    response={201: ReservationOut},
+    auth=JWTAuth(),
+)
+def create_reservation(request, payload: ReservationIn):
+    user: Account = request.user
 
     if payload.arrival_date >= payload.departure_date:
         raise HttpError(400, "arrival_date must be strictly before departure_date.")
