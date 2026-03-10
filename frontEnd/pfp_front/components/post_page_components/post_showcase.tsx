@@ -1,5 +1,7 @@
 import Link from "next/link"
+import Image from "next/image"
 import style from "@/styles/post_page_styles/showcase.module.css"
+import { mock } from "node:test"
 const SAVE_LOGO_ACTIVE = <svg className={style.save_active} width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7.38571 1.5C4.20759 1.5 1.5 4.368 1.5 8.09282C1.5 10.6624 2.49697 12.8258 3.81827 14.6178C5.13504 16.4037 6.83388 17.9028 8.36968 19.1574L11.0195 21.3222C11.3097 21.5593 11.6903 21.5593 11.9805 21.3222L14.6303 19.1574C16.1661 17.9028 17.865 16.4037 19.1817 14.6178C20.503 12.8258 21.5 10.6624 21.5 8.09282C21.5 4.368 18.7924 1.5 15.6143 1.5C13.976 1.5 12.5345 2.42709 11.5 3.62667C10.4655 2.42709 9.02397 1.5 7.38571 1.5Z" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
@@ -22,9 +24,9 @@ const TITLE_LOGO =<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xm
 <path d="M18.3333 19.8333V28.3333C18.3333 28.7753 18.5089 29.1992 18.8215 29.5118C19.134 29.8243 19.558 29.9999 20 29.9999C20.442 29.9999 20.8659 29.8243 21.1785 29.5118C21.4911 29.1992 21.6667 28.7753 21.6667 28.3333V19.8333C23.6901 19.4202 25.488 18.2706 26.712 16.6073C27.9359 14.9439 28.4987 12.8854 28.2911 10.8307C28.0836 8.77605 27.1205 6.87164 25.5886 5.4867C24.0567 4.10176 22.0651 3.33496 20 3.33496C17.9349 3.33496 15.9433 4.10176 14.4114 5.4867C12.8795 6.87164 11.9164 8.77605 11.7089 10.8307C11.5013 12.8854 12.064 14.9439 13.288 16.6073C14.512 18.2706 16.3099 19.4202 18.3333 19.8333ZM27.0167 24.0333C26.7978 23.9873 26.572 23.9849 26.3522 24.0262C26.1324 24.0675 25.9229 24.1517 25.7356 24.2739C25.5484 24.3962 25.387 24.5541 25.2608 24.7388C25.1346 24.9234 25.046 25.1311 25 25.3499C24.954 25.5688 24.9516 25.7946 24.9929 26.0144C25.0342 26.2342 25.1184 26.4437 25.2407 26.6309C25.3629 26.8182 25.5209 26.9796 25.7055 27.1058C25.8901 27.232 26.0978 27.3206 26.3167 27.3666C30.1 28.1166 31.6667 29.4666 31.6667 29.9999C31.6667 30.9666 27.5833 33.3333 20 33.3333C12.4167 33.3333 8.33333 30.9666 8.33333 29.9999C8.33333 29.4666 9.9 28.1166 13.6833 27.2999C13.9022 27.254 14.1099 27.1653 14.2945 27.0391C14.4791 26.9129 14.6371 26.7515 14.7593 26.5643C14.8816 26.377 14.9658 26.1675 15.0071 25.9477C15.0484 25.7279 15.046 25.5021 15 25.2833C14.954 25.0644 14.8654 24.8567 14.7392 24.6721C14.613 24.4875 14.4516 24.3295 14.2644 24.2073C14.0771 24.085 13.8676 24.0008 13.6478 23.9595C13.428 23.9182 13.2022 23.9206 12.9833 23.9666C7.91667 25.1333 5 27.3166 5 29.9999C5 34.3833 12.55 36.6666 20 36.6666C27.45 36.6666 35 34.3833 35 29.9999C35 27.3166 32.0833 25.1333 27.0167 24.0333Z" fill="#010006"/>
 </svg>
 
-export default function PostShowcase(){
+
+function PostHeader(){
   return(
-    <section className={style.post_showcase}>
         <div className={style.showcase_header}>
           <div className={style.title_container}>
             <div className={style.title_logo}><Link href={"#"}>{TITLE_LOGO}</Link></div>
@@ -41,6 +43,65 @@ export default function PostShowcase(){
             </div>
           </div>
         </div>
-      </section>
+
+  )
+}
+
+function PostImages(pictures:string[]){
+  return (
+    <>
+      {pictures.length>2?PicturesMoreThanTwo(pictures):PicturesLessThanTwo(pictures)}
+    </>
+  )
+
+  function PicturesMoreThanTwo(pictures:string[]){
+  return(
+    <div className={style.pictures_container}>
+          <div className={style.main_picture}>
+            <Image src="/mock_data/picture1.png" alt="main_picture" width={"650"} height={"500"} style={{ objectFit: "cover" }}/>
+          </div>
+          <div className={style.side_pictures} >
+            {pictures.map((pic)=>{
+              return(
+                <div key={pic} className={`${style.picture} ${style.emoreT3_picture}`}>
+                  <Image src={`/mock_data/picture${pic}.png`} alt="side_picture" width={"650"} height={"500"} style={{ objectFit: "cover" }}/>
+                </div>
+                )
+              })}
+            
+          </div>
+        </div>
+  )
+}
+
+function PicturesLessThanTwo(pictures:string[]){
+  return(
+    <div className={`${style.pictures_container} ${style.lessT3_pictures_container}`}>
+          <div className={style.main_picture}>
+            <Image src="/mock_data/picture1.png" alt="main_picture" width={"650"} height={"500"} style={{ objectFit: "cover" }}/>
+          </div>
+          <div className={style.main_picture} >
+            {pictures.map((pic)=>{
+              return(
+                <div key={pic} className={`${style.picture} ${style.moreT3_picture}`}>
+                  <Image src={`/mock_data/picture${pic}.png`} alt="main_picture" width={"650"} height={"500"} style={{ objectFit: "cover" }}/>
+                </div>
+                )
+              })}
+            
+          </div>
+        </div>
+  )
+}
+}
+
+export default function PostShowcase(){
+  const mock_pictures = ['3','6']
+  return(
+    <section className={style.post_showcase}>
+
+      {PostHeader()}
+      {PostImages(mock_pictures)}
+    </section>
   )
 }

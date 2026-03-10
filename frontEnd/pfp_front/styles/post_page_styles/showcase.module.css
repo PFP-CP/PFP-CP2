@@ -1,11 +1,12 @@
 .post_showcase{
 	width: 100%;
 	background-color: white;
-  padding: 1rem;
+  padding: 2rem ;
 }
 .showcase_header{
   display: flex;
   justify-content: space-between;
+  padding-bottom: 2rem;
 }
 
 .post_actions{
@@ -75,4 +76,57 @@
 .title_container .title{
   font-size: 40px;
   font-family: "sansation-700";
+}
+
+
+.pictures_container{
+  display: flex;
+  min-height:500px;
+  background-color: transparent;
+  padding-left: 3rem;
+  gap: 5rem;
+  align-items: center;
+}
+
+.lessT3_pictures_container{
+  justify-content: center;
+
+}
+
+/* .moreT3_picture{
+  max-Width:475px;
+} */
+
+.pictures_container .main_picture{
+  height: inherit;
+  background-color: red;
+  flex-grow: 1;
+  max-width: 650px;
+  max-height: 500px;
+  overflow: hidden;
+  border-radius: 23px;
+}
+
+.pictures_container .side_pictures{
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(475px, 1fr));
+  grid-template-rows:max-content;
+  row-gap: 40px;
+  column-gap: 2rem;
+  height: inherit;
+  flex-grow: 1;
+  background-color: transparent;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.pictures_container .side_pictures .picture{
+  background-color: pink;
+  max-height: 230px;
+  justify-self: center;
+  max-width: 475px;
+  border-radius: 23px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
 }
