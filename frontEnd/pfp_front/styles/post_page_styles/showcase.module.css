@@ -1,11 +1,15 @@
 
+.post_showcase img{
+  cursor: pointer;
+}
+
 .post_showcase{
 	width: 100%;
 	background-color: white;
-  padding: 2rem ;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  padding-bottom: 2rem;
 }
 .showcase_header{
   display: flex;

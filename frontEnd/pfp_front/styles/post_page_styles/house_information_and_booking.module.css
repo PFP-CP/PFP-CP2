@@ -1,0 +1,141 @@
+.nook_data_and_scheduler{
+  display: flex;
+	background-color: white;
+	width: 100%;
+
+}
+
+
+
+.nook_data{
+  flex: 1 0;
+}
+
+.nook_scheduler{
+  flex: 1 0;
+}
+
+.nook_and_renter_rating{
+  display: flex;
+  flex-direction: column;
+}
+
+.rating_display{
+  display: flex;
+  gap: 2rem;
+}
+.rating_and_ratingButton_container{
+  flex-basis: 329px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.renter_rating,.nook_rating_and_comments{
+  max-width: 329px;
+  min-height: 93px;
+  border-radius: 23px;
+}
+
+.nook_rating_and_comments{
+  background-color: white;
+  flex: 1 0;
+  border: 3px solid black;
+  display: flex;
+  padding-top: 1rem;
+  cursor: pointer;
+  padding-bottom: 1rem;
+
+}
+
+.comments_title_container{
+  flex: 1 0;
+}
+
+.nook_rating_and_comments .nook_rating_value,.nook_rating_and_comments .comments_number{
+  flex: 1 0;
+  text-align: center;
+  font-size: 30px;
+  font-family: "sansation-700", "sans-sarif";
+}
+
+.comments_number span{
+  font-size: 20px;
+}
+
+.nook_rating_and_comments .nook_rating_value{
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  align-self: flex-start;
+
+}
+
+.nook_rating_and_comments .nook_rating_value::after{
+  content: "";
+  position: absolute;
+  height: 25px;
+  width: 0;
+  border: 2px solid black;
+  right: 0;
+  top: calc(17px - calc(25px / 2));
+}
+
+.rating_display .rating_and_ratingButton_container .renter_rating{
+  flex: 1 0;
+  display: flex; 
+  align-items: center;
+  gap: 1rem;
+}
+
+
+.rating_and_ratingButton_container .renter_rating .profile_picture{
+  height: 55px;
+  width: 55px;
+  background-color: white; 
+  border: 3px solid #000000;
+  border-radius:50px;
+}
+
+.rating_and_ratingButton_container .renter_rating .name_rating_container{
+  flex-grow: 1;
+  min-height: 50px;
+  font-size: 20px;
+  font-family: "sansation-700", "sans-sarif";
+}
+
+.rating_and_ratingButton_container .renter_rating .name_rating_container .rating_container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap:.3rem;
+}
+
+.nook_and_renter_rating .rating_buttons_container{
+  display: flex;
+}
+
+.rating_and_ratingButton_container .rating_button{
+  min-height: 49px;
+  background-color: #D9D9D9;
+  flex-grow: 1;
+  border-radius: 23px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: "sansation-700", "sans-sarif";
+}
+
+.nook_comments{
+  background-color: grey;
+  flex: 1 0;
+}
+
+.renter_slider{
+  color: #220E67 !important;
+}
+
