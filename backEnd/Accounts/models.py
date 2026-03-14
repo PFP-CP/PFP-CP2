@@ -57,7 +57,12 @@ class Account(AbstractUser):
 
     def __str__(self):
         return self.full_name or self.email
-
+    
+    def set_name(self , new_name : str):
+        name = new_name.split(" ")
+        self.first_name = name[0]
+        self.last_name = name[1]
+    
     groups = models.ManyToManyField(
         Group,
         related_name="account_set",
@@ -92,3 +97,4 @@ class location(models.Model):
     # coords
     Longitude = models.FloatField(default=0, blank=True)
     Latitude = models.FloatField(default=0, blank=True)
+

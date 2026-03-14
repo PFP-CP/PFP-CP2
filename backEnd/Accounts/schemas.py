@@ -1,5 +1,6 @@
 from ninja import ModelSchema, Schema
 from .models import Account
+from typing import Optional
 
 class AccountSchema(ModelSchema):
 
@@ -19,13 +20,18 @@ class AccountSignin(ModelSchema):
         model = Account
         fields = [ "full_name", "email", "password" , "date_of_birth"]
 
-class ResetKey(Schema):
+class ResetPassword(Schema):
 
-    new_password : str
-    #Token : UID string 
-    key : str
+    email : str
+    new_password : Optional[str] = None
+    key : Optional[str] = None
 
 class AccountLogin(Schema):
 
     password : str
     Identifier : str
+
+class EmailConfirmation(Schema):
+
+    email : str
+    key: Optional[str] = None

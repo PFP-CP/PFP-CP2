@@ -1,4 +1,7 @@
 import json
+import secrets
+import string as STRING
+import time
 from pathlib import Path
 from ninja import Router
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -8,15 +11,12 @@ from django.utils.encoding import force_bytes
 from ninja_jwt.tokens import RefreshToken
 from ninja_jwt.authentication import JWTAuth
 from asgiref.sync import sync_to_async
+from django.contrib.auth.hashers import make_password , check_password
 from .models import *
 from .schemas import *
 
 tokenizer = PasswordResetTokenGenerator()
 router = Router()
-
-def authenticate():
-
-    return True
 
 #function to sign in  a new user with given fields 
 @router.post("/Signup")
@@ -33,7 +33,7 @@ def Signin(request , Acc:AccountSignin):
     #create newuser with the data given 
     #add email verification
     new_acc = Account.objects.create_user(email=Acc.email , password = Acc.password,is_active = False, gender = gen , full_name = Acc.full_name , date_of_birth = Acc.date_of_birth)
-    location.objects.create(Account = NewAcc,County = wilayas[Acc.state])
+    location.objects.create(Account = new_acc,County = wilayas[Acc.state])
     new_acc.save()
 
     refresh = RefreshToken.for_user(new_acc)
@@ -46,7 +46,54 @@ def Signin(request , Acc:AccountSignin):
         }
     }
 
+def generate_confirmation_key():
+    length = 8
+    mail_conf_key = ''.join(secrets.choice(STRING.ascii_letters + STRING.digits) for _ in range(length))
+    return mail_conf_key
 
+
+def verify_confirmation_key(KeyTime_pair : tuple , user_key ):
+    if not KeyTime_pair :
+        return False , "No key inputted"
+    if time.time() > KeyTime_pair[1]:
+        return False , "Key has expired"
+    if KeyTime_pair[0] != user_key:
+        return False , "Wrong Key"
+    return True , "Success"
+    
+
+#add a function for email confirmation 
+@router.patch("/email_confirmation" , auth=JWTAuth())
+def confirm_email(request , Confdata : EmailConfirmation):    
+    User = Account.objects.filter(email__exact = Confdata.email).first()
+    
+
+    if not User:
+        return {"Error" : "Email doesnt exist"} 
+    if User.is_active:
+        return {"Error" : "user's email already active"}
+    
+
+    key = generate_confirmation_key()
+    #300 is the number or seconds before the expiration of the key aka 5min
+    key_time_pair = (key , time.time() + 300 )
+    
+    
+    if Confdata.key is not None:
+        res = verify_confirmation_key(key_time_pair , Confdata.key)
+        if res[0] :
+            User.is_active = True
+        return {"Message" : res[1] }
+    
+    
+    
+    send_mail(
+        "Email Confirmation",
+        f"Here is the code that will enable you to confirm your email address\n {key}\n please copy it into the appropriate field ",
+        "nook.app1@gmail.com",
+        [Confdata.email],
+    )
+    return {"Message" : "Email Sent Successfully"}
 
 
 #function that logs a user in (missing JWT implementation)
@@ -71,14 +118,10 @@ def Login(request , Acc:AccountLogin):
         }
 
 
-#@sync_to_async
-#def get_key(request , ResetKey : str):
-    
 #function that resets the password of the user through a key
-@router.patch("password/reset")
-def password_reset(request , Key : ResetKey ):   
+def password_reset( key : str , new_password : str):   
     
-    split_key = Key.key.split(':')
+    split_key = key.split(':')
 
     if len(split_key) != 2:
         return {"error": "Invalid key format"}
@@ -92,15 +135,19 @@ def password_reset(request , Key : ResetKey ):
     if not tokenizer.check_token(user, split_key[0]):
         return {"error": "Key is expired or invalid"}
 
-    user.set_password(Key.new_password)
+    user.set_password(new_password)
     user.save()
 
     return {"message": "Password reset successfully"}
 
 #funstion that gets a mailing address and check if a user exists with said address , if yes it sends a Key to reset the password of said user
-@router.patch("/password/forget")
-def password_forgotten(request , mail : str):
-    User = Account.objects.filter(email__exact = mail).first()
+@router.patch("/passwordReset")
+def password_forgotten(request , ResetCred : ResetPassword):
+
+    if not ResetCred.key and not ResetCred.new_password:
+        return password_reset(ResetCred.key , ResetCred.new_password) 
+    
+    User = Account.objects.filter(email__exact = ResetCred.email).first()
     if not User:
         return {"Error" : "Account doesnt exist or email is wrong"}
     else:
@@ -115,7 +162,7 @@ def password_forgotten(request , mail : str):
                   Message ,
                   "nook.app1@gmail.com" ,
                   #if you want to test just put your own email in between the brackets as a string 
-                  ["merouaneakli06@gmail.com"])
+                  [User.email])
         return {"Message" : "Account found , email sent"}
 
 #testing method     
@@ -127,3 +174,11 @@ def display(request ):
         "Mail" : User.email,
         "gender" : User.gender,
     }
+
+
+@router.patch("/{User_id}" , auth=JWTAuth())
+def change_name(request , name : str ):
+    User = request.user
+    User.set_name(name)
+    User.save()
+    
