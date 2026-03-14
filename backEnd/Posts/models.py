@@ -12,7 +12,7 @@ class Post(models.Model):
     Updated_at = models.DateTimeField(auto_now=True)
     Title = models.TextField(max_length=100)
     Description = models.TextField(max_length=1000)
-    Likes = models.IntegerField(default=0)
+    Rating = models.FloatField(default=5)
 
     def __str__(self):
         return self.__str__()

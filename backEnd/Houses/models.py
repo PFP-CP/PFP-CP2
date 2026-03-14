@@ -20,7 +20,7 @@ class House(models.Model):
     Updated_at = models.DateTimeField(auto_now=True)
     Types_of_Renters = models.CharField(max_length=2 ,choices=AllowedPeople.choices,default=AllowedPeople.All)
     
-
+    
     def __str__(self):
         return str(self.Description)
     
@@ -40,10 +40,10 @@ class FeatureList(models.Model):
         return self.feature
 
 class Features(models.Model):
-    models.ForeignKey(House,on_delete=models.CASCADE)
-    features = models.ManyToManyField(FeatureList , blank=True)
+    House = models.ForeignKey(House, on_delete=models.CASCADE, related_name="features")
+    Available_features= models.ManyToManyField(FeatureList , blank=True)
 
-class AvalabilityCalendar(models.Model):
+class AvailablityCalendar(models.Model):
     Start_at = models.DateTimeField(default=House.Creation_time)
     end_at = models.DateTimeField()
     #make a function that make a array/list of the days from start to end modulo months and mark each day as available or not
@@ -51,14 +51,14 @@ class AvalabilityCalendar(models.Model):
     # also add a function to print the day of said month that are booked
 
 class Location(models.Model):
-    house = models.ForeignKey(House,on_delete=models.CASCADE)
+    house = models.OneToOneField(House,on_delete=models.CASCADE)
     #BALADIA
     County = models.TextField(max_length=100)
     #Wilaya
-    State = models.TextField(max_length=100)
+    State = models.TextField(max_length=100,blank=True)
     #Country
-    Country = models.TextField(max_length=100)
+    Country = models.TextField(max_length=100,blank=True)
     #coords
-    Longitude = models.FloatField()
-    Latitude = models.FloatField()
+    Longitude = models.DecimalField(max_digits=10, decimal_places=7,blank=True)
+    Latitude = models.DecimalField(max_digits=10, decimal_places=7,blank=True)
   
