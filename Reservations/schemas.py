@@ -1,0 +1,54 @@
+from datetime import date
+from typing import Optional
+
+from ninja import Schema
+
+#  Renter block
+
+
+class RenterOut(Schema):
+    id: int
+    full_name: str
+    email: str
+    phone: Optional[int]
+
+
+# House block
+
+
+class HouseOut(Schema):
+    id: int
+    Price: int
+    Description: str
+    wilaya: str
+    photo: str
+
+
+# Post block
+
+
+class PostOut(Schema):
+    id: int
+    Title: str
+    House: HouseOut
+
+
+# Full reservation row (one row in the UI table)
+
+
+class ReservationOut(Schema):
+    id: int
+    renter: RenterOut
+    post: PostOut
+    arrival_date: date
+    departure_date: date
+    created_at: str
+
+
+# Input body for POST /Reservations/
+
+
+class ReservationIn(Schema):
+    post_id: int
+    arrival_date: date
+    departure_date: date
