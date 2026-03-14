@@ -1,5 +1,6 @@
 import json
 import hashlib
+from pathlib import Path
 from django.core.cache import cache
 from ninja import Router
 from Accounts.models import Account
@@ -11,31 +12,38 @@ from .schemas import *
 router = Router()
 search_router = Router()
 
-def post_rating_query(previous_search: QuerySet ,rating :float | None = None ):
+def post_rating_query(previous_search: QuerySet ,rating :float | None = None ) -> QuerySet :
     if rating is not None :
         previous_search = previous_search.filter(Rating__gte=rating)
     return previous_search
 
-def renter_rating_query(previous_search: QuerySet ,rating :float | None = None ):
+def renter_rating_query(previous_search: QuerySet ,rating :float | None = None ) -> QuerySet :
     if rating is not None :
-        previous_search = previous_search.filter(Rating__gte=rating)
-    return previous_search
+        previous_search = previous_search.filter(Poster__rating__gte=rating)
+    return previous_search 
 
-def price_query(previous_search: QuerySet ,min_price :int | None = None , max_price : int| None =None):
+def price_query(previous_search: QuerySet ,min_price :int | None = None , max_price : int| None =None) -> QuerySet :
     if min_price is not None: 
-        previous_search = previous_search.filter(Price__gte=min_price)
+        previous_search = previous_search.filter(House__Price__gte=min_price)
     if max_price is not None: 
-        previous_search = previous_search.filter(Price__lte=max_price)
+        previous_search = previous_search.filter(House__Price__lte=max_price)
     return previous_search
 
 def rooms_query(previous_search: QuerySet, number_of_rooms: int | None = None) -> QuerySet:
+    #needs work still isnt finished to the standard im striving for
     if number_of_rooms is not None:
         previous_search = previous_search.filter(House__RoomNum=number_of_rooms)
     return previous_search
 
 def wilaya_query(previous_search: QuerySet, wilaya: str | None = None) -> QuerySet:
     if wilaya is not None:
-        previous_search = previous_search.filter(House__location__State=wilaya)
+
+        main_dir = Path(__file__).parents[1]
+        wilaya_dir = main_dir / "wilayas/wilayas.json"
+        with open(wilaya_dir ,"r") as file_json:
+            wilayas = json.load(file_json)
+        
+        previous_search = previous_search.filter(House__location__State=wilayas[wilaya])
     return previous_search
 
 def allowed_people_query(previous_search: QuerySet, allowed_people: list[str] = []) -> QuerySet:

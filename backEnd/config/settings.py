@@ -88,7 +88,7 @@ DATABASES = {
     }
 }
 
-# settings.py
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -116,8 +116,6 @@ CACHES = {
 #}
 #
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
