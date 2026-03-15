@@ -66,6 +66,8 @@ function comments_visible(setShowComments:React.Dispatch<React.SetStateAction<bo
                     <Comment />
                     <Comment />
                     <Comment />
+                    <Comment />
+                    <Comment />
                   </div>
                 <button className={style.leave_show_comments} onClick={()=>setShowComments(false)}>{LEAVE_TAB}</button>
                 </div>

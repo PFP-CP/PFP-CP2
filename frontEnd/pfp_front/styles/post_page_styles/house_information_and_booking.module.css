@@ -162,6 +162,7 @@
   background-color: transparent;
   border: none;
   cursor: pointer;
+  padding-top: .5rem;
 }
 
 .comments_container .comment{
