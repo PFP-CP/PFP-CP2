@@ -1,11 +1,44 @@
 'use client'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import style from '@/styles/post_page_styles/house_information_and_booking.module.css'
-import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB } from '@/public/svg/svg'
+import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM } from '@/public/svg/svg'
 import Comment from './house_information_components/Comment'
+import { Slider } from '@mui/material'
 
 
+function rateRenterButton(){
+  const [isRating, setIsRating] = useState(false);
+  const [value, setValue] = useState(0);
+  const [IsRenterRated, setIsRenterRated] = useState(false); // this has to be taken from api
 
+  const handleValueChange = (e:Event, ratingValue:number)=>{
+    setValue(ratingValue);
+  }
+  const handleSubmitRating = ()=>{
+    setIsRenterRated(true);
+    setIsRating(false);
+  };
+  return(
+    !isRating?
+      (!IsRenterRated?<div onClick={()=> setIsRating(true)} className={style.rating_button}>Rate the renter</div>:
+        <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>):
+    <div className={style.rating_slider_container}>
+      <Slider
+        className={style.renter_slider}
+        onChange={handleValueChange}
+        value={value}
+        valueLabelDisplay="on"
+        aria-label="rating"
+        defaultValue={0}
+        step={0.5}
+        marks
+        min={0}
+        max={5}
+      />
+      <button className={style.confirm_rating_button} onClick={handleSubmitRating}>{CONFIRM}</button>
+    </div>
+  )
+}
 
 function comments_invisible(setShowComments:React.Dispatch<React.SetStateAction<boolean>>){
   return(
@@ -39,7 +72,7 @@ function comments_invisible(setShowComments:React.Dispatch<React.SetStateAction<
                     </div>
                   </div>
                 </div>
-                <div className={style.rating_button}>Rate the renter</div>
+                {rateRenterButton()}
               </div>
             </div>
             

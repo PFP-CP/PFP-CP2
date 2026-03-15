@@ -30,6 +30,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  align-self: flex-start;
 }
 
 .renter_rating,.nook_rating_and_comments{
@@ -132,6 +133,26 @@
   font-family: "sansation-700", sans-serif;
   cursor: pointer;
 }
+
+.rated_button{
+  min-height: 49px;
+  background-color: #220E67;
+  flex-grow: 1;
+  border-radius: 23px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-family: "sansation-700", sans-serif;
+  cursor: pointer;
+  gap: .5rem;
+  color: white;
+}
+
+.rated_button svg path{
+  fill: white !important;
+}
+
 /*  */
 .rating_display_onCommentsShow{
   background-color: #D9D9D9;
@@ -209,6 +230,21 @@
 .nook_rating_and_comments_onCommentsShow{
   align-self: flex-start;
   flex-basis: 329px;
+}
+
+.rating_slider_container{
+  display: flex;
+  gap: .5rem;
+}
+
+.confirm_rating_button{
+  border-radius: 30px;
+  background-color: #220E67;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 
