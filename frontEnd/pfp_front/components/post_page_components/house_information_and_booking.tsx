@@ -5,11 +5,15 @@ import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM } from '@/public/svg/svg'
 import Comment from './house_information_components/Comment'
 import { Slider } from '@mui/material'
 
+let user = {
+  renterRated:false,
+  renterRate:3,
+}
 
-function rateRenterButton(){
+function RateRenterButton(){
   const [isRating, setIsRating] = useState(false);
-  const [value, setValue] = useState(0);
-  const [IsRenterRated, setIsRenterRated] = useState(false); // this has to be taken from api
+  const [value, setValue] = useState(user.renterRate);
+  const [IsRenterRated, setIsRenterRated] = useState(user.renterRated); // this has to be taken from api
 
   const handleValueChange = (e:Event, ratingValue:number)=>{
     setValue(ratingValue);
@@ -17,6 +21,8 @@ function rateRenterButton(){
   const handleSubmitRating = ()=>{
     setIsRenterRated(true);
     setIsRating(false);
+    user.renterRate=value;
+    user.renterRated=true;
   };
   return(
     !isRating?
@@ -24,7 +30,7 @@ function rateRenterButton(){
         <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>):
     <div className={style.rating_slider_container}>
       <Slider
-        className={style.renter_slider}
+        className={style.rating_slider}
         onChange={handleValueChange}
         value={value}
         valueLabelDisplay="on"
@@ -40,7 +46,63 @@ function rateRenterButton(){
   )
 }
 
+function RateNookButton({setRatingValue}:{setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>}){
+  const [isRating, setIsRating] = useState(true);
+  const [value, setValue] = useState(0);
+  const [isNookRated, setIsNookRated] = useState(false); // this has to be taken from api
+  console.log(value);
+  const handleValueChange = (e:Event, rating:number)=>{
+    setValue(rating);
+  }
+  const handleSubmitRating = ()=>{
+    setIsNookRated(true);
+    setIsRating(false);
+    setRatingValue(value);
+  };
+  return(
+    
+      !isRating && isNookRated?
+        <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>:
+    <div className={style.rating_slider_container}>
+      <Slider
+        className={style.rating_slider}
+        onChange={handleValueChange}
+        value={value}
+        valueLabelDisplay="on"
+        aria-label="rating"
+        defaultValue={0}
+        step={0.5}
+        marks
+        min={0}
+        max={5}
+      />
+      <button className={style.confirm_rating_button} onClick={handleSubmitRating}>{CONFIRM}</button>
+    </div>
+  )
+}
+
+function Comment_review({setIsCommenting, setRatingValue}:{setIsCommenting:React.Dispatch<React.SetStateAction<boolean>>, setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>}){
+  const handleCloseSubmit = ()=>{
+    setIsCommenting(false);
+  }
+  
+  return(
+    <div className={style.nook_review}>
+      <div className={style.nook_rating_and_close_button}>
+        {<RateNookButton setRatingValue={setRatingValue} />}
+        <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
+      </div>
+      <div className={style.comment_input}>
+        <textarea name="comment" id={style.comment} placeholder='Write your comment'></textarea>
+        <button onClick={handleCloseSubmit}>Submit</button>
+      </div>
+    </div>
+  )
+}
+
 function comments_invisible(setShowComments:React.Dispatch<React.SetStateAction<boolean>>){
+  const [isCommenting, setIsCommenting] = useState(false);
+  const [ratingValue,setRatingValue] = useState<number>();
   return(
           <div className={style.nook_and_renter_rating}>
             <div className={style.rating_display}>
@@ -55,7 +117,11 @@ function comments_invisible(setShowComments:React.Dispatch<React.SetStateAction<
                     </div>
 
                 </div>
-                <div className={style.rating_button}>Rate the nook</div>
+                {!isCommenting && (
+                  !ratingValue?
+                  <div onClick={()=>setIsCommenting(true)} className={style.rating_button}>Rate the nook</div>:
+                  <div onClick={()=> setIsCommenting(true)} className={style.rated_button}>{ratingValue.toFixed(2)} {STAR_LOGO_SMALL}</div>
+                  )}
 
               </div>
               {/* this will be a component */}
@@ -72,10 +138,10 @@ function comments_invisible(setShowComments:React.Dispatch<React.SetStateAction<
                     </div>
                   </div>
                 </div>
-                {rateRenterButton()}
+                {!isCommenting && <RateRenterButton />}
               </div>
             </div>
-            
+            {isCommenting && <Comment_review setIsCommenting={setIsCommenting} setRatingValue={setRatingValue}/>}
           </div>
   )
 }
