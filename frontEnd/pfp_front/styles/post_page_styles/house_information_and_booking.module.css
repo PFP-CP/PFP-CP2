@@ -18,6 +18,7 @@
 .nook_and_renter_rating{
   display: flex;
   flex-direction: column;
+  gap: 4rem;
 }
 
 .rating_display{
@@ -333,4 +334,71 @@
 
 .nook_review .rating_slider_container{
   flex-basis: 257px;
+}
+
+.description_and_rules_categories_container{
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.description_container{
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-left: .5rem;
+}
+
+.description_title{
+  font-size: 35px;
+  font-family: "sansation-700", sans-serif;
+}
+
+.description{
+  font-size: 30px;
+  font-family: "sansation-400", sans-serif;
+}
+
+.rules_categories_container{
+  cursor:default;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-left: .5rem;
+}
+
+.rules_container, .categories_container{
+  font-size: 35px;
+  font-family: "sansation-700", sans-serif;
+}
+
+.rules_container pre, .categories_container pre{
+  display: flex;
+  align-items: center;
+}
+
+.features_container{
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.features_title{
+  font-size: 35px;
+  font-family: "sansation-700", sans-serif;
+}
+
+.features{
+  font-size: 30px;
+  font-family: "sansation-700", sans-serif;
+  display: flex;
+  max-width: 923px;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.feature pre{
+  display: flex;
+  align-items: center;
 }
