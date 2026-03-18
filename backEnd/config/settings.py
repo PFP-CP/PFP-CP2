@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "storages",
     "Accounts.apps.AccountsConfig",
     "Posts.apps.PostsConfig",
     "Houses.apps.HousesConfig",
@@ -99,22 +100,23 @@ CACHES = {
     }
 }
 
-#STORAGES = {
-#    "staticfiles": {
-#        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-#    },
-#    "default": {
-#        "BACKEND": "storages.backends.s3.S3Storage",
-#        "OPTIONS": {
-#            "access_key": os.environ.get("SUPABASE_S3_ACCESS_KEY_ID"),
-#            "secret_key": os.environ.get("SUPABASE_S3_SECRET_ACCESS_KEY"),
-#            "bucket_name": os.environ.get("SUPABASE_S3_BUCKET_NAME"),
-#            "region_name": os.environ.get("SUPABASE_S3_REGION_NAME"),
-#            "endpoint_url": os.environ.get("SUPABASE_S3_ENDPOINT_URL"),
-#        },
-#    },
-#}
-#
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": "a0171b2add80ec93f04b642e0f26f089",
+            "secret_key": "818aa3ea6875dc813d817d6dd12d371547e037b7f4eff83cc18817e0e29dad1c",
+            "bucket_name": "media",
+            "region_name": "eu-west-1",
+            "endpoint_url": "https://wcnphqrchchdghpjolpa.supabase.co/storage/v1/s3",
+            "file_overwrite": False,
+            "default_acl": "public-read",
+        },
+    },
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [

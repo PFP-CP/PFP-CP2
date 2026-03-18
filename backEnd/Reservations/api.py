@@ -75,7 +75,7 @@ def list_reservations(request):
 
 
 @router.post(
-    "/create",
+    "/",
     response={201: ReservationOut},
     auth=JWTAuth(),
 )
