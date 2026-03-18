@@ -8,7 +8,7 @@ from Houses.models import *
 from .models import *
 from django.db.models import QuerySet
 from .schemas import *
-
+from ninja.pagination import PageNumberPagination , paginate
 router = Router()
 search_router = Router()
 
@@ -83,6 +83,7 @@ def sorting(post_results: list[SearchResult] , ordering_by ):
     return post_results
 
 @search_router.post("")
+@paginate(PageNumberPagination , page_size = 5)
 def search(request , Criteria : SearchCriteria ):
 
         

@@ -4,14 +4,16 @@ import string as STRING
 import time
 from pathlib import Path
 from ninja import Router
+from ninja.errors import HttpError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
+from django.core.cache import cache
+from django.contrib.auth.hashers import make_password , check_password
 from ninja_jwt.tokens import RefreshToken
 from ninja_jwt.authentication import JWTAuth
 from asgiref.sync import sync_to_async
-from django.contrib.auth.hashers import make_password , check_password
 from .models import *
 from .schemas import *
 
@@ -39,7 +41,7 @@ def Signin(request , Acc:AccountSignin):
     refresh = RefreshToken.for_user(new_acc)
 
     return {
-        "message": "Account created successfully",
+        201: "Account created successfully",
         "tokens": {
             "access": str(refresh.access_token),
             "refresh": str(refresh),
@@ -52,48 +54,44 @@ def generate_confirmation_key():
     return mail_conf_key
 
 
-def verify_confirmation_key(KeyTime_pair : tuple , user_key ):
-    if not KeyTime_pair :
-        return False , "No key inputted"
-    if time.time() > KeyTime_pair[1]:
-        return False , "Key has expired"
-    if KeyTime_pair[0] != user_key:
-        return False , "Wrong Key"
-    return True , "Success"
-    
+def verify_confirmation_key(cached_key, user_key):
+    if not cached_key:
+        return False, "Key has expired or no key was requested"
+    if cached_key != user_key:
+        return False, "Wrong Key"
+    return True, "Success"
+
 
 #add a function for email confirmation 
-@router.patch("/email_confirmation" , auth=JWTAuth())
-def confirm_email(request , Confdata : EmailConfirmation):    
-    User = Account.objects.filter(email__exact = Confdata.email).first()
-    
+@router.patch("/email_confirmation", auth=JWTAuth(), response={200: dict, 400: dict, 404: dict})
+def confirm_email(request, confirmdata: EmailConfirmation):    
+    User = Account.objects.filter(email__exact = confirmdata.email).first()
 
     if not User:
-        return {"Error" : "Email doesnt exist"} 
+        raise HttpError(404, "User not found")
     if User.is_active:
-        return {"Error" : "user's email already active"}
-    
+        return 400, {"detail": "user's email already active"}
+
+    if confirmdata.key is not None:
+        cached_key = cache.get(f"email_confirmation_{User.id}")
+        success, message = verify_confirmation_key(cached_key, confirmdata.key)
+        if success:
+            User.is_active = True
+            User.save()
+            cache.delete(f"email_confirmation_{User.id}")
+        return 200, {"detail": message}
 
     key = generate_confirmation_key()
-    #300 is the number or seconds before the expiration of the key aka 5min
-    key_time_pair = (key , time.time() + 300 )
-    
-    
-    if Confdata.key is not None:
-        res = verify_confirmation_key(key_time_pair , Confdata.key)
-        if res[0] :
-            User.is_active = True
-        return {"Message" : res[1] }
-    
-    
-    
+    #300 is the number of seconds before the expiration of the key aka 5min
+    cache.set(f"email_confirmation_{User.id}", key, timeout=300)
+
     send_mail(
         "Email Confirmation",
         f"Here is the code that will enable you to confirm your email address\n {key}\n please copy it into the appropriate field ",
         "nook.app1@gmail.com",
-        [Confdata.email],
+        [confirmdata.email],
     )
-    return {"Message" : "Email Sent Successfully"}
+    return 200, {"detail": "Email Sent Successfully"}
 
 
 #function that logs a user in (missing JWT implementation)
@@ -144,7 +142,7 @@ def password_reset( key : str , new_password : str):
 @router.patch("/passwordReset")
 def password_forgotten(request , ResetCred : ResetPassword):
 
-    if not ResetCred.key and not ResetCred.new_password:
+    if ResetCred.key and ResetCred.new_password:
         return password_reset(ResetCred.key , ResetCred.new_password) 
     
     User = Account.objects.filter(email__exact = ResetCred.email).first()
