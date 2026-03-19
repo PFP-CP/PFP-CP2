@@ -52,3 +52,9 @@ class ReservationIn(Schema):
     post_id: int
     arrival_date: date
     departure_date: date
+
+
+# output for DELETE /Reservations/{reservation_id}
+class DeleteReservationOut(Schema):
+    message: str
+    reservation_id: int

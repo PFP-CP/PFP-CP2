@@ -1,14 +1,13 @@
+from Accounts.models import Account, Contact
 from django.shortcuts import get_object_or_404
+from Houses.models import Location, Pictures
 from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
-
-from Accounts.models import Account, Contact
-from Houses.models import Location, Pictures
 from Posts.models import Post
 
 from .models import Reservation
-from .schemas import ReservationIn, ReservationOut
+from .schemas import DeleteReservationOut, ReservationIn, ReservationOut
 
 router = Router()
 
@@ -110,3 +109,36 @@ def create_reservation(request, payload: ReservationIn):
     ).get(pk=reservation.pk)
 
     return 201, _reservation_to_dict(reservation)
+
+
+@router.delete("/{reservation_id}", auth=JWTAuth(), response=DeleteReservationOut)
+def delete_reservation(request, reservation_id: int):
+    """
+    Delete a reservation.
+    Allowed if:
+      - requester is the renter who made the reservation, OR
+      - requester is the host/owner of the post (post.Poster)
+    """
+    user: Account = request.user
+
+    reservation = (
+        Reservation.objects.select_related("renter", "post", "post__Poster")
+        .filter(id=reservation_id)
+        .first()
+    )
+
+    if not reservation:
+        raise HttpError(404, "Reservation not found.")
+
+    # Authorization rule
+    is_renter = reservation.renter_id == user.id
+    is_host = reservation.post.Poster_id == user.id
+
+    if not (is_renter or is_host):
+        raise HttpError(403, "You are not allowed to delete this reservation.")
+
+    reservation.delete()
+    return {
+        "message": "Reservation deleted successfully.",
+        "reservation_id": reservation_id,
+    }
