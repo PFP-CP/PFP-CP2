@@ -10,7 +10,8 @@ export default function PostPage() {
       backgroundColor:"white",
   }}>
     <PostShowcase show_pictures={show_pictures} setShowPictures={setShowPictures} />
-    <HouseInformationAndBooking />
+
+    {!show_pictures&&<HouseInformationAndBooking />}
   </main>
   );
 }

@@ -9,10 +9,10 @@ import styles2 from "@/styles/auth_styles/structure_css/auth_form.module.css"
 import Image from 'next/image'
 
 import { wilayas_string_only } from "@/data/auth_data/data"
-import "react-datepicker/dist/react-datepicker.css";
 import RadioButton from "../ui/radio_input";
 import {setForm, setDate, FormType, keyValues_errors} from "@/types/types"
 import { errMap, wilayas } from "@/data/auth_data/data"
+import { useForm } from "react-hook-form"
 
 
 
@@ -71,6 +71,8 @@ export default function AuthForm(){
   const [errors, setErrors] = useState({full_name:"",email:"", password:"", birth_date:""})
   const [handledate, setDate] = useState<Date|null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const {register, handleSubmit, watch,formState:{errors}} = useForm();
+
   
   // Must be automized {
   const button_ref = useRef<HTMLDivElement>(null);

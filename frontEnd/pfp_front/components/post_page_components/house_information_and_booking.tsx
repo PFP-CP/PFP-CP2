@@ -1,10 +1,14 @@
 'use client'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useState,useRef } from 'react'
 import style from '@/styles/post_page_styles/house_information_and_booking.module.css'
 import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM } from '@/public/svg/svg'
 import Comment from './house_information_components/Comment'
 import { Slider } from '@mui/material'
+import MyDatePicker from './ui/date_picker'
 import { div } from 'motion/react-client'
+
+
+
 
 const ALLOW = <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M33 16.5C33 25.6127 25.6127 33 16.5 33C7.3873 33 0 25.6127 0 16.5C0 7.3873 7.3873 0 16.5 0C25.6127 0 33 7.3873 33 16.5ZM24.8125 10.2499C24.2084 9.64585 23.229 9.64585 22.6249 10.2499C22.6103 10.2645 22.5966 10.28 22.5839 10.2962L15.4221 19.422L11.1042 15.1041C10.5002 14.5001 9.52073 14.5001 8.91663 15.1041C8.31254 15.7082 8.31254 16.6877 8.91663 17.2918L14.3749 22.7501C14.979 23.3541 15.9585 23.3541 16.5625 22.7501C16.576 22.7366 16.5887 22.7224 16.6006 22.7076L24.8345 12.4152C25.4165 11.8095 25.4092 10.8466 24.8125 10.2499Z" fill="#12860C"/>
@@ -144,10 +148,16 @@ function Rules_categories_features(){
     <>
       <div className={style.rules_categories_container}>
           <div className={style.rules_container}>
-            <pre>Rules : Smoking {ALLOW} Animals {NOT_ALLOW} Noise {ALLOW}</pre>
+            <div className={style.rules_container_item}>Rules :</div>
+            <div className={style.rules_container_item}>Smoking {ALLOW}</div>
+            <div className={style.rules_container_item}>Animals {NOT_ALLOW}</div>
+            <div className={style.rules_container_item}>Noise {ALLOW}</div>
           </div>
           <div className={style.categories_container}>
-            <pre>Categories : Family {NOT_ALLOW} Single {NOT_ALLOW} Couple {NOT_ALLOW}</pre>
+            <div className={style.rules_container_item}>Categories :</div>
+            <div className={style.rules_container_item}>Family {ALLOW}</div>
+            <div className={style.rules_container_item}>Single {NOT_ALLOW}</div>
+            <div className={style.rules_container_item}>Couple {ALLOW}</div>
           </div>
       </div>
 
@@ -265,13 +275,45 @@ function Comments_visible({setShowComments}:{setShowComments:React.Dispatch<Reac
 
 export default function HouseInformationAndBooking(){
   const [showComments, setShowComments] = useState(false);
+  const [visitorsActive, setVisitorsActive] = useState(false);
+  const [visitorsNumber, setVisitorsNumber] = useState<string>('0');
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const handleVisitorsNumber = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    if(Number(e.currentTarget.value)<1){
+      setVisitorsNumber('0');
+      return;
+    } 
+    if(e.currentTarget.value.charAt(0)==='0'){
+      const new_visitors =e.currentTarget.value.slice(1); 
+      setVisitorsNumber(new_visitors);
+      return;
+    }
+    setVisitorsNumber(e.currentTarget.value);
+  }
+
+
+  //some conditions for readability
+  const visitors_value = Number(visitorsNumber)>0?visitorsNumber:<>Visitors</>
+  const visitors_style = Number(visitorsNumber)>0? style.visitors_after:style.visitors_before;
+  
   return(
     <section className={style.nook_data_and_scheduler}>
         <div className={style.nook_data}>
           {!showComments?<Comments_invisible setShowComments={setShowComments} />:<Comments_visible setShowComments={setShowComments} />}
         </div>
         <div className={style.nook_scheduler}>
-          date picker here
+          <div className={style.nook_scheduler_container}>
+            <MyDatePicker setCalendarOpen={setCalendarOpen} calendarOpen={calendarOpen}/>
+            {!calendarOpen &&
+            <>
+              <div className={style.visitors_and_price}>
+                <div className={style.price_container}><span>19000 DA</span> per night</div>
+                {visitorsActive?<input autoFocus onBlur={()=>setVisitorsActive(false)} value={visitorsNumber} onChange={handleVisitorsNumber} type="number" />:<div onClick={()=>setVisitorsActive(true)} className={`${style.visitors} ${visitors_style}`}>{visitors_value}</div>}
+              </div>
+              <button>Book</button>
+            </>}
+          </div>
         </div>
       </section>
   )
