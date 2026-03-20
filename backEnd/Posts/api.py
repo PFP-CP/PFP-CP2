@@ -28,11 +28,7 @@ search_router = Router()
 # Filter helpers — all updated to teammate's lowercase field names    #
 
 def post_rating_query(previous_search: QuerySet, rating: float | None = None) -> QuerySet:
-    """
-    Post no longer stores a Rating field directly.
-    We filter by the average of related Comment.rating values.
-    This uses a subquery annotation approach for efficiency.
-    """
+ 
     if rating is not None:
         from django.db.models import Avg, OuterRef, Subquery
         from .models import Comment
@@ -81,7 +77,12 @@ def wilaya_query(previous_search: QuerySet, wilaya: str | None = None) -> QueryS
         wilaya_dir = main_dir / "wilayas/wilayas.json"
         with open(wilaya_dir, "r") as f:
             wilayas = json.load(f)
-        previous_search = previous_search.filter(house__location__State=wilayas[wilaya])
+
+        if wilaya in wilayas:
+          previous_search = previous_search.filter(house__location__State=wilayas[wilaya]  )
+        else:
+          # handle invalid wilaya
+          return previous_search.none()
     return previous_search
 
 
@@ -131,7 +132,7 @@ def sorting(post_results: list[dict], ordering_by: str) -> list[dict]:
 
 # Search endpoint                                                      
 
-@search_router.post("")
+@search_router.post("",tags=["Search"])
 def search(request, Criteria: SearchCriteria):
     # Cache key excludes order_by — sorting is in-memory after retrieval
     criteria_dict = Criteria.dict(exclude={"order_by"})
@@ -144,12 +145,11 @@ def search(request, Criteria: SearchCriteria):
     if results is None:
         
         results_query = Post.objects.select_related(
-            "house__location",
             "seller__contact",
             "seller",
-        ).prefetch_related(
+        ).prefetch_related( "house__location",
             "house__features__Available_features",
-            "comments",   # needed by Post.average_rating()
+            "comments",   
         )
 
         # Apply all filters
@@ -168,7 +168,67 @@ def search(request, Criteria: SearchCriteria):
 
     results = sorting(results, Criteria.order_by)
     return results
+#List Post with query parameter
+@router.get('/', response=List[PostListOut], tags=['List post'], auth=None)
+def list_posts(
+    request,
+    # Filters
+    status:         str   = 'active',
+    city:           str   = None,
+    min_price:      float = None,
+    max_price:      float = None,
+    min_surface:    float = None,
+    type_of_people: str   = None,
+    min_rooms:      int   = None,
+    # Sorting
+    sort_by: str = 'newest',   # newest
+    # Pagination 
+    page:     int = 1,
+    per_page: int = 20,
+):
+    """
+    Main page 
+    Returns active posts houses info, location, and primary image.
+    """
+    qs = Post.objects.select_related(
+        'house'
+    ).prefetch_related(
+        'house__images',
+        Prefetch('comments', queryset=Comment.objects.order_by('-created_at')),
+    ).filter(status=status)
 
+    # ── Filters 
+    if city:
+        qs = qs.filter(house__location__State__icontains=city)
+    if min_price is not None:
+        qs = qs.filter(house__Price__gte=min_price)
+    if max_price is not None:
+        qs = qs.filter(house__Price__lte=max_price)
+    if min_surface is not None:
+        qs = qs.filter(house__Surface__gte=min_surface)
+    if type_of_people:
+        qs = qs.filter(
+            Q(house__Types_of_Renters=type_of_people) |
+            Q(house__Types_of_Renters__isnull=True)
+        )
+    if min_rooms is not None:
+        qs = qs.filter(house__RoomNum__gte=min_rooms)
+
+    # ── Sorting
+    sort_map = {
+        'newest':     '-created_at',
+        'oldest':     'created_at',
+        'price_asc':  'house__price',
+        'price_desc': '-house__price',
+        'popular':    '-views_count',
+    }
+    qs = qs.order_by(sort_map.get(sort_by, '-created_at'))
+
+    # ── Pagination 
+    offset = (page - 1) * per_page
+    qs = qs[offset: offset + per_page]
+
+    return qs
 # saved post bookmark -favorite post 
 
 @router.get('/saved', response=List[SavedPostOut], tags=['Saved Posts (my favorite)'])

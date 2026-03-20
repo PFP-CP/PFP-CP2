@@ -80,7 +80,7 @@ class Account(AbstractUser):
 
 
 class Contact(models.Model):
-    Account = models.OneToOneField(Account, on_delete=models.CASCADE)
+    Account = models.OneToOneField(Account, on_delete=models.CASCADE,related_name="contact")
     Phone_Number = models.IntegerField(default=0, unique=True)
     WhatsApp = models.SmallIntegerField(default=0, blank=True)
     Facebook = models.URLField(blank=True)

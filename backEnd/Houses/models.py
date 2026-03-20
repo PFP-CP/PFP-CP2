@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 #from django.db.models.functions import Extract 
 # Create your models here.
@@ -14,22 +15,23 @@ class AllowedPeople(models.TextChoices):
 class House(models.Model):
     Price = models.IntegerField(default=0)
     RoomNum = models.SmallIntegerField(default=1)
+
     Surface = models.FloatField()
     Description = models.TextField(max_length=1000)
     Created_at = models.DateTimeField(auto_now_add=True)
     Updated_at = models.DateTimeField(auto_now=True)
     Types_of_Renters = models.CharField(max_length=2 ,choices=AllowedPeople.choices,default=AllowedPeople.All)
     
-    
+
     def __str__(self):
-        return str(self.Description)
+        return f"{str(self.Description) } id={self.id}"  
     
     def Creation_time(self):
         return self.Created_at
 
 class Pictures(models.Model):
     blank_house_image =  "https://images.template.net/465793/Blank-House-Clipart-edit-online.png"
-    house = models.ForeignKey(House,on_delete=models.CASCADE)
+    house = models.ForeignKey(House,on_delete=models.CASCADE,related_name='images')
     URL = models.URLField(max_length=200,default=blank_house_image,blank=True)
     time_stamp = models.DateTimeField(auto_now_add=True)
 
@@ -40,10 +42,10 @@ class FeatureList(models.Model):
         return self.feature
 
 class Features(models.Model):
-    House = models.ForeignKey(House, on_delete=models.CASCADE, related_name="features")
-    Available_features= models.ManyToManyField(FeatureList , blank=True)
+    house=models.ForeignKey(House,on_delete=models.CASCADE,related_name='features')
+    features = models.ManyToManyField(FeatureList , blank=True)
 
-class AvailablityCalendar(models.Model):
+class AvalabilityCalendar(models.Model):
     Start_at = models.DateTimeField(default=House.Creation_time)
     end_at = models.DateTimeField()
     #make a function that make a array/list of the days from start to end modulo months and mark each day as available or not
@@ -51,14 +53,16 @@ class AvailablityCalendar(models.Model):
     # also add a function to print the day of said month that are booked
 
 class Location(models.Model):
-    house = models.OneToOneField(House,on_delete=models.CASCADE)
+    house = models.ForeignKey(House,on_delete=models.CASCADE,related_name='location')
     #BALADIA
     County = models.TextField(max_length=100)
     #Wilaya
-    State = models.TextField(max_length=100,blank=True)
+    State = models.TextField(max_length=100)
     #Country
-    Country = models.TextField(max_length=100,blank=True)
+    Country = models.TextField(max_length=100)
     #coords
-    Longitude = models.DecimalField(max_digits=10, decimal_places=7,blank=True)
-    Latitude = models.DecimalField(max_digits=10, decimal_places=7,blank=True)
+    Longitude = models.FloatField()
+    Latitude = models.FloatField()
+    def __str__(self):
+        return f" {self.house.Description} location"
   
