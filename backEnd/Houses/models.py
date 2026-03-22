@@ -31,7 +31,7 @@ class House(models.Model):
 
 class Pictures(models.Model):
     blank_house_image =  "https://images.template.net/465793/Blank-House-Clipart-edit-online.png"
-    house = models.ForeignKey(House,on_delete=models.CASCADE,related_name='images')
+    house = models.ForeignKey(House,on_delete=models.CASCADE)
     URL = models.URLField(max_length=200,default=blank_house_image,blank=True)
     time_stamp = models.DateTimeField(auto_now_add=True)
 

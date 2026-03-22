@@ -36,7 +36,7 @@ class Account_status(models.TextChoices):
 
 
 class Account(AbstractUser):
-    Default_profile_picture = (
+    default_profile_picture = (
         "https://i.pinimg.com/1200x/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg"
     )
     username = None  # Remove username field
@@ -51,7 +51,7 @@ class Account(AbstractUser):
     full_name = models.TextField(max_length=150)
     gender = models.BooleanField(default=True)
     date_of_birth = models.DateField(default="2000-01-01", null=True, blank=True)
-    profile_picture = models.URLField(default=Default_profile_picture, blank=True)
+    profile_picture = models.ImageField(upload_to="Account/PFP" , blank=True)
     rating = models.FloatField(default=5, blank=True)
     verified = models.BooleanField(default=False)
 

@@ -113,7 +113,8 @@ STORAGES = {
             "region_name": "eu-west-1",
             "endpoint_url": "https://wcnphqrchchdghpjolpa.supabase.co/storage/v1/s3",
             "file_overwrite": False,
-            "default_acl": "public-read",
+            "signature_version": "s3v4",
+            "custom_domain": "wcnphqrchchdghpjolpa.supabase.co/storage/v1/object/public/media",
         },
     },
 }
