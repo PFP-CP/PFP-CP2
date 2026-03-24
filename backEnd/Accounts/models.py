@@ -61,8 +61,8 @@ class Account(AbstractUser):
     verified = models.BooleanField(default=False)
 
     # fields added to match supabase
-    num_reviews = models.IntegerField(default=0)
-    num_posts = models.IntegerField(default=0)
+    num_review = models.IntegerField(default=0 ,blank = True)
+    num_posts = models.IntegerField(default=0 , blank= True)
     type_of_user = models.CharField(
         max_length=20,
         choices=UserType.choices,
