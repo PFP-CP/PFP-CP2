@@ -71,7 +71,7 @@ export default function AuthForm(){
   const [errors, setErrors] = useState({full_name:"",email:"", password:"", birth_date:""})
   const [handledate, setDate] = useState<Date|null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
-  const {register, handleSubmit, watch,formState:{errors}} = useForm();
+  
 
   
   // Must be automized {
