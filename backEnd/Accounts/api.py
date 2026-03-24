@@ -58,7 +58,7 @@ def Signin(request, Acc: AccountSignin):
     refresh = RefreshToken.for_user(new_acc)
 
     return {
-        201: "Account created successfully",
+        "message": "Account created successfully",
         "tokens": {
             "access": str(refresh.access_token),
             "refresh": str(refresh),
