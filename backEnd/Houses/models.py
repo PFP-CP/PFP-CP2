@@ -15,6 +15,8 @@ class AllowedPeople(models.TextChoices):
 class House(models.Model):
     Price = models.IntegerField(default=0)
     RoomNum = models.SmallIntegerField(default=1)
+    num_bedroom = models.SmallIntegerField(default=1)
+    num_bathroom = models.SmallIntegerField(default=1)
 
     Surface = models.FloatField()
     Description = models.TextField(max_length=1000)

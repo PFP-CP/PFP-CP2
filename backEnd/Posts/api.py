@@ -293,26 +293,31 @@ def get_post(request, post_id: uuid.UUID):
     post.increment_views() 
     return 200, post
 
-
-@router.post('/', response={201: PostOut, 422: ErrorSchema, 403: ErrorSchema},
-             tags=['Posts'])
+@router.post('/', response={201: PostOut, 403: ErrorSchema})
 @transaction.atomic
 def create_post(request, payload: PostCreateSchema):
-    """
-    Seller creates a post for one of their houses.
-    The house must exist and must not already have a post.
-    """
-    from Houses.models import House
+   
 
-    house = get_object_or_404(House, pk=payload.house)
-
-    # Business rule: only the house owner (seller) can post it
-    if Post.objects.filter(house=house).exists():
-        return 422, {'detail': 'This house already has a post.'}
-  
-    if request.user.type_of_user.upper()!= 'SELLER' and not  request.user.is_staff:
-        return 403, {'detail': 'Only sellers can create posts.'}
-
+    # 2. Create House
+    house = House.objects.create(
+        Price=payload.price,
+        Surface=payload.surface,
+        RoomNum=payload.room_num,
+        Types_of_Renters=payload.types_of_renters,
+        Description=payload.house_description,
+        num_bedroom=payload.num_bedroom,
+        num_bathroom=payload.num_bathroom,
+    )
+     # 1. Create Location
+    Location.objects.create(
+        house=house,
+        County=payload.county,
+        State=payload.state,
+        Country=payload.country,
+        Latitude=payload.latitude,
+        Longitude=payload.longitude
+    )
+    # 3. Create Post
     post = Post.objects.create(
         house=house,
         seller=request.user,

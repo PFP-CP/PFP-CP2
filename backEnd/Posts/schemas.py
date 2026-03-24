@@ -87,8 +87,8 @@ class HouseMiniOut(Schema):
     Price:          Decimal
     Surface:        Decimal
     RoomNum:       int
-    # num_bedroom:    int
-    # num_bathroom:   int
+    num_bedroom:    Optional[int]
+    num_bathroom:   Optional[int]
     Types_of_Renters: Optional[str]
     
     Description:    str
@@ -102,11 +102,6 @@ class HouseLocationMiniOut(Schema):
     Longitude: float
 class HouseImageMiniOut(Schema):
     URL: str
-
-
-
-
-
 
 
 # Comment schemas
@@ -226,18 +221,30 @@ class PostListOut(Schema):
     #     return img.URL if img else None
 
 class PostCreateSchema(Schema):
-    """Create a post — house must already exist and belong to the seller."""
-    house: int 
-    title:       str
-    description: str = ''
-
+    # --- REQUIRED ---
+    title: str
+    price: Decimal
+    surface: Decimal
+    room_num: int
+    county: str
+    state: str
+    
+    # --- OPTIONAL
+    description: str = ""  # Post-specific summary
+    house_description: str = ""  # Detailed house info
+    types_of_renters: Optional[str] = "All"
+    country: str = "Algeria"
+    num_bedroom: Optional[int] = None
+    num_bathroom: Optional[int] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+  
     @field_validator('title')
     @classmethod
     def non_empty_title(cls, v):
         if not v.strip():
             raise ValueError('Title cannot be empty.')
         return v
-
 
 class PostUpdateSchema(Schema):
     title:       Optional[str] = None
