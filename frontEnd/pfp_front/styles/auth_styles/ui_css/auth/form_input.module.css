@@ -1,0 +1,85 @@
+.input_container{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+
+}
+.form_input{
+  width:100%;
+  border-radius: var(--input-radius);
+  border: none;
+  transition: outline 300ms ease-out;
+  padding-left:39px;
+  font-family: 'sansation-700';
+  font-size: var(--font-s-25);
+  color: var(--primary-color);
+  line-height: 78px;
+  background-color: #E4E4E4;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+
+
+.form_input:focus{
+  outline: 4px solid var(--primary-color);
+}
+
+.form_input_invalid{
+  outline: 4px solid red !important;
+  color: red;
+}
+
+.input_container input[type="date"]{
+  padding-right: 1rem;
+}
+
+
+
+.input_container .placeHolder{
+  position: absolute;
+  color: rgb(0, 0, 0,0.5);
+  font-family: 'sansation-400';
+  font-size: var(--font-s-25);
+  opacity: 1;
+  transition: opacity 300ms ease-out ;
+  left:39px;
+  top: calc(50% - 39px);
+  line-height: 78px;
+  pointer-events: none;
+}
+
+.date_input{
+  color: rgb(0, 0, 0,0.5);
+  font-family: 'sansation-400';
+  font-size: var(--font-s-25);
+}
+
+.form_input:focus+.placeHolder{
+  opacity: 0;
+}
+
+.password_lock_image{
+  position: absolute;
+  right: 1rem;
+}
+
+.hidden{
+  display:none;
+}
+
+
+@media (max-width:1440px) {
+  .form_input{
+    max-height: 60px;
+    font-size: var(--font-s-20);
+}
+
+.input_container .placeHolder{
+    font-size: var(--font-s-20);
+
+}
+  
+
+}
+

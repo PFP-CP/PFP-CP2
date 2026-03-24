@@ -1,0 +1,113 @@
+
+body {
+  background-color: grey;
+  min-height: 100vh;
+}
+
+
+#navbar{
+  min-width: 100%;
+  height: 98px;
+  background-color: rgba(99, 74, 173, 0.85);
+
+  display: flex;
+  align-items: center;
+
+  padding-right: 4rem;
+}
+
+#navbar #logo_container{
+  height: 50px;
+  display: flex;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+#navbar #logo_container #nav_logo{
+  background-color: red;
+  height: 40px;
+  width: 50px;
+}
+#navbar #navigation{
+  display: flex;
+  gap: 4rem;
+  align-items: center;
+  padding-right: 2rem;
+}
+
+#navbar #navigation #navigation_links{
+  display: grid;
+  grid-template-columns: repeat(4,minmax(min-content,max-content) );
+  grid-template-rows: max-content 2px;
+  column-gap: 4rem;
+  row-gap: .5rem;
+  flex-grow: 4;
+  align-items: center;
+
+}
+
+#navbar #navigation .nav_text{
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: "sansation-400";
+}
+
+#navbar #navigation .nav_indicator{
+  grid-area: indicator;
+  height: 4px;
+  background-color: white;
+  bottom: -.2rem;
+  width: 100%;
+}
+
+#navbar .nav_search{
+  min-width: 215px;
+  height: 3rem;
+  background-color: rgb(34, 14, 103, 1);
+  display: flex;
+  border-radius: 23px;
+  padding-left: 1rem;
+  gap: 1rem;
+  cursor:pointer;
+
+}
+
+#navbar .nav_search .find_retals_h3_container{
+  background-color: transparent;
+  height: 100%;
+  display: flex;
+  color: white;
+  font-size: 20px;
+}
+
+#navbar .nav_search .find_retals_h3{
+  position: absolute;
+  align-self: center;
+  justify-self: center;
+  font-family: "sansation-700";
+}
+
+#navbar .nav_search .search_logo_container{
+  display: flex;
+}
+
+#navbar .nav_search .search_logo{
+  height: 20px;
+  width: 20px;
+  align-self: center;
+}
+
+#navbar #user_controls{
+  display: flex;
+  gap: 1.5rem;
+  flex-grow: 2;
+  
+  justify-content: end;
+}
+
+#navbar #user_controls .settings,#navbar #user_controls .user_profile{
+  cursor: pointer;
+}
+
+

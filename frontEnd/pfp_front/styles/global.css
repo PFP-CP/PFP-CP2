@@ -1,0 +1,68 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  min-height: 100vh;
+  background-color: var(--color-btn-hover);
+}
+
+
+:root{
+  --primary-color:#220E67;
+  --secondary-color:#9D84E4;
+
+  --color-btn-hover:#4D369A;
+
+  /* font variables */
+  --font-s-20:20px;
+  --font-s-25:25px;
+  --font-s-38:38px;
+
+  /* form ui heights, widths, border-radius -> we use these for: buttons an inputs*/
+  --input-width: 400px;
+  --input-height: 78px;
+  --input-radius:70px  
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+@font-face {
+    font-family: 'sansation-700';
+    src: url('/fonts/Sansation/Sansation-Bold.woff2');
+  }
+@font-face{
+  font-family: 'sansation-400';
+  src: url('/fonts/Sansation/Sansation-Light.woff2');
+}
+
+
+@media (max-width:1440px) {
+  .react-datepicker__input-container input{
+    max-height: 60px;
+    font-size: var(--font-s-20);
+  }
+  .react-datepicker__input-container input::placeholder{
+    font-size: var(--font-s-20);
+  }
+  
+
+
+}
+
+.rdrDateDisplayWrapper{
+  display: none !important;
+}
+
+.rdrDateDisplayItem input{
+  background-color: #220E67 !important;
+  font-family: "sansation-700";
+  border-radius: 23px !important;
+  font-size: 25px;
+  color: white !important;
+}

@@ -1,0 +1,187 @@
+.auth_form{
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  background-color: transparent;
+  padding: 1rem;
+  border-radius: 50px;
+  /* animation: slide_up forwards 500ms linear; */
+
+  
+}
+.auth_img_container{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-height: 243px;
+  min-height: 200px;
+}
+
+.input_container{
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.input_container_forgot{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+
+
+
+
+.pass_container{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+.pass_container_forgot{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: start;
+  padding-left: 25px;
+}
+
+.pass_container_forgot p{
+  font-family: 'sansation-400';
+  font-size: 16px;
+  line-height: 30px;
+  color: var(--primary-color);
+}
+
+.forgot_pass{
+  font-family: 'sansation-700';
+  font-size:var(--font-s-20);
+    align-self: end;
+
+}
+
+.sign_in_btn_container{
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.sign_up_btn_container{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+.back_to_sign_in{
+  font-family: 'sansation-700';
+  font-size:var(--font-s-25);
+  align-self: center;
+}
+
+.have_an_account{
+  display: flex;
+  justify-content: center;
+}
+.have_an_account h1{
+  font-family: 'sansation-700';
+  font-size: var(--font-s-25);
+  color: var(--secondary-color);
+}
+
+.btn_anchor{
+  background-color: transparent;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding-left: 0.5rem;
+}
+
+.error_popup{
+
+	border-radius: 25px;
+  border: 2px solid red;
+  padding: 1rem;
+  max-width: var(--input-width);
+  align-self: center;
+  animation: fade_in 150ms linear;
+  color: red;
+}
+
+
+.error_popup > ul{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem
+}
+
+.error_popup > ul > li{
+  list-style-type:none;
+  font-size: var(--font-s-25);
+  font-family: "sansation-700";
+}
+
+.slide_login_up{
+  animation: slide_up forwards 300ms linear;
+}
+
+.slide_login_down{
+  animation: slide_down forwards 300ms linear;
+}
+
+.fade_in{
+  animation: fade_in forwards 600ms linear;
+}
+
+.fade_out{
+  animation: fade_out forwards 300ms linear;
+
+}
+
+
+
+/* login slide up animation */
+
+@keyframes slide_up {
+  0%{
+    transform: translateY(200px);
+    opacity: 0;
+  }to{
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade_out {
+  0%{
+    opacity:1;
+  }to{
+    opacity:0;
+  }
+}
+
+@keyframes fade_in {
+  0%{
+    opacity: 0;
+  }to{
+    opacity: 1;
+  }
+}
+
+@media (max-width:1440px) {
+  .error_popup > ul > li{
+  font-size: var(--font-s-20);
+}
+}
+
+@media (max-width:720px) {
+  .auth_form{
+    padding-bottom: 5rem;
+  }
+  .have_an_account{
+    flex-direction: column;
+    align-items: center;
+  }
+}
