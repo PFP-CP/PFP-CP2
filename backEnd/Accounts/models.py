@@ -35,6 +35,11 @@ class Account_status(models.TextChoices):
     Banned = "BN", "Account banned"
 
 
+class UserType(models.TextChoices):
+    GUEST = "GUEST", "Guest"
+    RENTER = "RENTER", "Renter"
+
+
 class Account(AbstractUser):
     default_profile_picture = (
         "https://i.pinimg.com/1200x/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg"
@@ -51,18 +56,27 @@ class Account(AbstractUser):
     full_name = models.TextField(max_length=150)
     gender = models.BooleanField(default=True)
     date_of_birth = models.DateField(default="2000-01-01", null=True, blank=True)
-    profile_picture = models.ImageField(upload_to="Account/PFP" , blank=True)
+    profile_picture = models.ImageField(upload_to="Account/PFP", blank=True)
     rating = models.FloatField(default=5, blank=True)
     verified = models.BooleanField(default=False)
 
+    # fields added to match supabase
+    num_reviews = models.IntegerField(default=0)
+    num_posts = models.IntegerField(default=0)
+    type_of_user = models.CharField(
+        max_length=20,
+        choices=UserType.choices,
+        default=UserType.GUEST,
+    )
+
     def __str__(self):
         return self.full_name or self.email
-    
-    def set_name(self , new_name : str):
+
+    def set_name(self, new_name: str):
         name = new_name.split(" ")
         self.first_name = name[0]
         self.last_name = name[1]
-    
+
     groups = models.ManyToManyField(
         Group,
         related_name="account_set",
@@ -80,7 +94,9 @@ class Account(AbstractUser):
 
 
 class Contact(models.Model):
-    Account = models.OneToOneField(Account, on_delete=models.CASCADE,related_name="contact")
+    Account = models.OneToOneField(
+        Account, on_delete=models.CASCADE, related_name="contact"
+    )
     Phone_Number = models.IntegerField(default=0, unique=True)
     WhatsApp = models.SmallIntegerField(default=0, blank=True)
     Facebook = models.URLField(blank=True)
@@ -97,4 +113,3 @@ class location(models.Model):
     # coords
     Longitude = models.FloatField(default=0, blank=True)
     Latitude = models.FloatField(default=0, blank=True)
-
