@@ -1,6 +1,5 @@
- 
-
 from django.db import models
+from Accounts.models import Account
 from django.db.models import F, Avg
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -50,7 +49,8 @@ class Post(models.Model):
     views_count    = models.PositiveIntegerField(default=0,editable=False)
     saves_count    = models.PositiveIntegerField(default=0,editable=False)
     comments_count = models.PositiveIntegerField(default=0,editable=False)
-    Likes = models.IntegerField(default=0)
+    Likes = models.IntegerField(default=0,editable=False)
+    rating = models.FloatField(default=0.0)
     
     @property
     def Price(self):
@@ -67,7 +67,10 @@ class Post(models.Model):
     @property
     def County(self):
         location=self.house.location.first()
-        return location.County 
+        return location.County if location else None
+    @property
+    def phone_number(self):
+        return self.seller.contact.Phone_Number
     class Meta:
         db_table = 'post'
         ordering = ['-created_at']
@@ -122,10 +125,6 @@ class Post(models.Model):
         Post.objects.filter(pk=self.pk).update(comments_count=F('comments_count') + 1)
         self.refresh_from_db(fields=['comments_count'])
 
-    def average_rating(self):
-         
-        result = self.comments.aggregate(avg=Avg('rating'))['avg']
-        return round(result, 2) if result else 0.00
 
 #is used by users to save posts they are interested in for later viewing. A user can save a post only once, but can save multiple different posts.
 class SavedPost(models.Model):
@@ -154,7 +153,7 @@ class SavedPost(models.Model):
 
     @property
     def primary_image(self):
-        img = self.post.house.images.first()
+        img = self.post.house.pictures.first()
         return img.URL if img else None
     class Meta:
         db_table        = 'saved_post'
@@ -212,19 +211,27 @@ class Comment(models.Model):
     def save(self, *args, **kwargs):
         is_new = self._state.adding
         super().save(*args, **kwargs)
+        self._update_seller_rating()
+        self._update_post_rating()
         if is_new:
             self.post.increment_comments()
-            from Accounts.models import Account
             Account.objects.filter(pk=self.user.pk).update(
                 num_review=F('num_review') + 1
             )
-            self._update_seller_rating()
 
     def _update_seller_rating(self):
-        from Accounts.models import Account 
-        seller = self.post.seller 
+        seller = self.post.seller
         avg = Comment.objects.filter( 
             post__seller=seller
         ).aggregate(avg=Avg('rating'))['avg']
         if avg is not None:
             Account.objects.filter(pk=seller.pk).update(rating=round(avg, 2))
+
+    def _update_post_rating(self):
+
+        avg = Comment.objects.filter(
+            post=self.post
+        ).aggregate(avg=Avg('rating'))['avg']
+
+        self.post.rating = float(round(avg, 2)) if avg else 0.0
+        self.post.save(update_fields=['rating'])

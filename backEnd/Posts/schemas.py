@@ -28,7 +28,7 @@ class SearchResult(Schema):
     price:         int
     rating:        float
     description:   str
-    phone_number:  int
+    phone_number:  Optional[str]=None
     contact:       str
     creation_time: str
 
@@ -43,8 +43,8 @@ class SearchResult(Schema):
     @staticmethod
     def resolve_wilaya(obj):
         # House → location (FK/related) → State
-        # teammate's SavedPost uses house.location.first().State
-        return obj.house.location.first().State
+        loc=obj.house.location.first()
+        return loc.State if loc else None
 
     @staticmethod
     def resolve_price(obj):
@@ -53,7 +53,7 @@ class SearchResult(Schema):
     @staticmethod
     def resolve_rating(obj):
         # Post no longer has a Rating field — computed from comments
-        return obj.average_rating()
+        return obj.rating
 
     @staticmethod
     def resolve_description(obj):
@@ -61,7 +61,7 @@ class SearchResult(Schema):
 
     @staticmethod
     def resolve_phone_number(obj):
-        return obj.seller.contact.Phone_Number
+        return obj.phone_number
 
     @staticmethod
     def resolve_contact(obj):
@@ -102,7 +102,9 @@ class HouseLocationMiniOut(Schema):
     Longitude: float
 class HouseImageMiniOut(Schema):
     URL: str
-        
+
+
+
 
 
 
@@ -153,6 +155,7 @@ class PostOut(Schema):
     title:          str 
     description:    str 
     status:         str
+    rating :       float
     created_at:     datetime 
     updated_at:     datetime
     views_count:    int
@@ -162,9 +165,15 @@ class PostOut(Schema):
     seller:   SellerMiniOut
     house:    HouseMiniOut
     location: Optional[HouseLocationMiniOut] = None
-    images:   List[HouseImageMiniOut]        = []
+    house_pictures:   List[HouseImageMiniOut]        = []
     comments: List[CommentOut]               = []
 
+    @staticmethod
+    def resolve_location(obj):
+        locs = getattr(obj.house, 'location', None)
+        if locs and hasattr(locs, 'first'):
+            return locs.first()
+        return locs
 
 class PostListOut(Schema):
     """ used on the main page listing."""
@@ -182,7 +191,7 @@ class PostListOut(Schema):
     RoomNum:       int
     Types_of_Renters: Optional[str]
     County:           Optional[str]
-    primary_image:  Optional[str]    # URL of primary image
+    # primary_image:  Optional[str]    # URL of primary image
 
     @staticmethod
     def resolve_Price(obj):
@@ -199,21 +208,22 @@ class PostListOut(Schema):
     @staticmethod 
     def resolve_Types_of_Renters(obj):
         return obj.house.Types_of_Renters
-    
 
     @staticmethod
-    def resolve_country(obj):
+    def resolve_County(obj):
         loc = getattr(obj.house, 'location', None)
-        return loc.country if loc else None
-
+        if loc and hasattr(loc, 'first'):
+            loc_obj = loc.first()
+            return loc_obj.County if loc_obj else None
+        return None
   
     @staticmethod
     def resolve_average_rating(obj):
-        return obj.average_rating()
-    @staticmethod
-    def resolve_primary_image(obj):
-        img = obj.house.images.first()
-        return img.URL if img else None
+        return obj.rating
+    # @staticmethod
+    # def resolve_primary_image(obj):
+    #     img = obj.house.pictures.first()
+    #     return img.URL if img else None
 
 class PostCreateSchema(Schema):
     """Create a post — house must already exist and belong to the seller."""

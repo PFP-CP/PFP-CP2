@@ -4,8 +4,11 @@ from pathlib import Path
 from django.core.cache import cache
 from ninja import Router
 from Accounts.models import Account
+from django.db.models import Value
 from Houses.models import *
 from .models import *
+from django.db.models import Avg
+from .models import Comment
 from django.db.models import QuerySet
 from .schemas import *
 from ninja.pagination import PageNumberPagination , paginate
@@ -15,7 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.db.models import Prefetch, Q
 from typing import List, Optional
-from .models import Post, SavedPost, Comment, PostStatus
+
 from .schemas import (
     PostOut, PostListOut, PostCreateSchema, PostUpdateSchema,
     CommentOut, CommentIn, CommentUpdate,
@@ -26,21 +29,10 @@ router = Router()
 search_router = Router()
  
 # Filter helpers — all updated to teammate's lowercase field names    #
-
 def post_rating_query(previous_search: QuerySet, rating: float | None = None) -> QuerySet:
- 
     if rating is not None:
-        from django.db.models import Avg, OuterRef, Subquery
-        from .models import Comment
-        avg_rating_subquery = Comment.objects.filter(
-            post=OuterRef('pk')
-        ).values('post').annotate(avg=Avg('rating')).values('avg')
-
-        previous_search = previous_search.annotate(
-            avg_rating=Subquery(avg_rating_subquery)
-        ).filter(avg_rating__gte=rating)
+        previous_search = previous_search.filter(rating__gte=rating)
     return previous_search
-
 
 def renter_rating_query(previous_search: QuerySet, rating: float | None = None) -> QuerySet:
     """Filter by seller's Account.rating field (updated by Comment._update_seller_rating)."""
@@ -82,7 +74,7 @@ def wilaya_query(previous_search: QuerySet, wilaya: str | None = None) -> QueryS
           previous_search = previous_search.filter(house__location__State=wilayas[wilaya]  )
         else:
           # handle invalid wilaya
-          return previous_search.none()
+          return previous_search
     return previous_search
 
 
@@ -97,7 +89,7 @@ def features_query(previous_search: QuerySet, features: list[str] = []) -> Query
     """Filter by house features (adjust traversal to match your House model)."""
     for feature in features:
         previous_search = previous_search.filter(
-            house__features__Available_features__feature=feature
+            house__features__features__feature=feature
         )
     return previous_search
 
@@ -148,7 +140,7 @@ def search(request, Criteria: SearchCriteria):
             "seller__contact",
             "seller",
         ).prefetch_related( "house__location",
-            "house__features__Available_features",
+            "house__features__features",
             "comments",   
         )
 
@@ -160,7 +152,7 @@ def search(request, Criteria: SearchCriteria):
         results_query = wilaya_query(results_query,        Criteria.wilaya)
         results_query = allowed_people_query(results_query, Criteria.allowed_people)
         results_query = features_query(results_query,      Criteria.features)
-
+        
         # Serialise to plain dicts for caching
         results = [SearchResult.from_orm(post).dict() for post in results_query]
 
@@ -193,7 +185,7 @@ def list_posts(
     qs = Post.objects.select_related(
         'house'
     ).prefetch_related(
-        'house__images',
+        'house__pictures',
         Prefetch('comments', queryset=Comment.objects.order_by('-created_at')),
     ).filter(status=status)
 
@@ -218,8 +210,8 @@ def list_posts(
     sort_map = {
         'newest':     '-created_at',
         'oldest':     'created_at',
-        'price_asc':  'house__price',
-        'price_desc': '-house__price',
+        'price_asc':  'house__Price',
+        'price_desc': '-house__Price',
         'popular':    '-views_count',
     }
     qs = qs.order_by(sort_map.get(sort_by, '-created_at'))
@@ -236,7 +228,7 @@ def list_saved_posts(request):
     """Return all posts saved by the authenticated user."""
     return SavedPost.objects.filter(user=request.user).select_related(
         'post', 'post__house',
-    ).prefetch_related('post__house__images', 'post__house__location')
+    ).prefetch_related('post__house__pictures', 'post__house__location')
 
 
 @router.post('/{post_id}/save',
@@ -276,7 +268,7 @@ def my_posts(request, status: str ='active'):
     print("requsest user id ",request.user.id)
     
     qs = Post.objects.select_related(
-        'house').prefetch_related('house__images','house__location').filter(seller_id=request.user.id)
+        'house').prefetch_related('house__pictures','house__location').filter(seller_id=request.user.id)
     print("qs ",Post.seller_id)
     if status:
         qs = qs.filter(status=status)
@@ -290,8 +282,8 @@ def get_post(request, post_id: uuid.UUID):
     post = get_object_or_404(
         Post.objects.select_related(
             'house', 'seller' ).prefetch_related('house__location',
-            'house__images',
-            'house__features__feature',
+            'house__pictures',
+            'house__features__features',
         
             Prefetch('comments',
                      queryset=Comment.objects.select_related('user').order_by('-created_at')),
@@ -318,7 +310,7 @@ def create_post(request, payload: PostCreateSchema):
     if Post.objects.filter(house=house).exists():
         return 422, {'detail': 'This house already has a post.'}
   
-    if request.user.type_of_user.upper()!= 'SELLER':
+    if request.user.type_of_user.upper()!= 'SELLER' and not  request.user.is_staff:
         return 403, {'detail': 'Only sellers can create posts.'}
 
     post = Post.objects.create(
@@ -447,6 +439,7 @@ def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
         comment=payload.comment,
         rating=payload.rating,
     )
+
     return 201, comment
 
 
@@ -461,7 +454,6 @@ def update_comment(request, post_id: uuid.UUID,
     for field, value in payload.dict(exclude_none=True).items():
         setattr(comment, field, value)
     comment.save()
-    comment._update_seller_rating()
     return 200, comment
 
 
@@ -472,7 +464,11 @@ def delete_comment(request, post_id: uuid.UUID, comment_id: uuid.UUID):
     comment = get_object_or_404(Comment, pk=comment_id, post=post_id)
     if comment.user != request.user and not request.user.is_staff:
         return 403, {'detail': 'Not allowed.'}
+    post = comment.post
+    seller = comment.post.seller
     comment.delete()
+    post._update_post_rating()
+    seller._update_seller_rating()
     return 200, {'message': 'Comment deleted.'}
 
 
