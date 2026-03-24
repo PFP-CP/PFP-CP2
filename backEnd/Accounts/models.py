@@ -61,8 +61,8 @@ class Account(AbstractUser):
     verified = models.BooleanField(default=False)
 
     # fields added to match supabase
-    num_review = models.IntegerField(default=0 ,blank = True)
-    num_posts = models.IntegerField(default=0 , blank= True)
+    num_review = models.IntegerField(default=0, blank=True)
+    num_posts = models.IntegerField(default=0, blank=True)
     type_of_user = models.CharField(
         max_length=20,
         choices=UserType.choices,
@@ -97,7 +97,7 @@ class Contact(models.Model):
     Account = models.OneToOneField(
         Account, on_delete=models.CASCADE, related_name="contact"
     )
-    Phone_Number = models.IntegerField(default=0, unique=True)
+    Phone_Number = models.CharField(max_length=20, unique=True)
     WhatsApp = models.SmallIntegerField(default=0, blank=True)
     Facebook = models.URLField(blank=True)
 
