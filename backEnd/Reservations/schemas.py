@@ -28,7 +28,7 @@ class HouseOut(Schema):
 
 
 class PostOut(Schema):
-    id: int
+    id: UUID
     Title: str
     House: HouseOut
 
@@ -49,7 +49,7 @@ class ReservationOut(Schema):
 
 
 class ReservationIn(Schema):
-    post_id: int
+    post_id: UUID
     arrival_date: date
     departure_date: date
 
