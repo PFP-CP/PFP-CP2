@@ -2,6 +2,7 @@ import json
 import secrets
 import string as STRING
 import time
+from multiprocessing.context import AuthenticationError
 from pathlib import Path
 
 from asgiref.sync import sync_to_async
@@ -213,19 +214,21 @@ def change_name(request, name: str):
 
 
 # fucntion that get a profile based on ID
-@router.get("/profile/{host_id}", response=HostProfileOut, tags=["Account Profile"])
+@router.get(
+    "/my-profile", response=HostProfileOut, tags=["Account Profile"], auth=JWTAuth
+)
 def get_host_profile(request, host_id: int):
     """
     Returns the complete profile page for a host, including their stats
     and their active listings grouped by city.
     """
     # 1. Get the Host Account
-    # get location and contact in the same query
-    host = get_object_or_404(
-        Account.objects.select_related("contact", "location"), id=host_id
-    )
+    host = request.user
 
-    # 2. Get Phone & City
+    if host.type_of_user.upper() != "SELLER" or host.verified is not True:
+        raise HttpError(403, "Only verified sellers have access to this dashboard.")
+
+    # Get Phone & City
     phone = getattr(host, "contact", None)
     phone_number = str(phone.Phone_Number).zfill(10) if phone else None
 
@@ -248,7 +251,7 @@ def get_host_profile(request, host_id: int):
     for post in active_posts:
         # get city
         post_loc = post.house.location_set.first()
-        city_name = post_loc.State if post_loc and post_loc.State else "Other Locations"
+        city_name = post_loc.State if post_loc and post_loc.State else "whatever"
 
         # first image
         first_pic = post.house.pictures_set.first()
