@@ -369,11 +369,12 @@
   flex-direction: column;
   gap: 1rem;
   padding-left: .5rem;
+  font-size: 35px;
+  font-family: "sansation-700", sans-serif;
 }
 
 .rules_container, .categories_container{
-  font-size: 35px;
-  font-family: "sansation-700", sans-serif;
+  
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -407,7 +408,7 @@
   gap: 1rem;
 }
 
-.feature pre{
+.feature p{
   display: flex;
   align-items: center;
 }
@@ -446,6 +447,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  gap: 2rem;
 }
 
 .visitors_and_price .price_container{
@@ -495,4 +497,100 @@
   border-radius: 23px;
   border: 3px solid #220E67;
   color: black;
+}
+
+
+@media (max-width:1250px) {
+  .nook_data_and_scheduler{
+    flex-direction: column;
+  }
+  .rating_display{
+    justify-content: center;
+  }
+  .nook_review{
+    align-self: center;
+    width: 100%;
+  }
+}
+
+.rating_and_ratingButton_container_mobile_view{
+    display:none;
+  }
+.lower_comment_review_mobile_view{
+  display: none;
+}
+@media (max-width:700px){
+  .upper_comment_review_mobile_view{
+    display: none;
+  }
+  .lower_comment_review_mobile_view{
+    display: block;
+  }
+
+  .rating_and_ratingButton_container_mobile_view{
+    display: block;
+  }
+  .rating_and_ratingButton_container_desktop_view{
+    display: none;
+  }
+}
+
+@media (max-width:500px) {
+   .nook_and_renter_rating{
+    gap: 2rem;
+  }
+  .description_title{
+    font-size: 20px;
+  }
+  .description{
+    font-size: 17px;
+    line-height: 1.2rem;
+  }
+  .rules_categories_container{
+    font-size: 17px;
+    gap: 2rem;
+  }
+  .rules_container_item svg{
+    height: 30px !important;
+    width: 30px !important;
+  }
+  .features_container{
+    gap: 2rem;
+  }
+  .features_title{
+    font-size: 20px;
+  }
+  .features{
+    font-size: 14px;
+  }
+
+  .feature p svg{
+    height: 30px !important;
+    width: 30px !important;
+  }
+  .rating_and_ratingButton_container .renter_rating .name_rating_container{
+    font-size: 17px;
+  }
+  .rating_button{
+    font-size: 17px;
+  }
+  .visitors_and_price .visitors{
+    padding: .5rem;
+    font-size: 17px;
+  }
+  .visitors_and_price .price_container{
+    font-size: 17px;
+  }
+  .nook_rating_and_close_button .rated_button{
+    flex-basis: 100px;
+  }
+  .nook_rating_and_close_button{
+    gap: .5rem;
+  }
+  .nook_rating_and_comments{
+    min-height: 71px;
+  }
+  .nook_rating_and_comments .nook_rating_value,.nook_rating_and_comments .comments_number, .nook_rating_and_comments .comments_number span{
+    font-size: 17px;
+  }
 }

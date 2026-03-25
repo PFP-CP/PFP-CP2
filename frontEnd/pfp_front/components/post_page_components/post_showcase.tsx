@@ -6,27 +6,49 @@ import { showPostPicturesState } from "@/types/types"
 import 'react-photo-view/dist/react-photo-view.css';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import { SAVE_LOGO_ACTIVE,COPY_LINK_LOGO, TITLE_LOGO,LEAVE_TAB } from "@/public/svg/svg"
+import Carousel from "./carousel"
+import { div } from "motion/react-client"
+import { useState,useEffect } from "react"
 
 
-
-
-function postHeader(){
+function PostHeader(){
+  const [screenWidth, setScreenWidth] = useState(0);
+  
+    useEffect(()=>{
+      setScreenWidth(window.innerWidth);
+      let timeId : NodeJS.Timeout | null = null;;
+      const handleResize = ()=> {
+        
+        if(timeId) return;
+  
+        timeId =  setTimeout(()=>{
+          setScreenWidth(window.innerWidth);
+          timeId = null;
+  
+        },300)
+      }
+      window.addEventListener('resize', handleResize);
+      return ()=> {
+        removeEventListener('resize', handleResize);
+        if(timeId) clearTimeout(timeId);
+      }
+    },[])
   return(
         <div className={style.showcase_header}>
           <div className={style.title_container}>
             <div className={style.title_logo}><Link href={"#"}>{TITLE_LOGO}</Link></div>
             <div className={style.title}>Studio - View Cathedrale d'Oran</div>
           </div>
-          <div className={style.post_actions}>
+          {screenWidth>=700 &&<div className={style.post_actions}>
             <div className={style.copy_link_container}>
               <div className={style.copy_link_logo}>{COPY_LINK_LOGO}</div>
-              <div className={style.copy_link}>Copy Link</div>
+              {screenWidth>=700 &&  <div className={style.copy_link}>Copy Link</div>}
             </div>
             <div className={style.save_container}>
               <div className={style.save_logo}>{SAVE_LOGO_ACTIVE}</div>
-              <div className={style.save}>Save</div>
+               <div className={style.save}>Save</div>
             </div>
-          </div>
+          </div>}
         </div>
 
   )
@@ -130,20 +152,28 @@ function display_images(setShowPictures:React.Dispatch<React.SetStateAction<bool
             )
 }
 
-export default function PostShowcase({setShowPictures,show_pictures}:showPostPicturesState){
 
+
+export default function PostShowcase({setShowPictures,show_pictures}:showPostPicturesState){
   const mock_pictures = ['1','5','4','3','6']
   return(
     <section className={style.post_showcase}>
-      {show_pictures ?<>
+      {<>
+              {<PostHeader/>}
+        <div className={style.desktop_view}>
+          {show_pictures ?<>
               {display_images(setShowPictures,mock_pictures)}
             </> 
             :<>
-              {postHeader()}
               {postImages(mock_pictures)}
+            </>}
+          </div>
+          <div className={style.mobile_view}>
+            <Carousel/>
+          </div>
               {image_navigation(setShowPictures)}
-            </>
-            }
+        </>
+      }
     </section>
   )
 }

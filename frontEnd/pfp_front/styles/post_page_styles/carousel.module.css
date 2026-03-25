@@ -1,0 +1,28 @@
+
+.glide_container{
+  position: relative;
+}
+
+.carousel_buttons{
+  height: 70px;
+  width: 70px;
+  background-color:#220E67;
+  border: none;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  cursor: pointer;
+}
+
+.carousel_buttons.right{
+  top: calc(50% - 35px);
+  right: 0;
+}
+
+.carousel_buttons.left{
+  top: calc(50% - 35px);
+  left: 0;
+}
+

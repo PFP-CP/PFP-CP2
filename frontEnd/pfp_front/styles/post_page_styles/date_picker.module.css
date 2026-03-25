@@ -62,3 +62,10 @@
   color: white;
 
 }
+
+
+@media (max-width:500px) {
+  .date_container{
+    font-size:17px;
+  }
+}
