@@ -20,7 +20,7 @@ router = Router()
 def _reservation_to_dict(r: Reservation) -> dict:
     # Wilaya comes from Houses.Location (FK from House)
     try:
-        wilaya = Location.objects.get(house=r.post.House).State
+        wilaya = Location.objects.get(house=r.post.house).State
     except Location.DoesNotExist:
         wilaya = "—"
 
@@ -29,7 +29,7 @@ def _reservation_to_dict(r: Reservation) -> dict:
         phone = Contact.objects.get(Account=r.renter).Phone_Number
     except Contact.DoesNotExist:
         phone = None
-    first_pic = Pictures.objects.filter(house=r.post.House).first()
+    first_pic = Pictures.objects.filter(house=r.post.house).first()
     photo = first_pic.URL if first_pic else Pictures.blank_house_image
     return {
         "id": r.id,
@@ -40,12 +40,12 @@ def _reservation_to_dict(r: Reservation) -> dict:
             "phone": phone,  # matches RenterOut.phone
         },
         "post": {
-            "id": r.post.id,
-            "Title": r.post.Title,
+            "id": str(r.post.id),
+            "Title": r.post.title,
             "House": {
-                "id": r.post.House.id,
-                "Price": r.post.House.Price,
-                "Description": r.post.House.Description,
+                "id": r.post.house.id,
+                "Price": r.post.house.Price,
+                "Description": r.post.house.Description,
                 "wilaya": wilaya,
                 "photo": photo,
             },
@@ -61,11 +61,11 @@ def list_reservations(request):
     user: Account = request.user
 
     reservations = (
-        Reservation.objects.filter(post__Poster=user)  # only this host's listings
+        Reservation.objects.filter(post__seller=user)  # only this host's listings
         .select_related(
             "renter",  # avoids N+1 on renter fields
             "post",
-            "post__House",  # avoids N+1 on house fields
+            "post__house",  # avoids N+1 on house fields
         )
         .order_by("-created_at")  # most recent first
     )
@@ -105,7 +105,7 @@ def create_reservation(request, payload: ReservationIn):
 
     # select_related so _reservation_to_dict can access renter/post/House
     reservation = Reservation.objects.select_related(
-        "renter", "post", "post__House"
+        "renter", "post", "post__house"
     ).get(pk=reservation.pk)
 
     return 201, _reservation_to_dict(reservation)
@@ -122,7 +122,7 @@ def delete_reservation(request, reservation_id: int):
     user: Account = request.user
 
     reservation = (
-        Reservation.objects.select_related("renter", "post", "post__Poster")
+        Reservation.objects.select_related("renter", "post", "post__seller")
         .filter(id=reservation_id)
         .first()
     )

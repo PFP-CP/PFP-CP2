@@ -230,9 +230,9 @@ class PostCreateSchema(Schema):
     state: str
     
     # --- OPTIONAL
-    description: str = ""  # Post-specific summary
-    house_description: str = ""  # Detailed house info
-    types_of_renters: Optional[str] = "All"
+    description: str = ""  
+    house_description: str = "" 
+    types_of_renters: Optional[str] = "Al"
     country: str = "Algeria"
     num_bedroom: Optional[int] = None
     num_bathroom: Optional[int] = None

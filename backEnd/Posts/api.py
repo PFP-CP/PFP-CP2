@@ -265,11 +265,9 @@ def unsave_post(request, post_id: uuid.UUID):
 @router.get('/my-posts', response=List[PostListOut], tags=['Seller (My Nook)'])
 def my_posts(request, status: str ='active'):
     """Seller sees their own posts."""
-    print("requsest user id ",request.user.id)
-    
     qs = Post.objects.select_related(
         'house').prefetch_related('house__pictures','house__location').filter(seller_id=request.user.id)
-    print("qs ",Post.seller_id)
+ 
     if status:
         qs = qs.filter(status=status)
     return qs
@@ -293,13 +291,20 @@ def get_post(request, post_id: uuid.UUID):
     post.increment_views() 
     return 200, post
 
-@router.post('/', response={201: PostOut, 403: ErrorSchema})
+@router.post('/', response={201: PostOut, 403: ErrorSchema,400: ErrorSchema}, tags=['Posts'])
 @transaction.atomic
 def create_post(request, payload: PostCreateSchema):
-   
+    post_exists = Post.objects.filter(
+      
+        seller=request.user,
+        title=payload.title ,
+        house__location__State=payload.state,
+        house__location__County=payload.county).exists()
 
-    # 2. Create House
-    house = House.objects.create(
+    if post_exists:
+        return 400, {"detail": "You already have a post with this title. Please edit the existing one."}
+
+    house = House.objects.create(  #create house 
         Price=payload.price,
         Surface=payload.surface,
         RoomNum=payload.room_num,
@@ -308,17 +313,15 @@ def create_post(request, payload: PostCreateSchema):
         num_bedroom=payload.num_bedroom,
         num_bathroom=payload.num_bathroom,
     )
-     # 1. Create Location
-    Location.objects.create(
-        house=house,
+    Location.objects.create( #create location 
+        house=house, 
         County=payload.county,
         State=payload.state,
         Country=payload.country,
         Latitude=payload.latitude,
         Longitude=payload.longitude
     )
-    # 3. Create Post
-    post = Post.objects.create(
+    post = Post.objects.create( #create post
         house=house,
         seller=request.user,
         title=payload.title,
