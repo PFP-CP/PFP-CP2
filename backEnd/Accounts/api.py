@@ -215,9 +215,9 @@ def change_name(request, name: str):
 
 # fucntion that get a profile based on ID
 @router.get(
-    "/my-profile", response=HostProfileOut, tags=["Account Profile"], auth=JWTAuth
+    "/my-profile/", response=HostProfileOut, tags=["Account Profile"], auth=JWTAuth()
 )
-def get_host_profile(request, host_id: int):
+def get_host_profile(request):
     """
     Returns the complete profile page for a host, including their stats
     and their active listings grouped by city.
@@ -242,7 +242,7 @@ def get_host_profile(request, host_id: int):
     active_posts = (
         Post.objects.filter(seller=host, status=PostStatus.ACTIVE)
         .select_related("house")
-        .prefetch_related("house__location_set", "house__pictures_set")
+        .prefetch_related("house__location", "house__pictures")
     )
 
     # Group Posts by City
@@ -250,11 +250,11 @@ def get_host_profile(request, host_id: int):
 
     for post in active_posts:
         # get city
-        post_loc = post.house.location_set.first()
+        post_loc = post.house.location.first()
         city_name = post_loc.State if post_loc and post_loc.State else "whatever"
 
         # first image
-        first_pic = post.house.pictures_set.first()
+        first_pic = post.house.pictures.first()
         image_url = first_pic.URL if first_pic else None
 
         # Build the post dictionary
