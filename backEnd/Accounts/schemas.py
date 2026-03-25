@@ -1,4 +1,6 @@
-from typing import Optional
+from datetime import date
+from typing import Dict, List, Optional
+from uuid import UUID
 
 from ninja import ModelSchema, Schema
 
@@ -42,3 +44,34 @@ class AccountLogin(Schema):
 class EmailConfirmation(Schema):
     email: str
     key: Optional[str] = None
+
+
+class HostPostOut(Schema):
+    # Schema for the small post cards shown under each city
+
+    id: UUID
+    title: str
+    price: int
+    rating: float
+    primary_image: Optional[str] = None
+
+
+class HostProfileOut(Schema):
+    # Schema for the entire host profile page
+
+    id: int
+    full_name: str
+    gender: str
+    email: str
+    phone_number: Optional[str] = None
+    date_of_birth: Optional[date] = None
+    location: str
+    rating: float
+    num_reviews: int
+    num_nooks: int
+    num_reservations: int
+    join_date: date
+    profile_picture: Optional[str] = None
+
+    # Dictionary where keys are City names, and values are lists of posts
+    posts_by_city: Dict[str, List[HostPostOut]]

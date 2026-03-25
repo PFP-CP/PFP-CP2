@@ -9,12 +9,16 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.cache import cache
 from django.core.mail import send_mail
+from django.db.models import Count
+from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.tokens import RefreshToken
+from Posts.models import Post, PostStatus
+from Reservations.models import Reservation
 
 from .models import *
 from .schemas import *
@@ -201,19 +205,85 @@ def password_forgotten(request, ResetCred: ResetPassword):
         return {"Message": "Account found , email sent"}
 
 
-# testing method
-@router.get("/display", auth=JWTAuth())
-def display(request):
-    User = request.user
-    return {
-        "name": User.full_name,
-        "Mail": User.email,
-        "gender": User.gender,
-    }
-
-
 @router.patch("/{User_id}", auth=JWTAuth())
 def change_name(request, name: str):
     User = request.user
     User.set_name(name)
     User.save()
+
+
+# fucntion that get a profile based on ID
+@router.get("/profile/{host_id}", response=HostProfileOut, tags=["Account Profile"])
+def get_host_profile(request, host_id: int):
+    """
+    Returns the complete profile page for a host, including their stats
+    and their active listings grouped by city.
+    """
+    # 1. Get the Host Account
+    # get location and contact in the same query
+    host = get_object_or_404(
+        Account.objects.select_related("contact", "location"), id=host_id
+    )
+
+    # 2. Get Phone & City
+    phone = getattr(host, "contact", None)
+    phone_number = str(phone.Phone_Number).zfill(10) if phone else None
+
+    loc = getattr(host, "location", None)
+    host_city = loc.State if loc and loc.State else "Unknown"
+
+    # Calculate total reservations made ON this host's posts
+    total_reservations = Reservation.objects.filter(post__seller=host).count()
+
+    # Fetch hosts active posts
+    active_posts = (
+        Post.objects.filter(seller=host, status=PostStatus.ACTIVE)
+        .select_related("house")
+        .prefetch_related("house__location_set", "house__pictures_set")
+    )
+
+    # Group Posts by City
+    posts_by_city = {}
+
+    for post in active_posts:
+        # get city
+        post_loc = post.house.location_set.first()
+        city_name = post_loc.State if post_loc and post_loc.State else "Other Locations"
+
+        # first image
+        first_pic = post.house.pictures_set.first()
+        image_url = first_pic.URL if first_pic else None
+
+        # Build the post dictionary
+        post_data = {
+            "id": post.id,
+            "title": post.title,
+            "price": post.house.Price,
+            "rating": post.rating,
+            "primary_image": image_url,
+        }
+
+        # Add to the dictionary under the correct city
+        if city_name not in posts_by_city:
+            posts_by_city[city_name] = []
+        posts_by_city[city_name].append(post_data)
+
+    # format output
+    return {
+        "id": host.id,
+        "full_name": host.full_name,
+        "gender": "male" if host.gender else "female",
+        "email": host.email,
+        "phone_number": phone_number,
+        "date_of_birth": host.date_of_birth,
+        "location": host_city,
+        "rating": host.rating,
+        "num_reviews": host.num_review,
+        "num_nooks": active_posts.count(),
+        "num_reservations": total_reservations,
+        "join_date": host.date_joined.date(),
+        "profile_picture": getattr(host.profile_picture, "url", None)
+        if host.profile_picture
+        else Account.default_profile_picture,
+        "posts_by_city": posts_by_city,
+    }
