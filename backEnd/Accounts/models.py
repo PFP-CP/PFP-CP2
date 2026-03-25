@@ -56,7 +56,7 @@ class Account(AbstractUser):
     full_name = models.TextField(max_length=150)
     gender = models.BooleanField(default=True)
     date_of_birth = models.DateField(default="2000-01-01", null=True, blank=True)
-    profile_picture = models.ImageField(upload_to="Account/PFP", blank=True)
+    profile_picture = models.ImageField(upload_to="Account/PFP", default="", blank=True)
     rating = models.FloatField(default=5, blank=True)
     verified = models.BooleanField(default=False)
 

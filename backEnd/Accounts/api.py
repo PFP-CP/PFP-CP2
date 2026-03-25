@@ -2,9 +2,10 @@ import json
 import secrets
 import string as STRING
 import time
+import utilitymethods.Pictures as Pic
 from multiprocessing.context import AuthenticationError
 from pathlib import Path
-
+from Houses.models import Pictures
 from asgiref.sync import sync_to_async
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -225,8 +226,6 @@ def get_host_profile(request):
     # 1. Get the Host Account
     host = request.user
 
-    if host.type_of_user.upper() != "SELLER" or host.verified is not True:
-        raise HttpError(403, "Only verified sellers have access to this dashboard.")
 
     # Get Phone & City
     phone = getattr(host, "contact", None)
@@ -238,55 +237,53 @@ def get_host_profile(request):
     # Calculate total reservations made ON this host's posts
     total_reservations = Reservation.objects.filter(post__seller=host).count()
 
-    # Fetch hosts active posts
-    active_posts = (
-        Post.objects.filter(seller=host, status=PostStatus.ACTIVE)
-        .select_related("house")
-        .prefetch_related("house__location", "house__pictures")
-    )
-
     # Group Posts by City
     posts_by_city = {}
 
-    for post in active_posts:
-        # get city
-        post_loc = post.house.location.first()
-        city_name = post_loc.State if post_loc and post_loc.State else "whatever"
+    if host.type_of_user.upper() == "SELLER" or host.verified:
+        # Fetch hosts active posts
+        active_posts = (
+            Post.objects.filter(seller=host, status=PostStatus.ACTIVE)
+            .select_related("house")
+            .prefetch_related("house__location", "house__pictures")
+        )
 
-        # first image
-        first_pic = post.house.pictures.first()
-        image_url = first_pic.URL if first_pic else None
 
-        # Build the post dictionary
-        post_data = {
-            "id": post.id,
-            "title": post.title,
-            "price": post.house.Price,
-            "rating": post.rating,
-            "primary_image": image_url,
-        }
+        for post in active_posts:
+            # get city
+            post_loc = post.house.location.first()
+            city_name = post_loc.State if post_loc and post_loc.State else "whatever"
 
-        # Add to the dictionary under the correct city
-        if city_name not in posts_by_city:
-            posts_by_city[city_name] = []
-        posts_by_city[city_name].append(post_data)
+            # first image
+            first_pic = post.house.pictures.first()
+            url = Pic.get_picture_url(first_pic , "picture") if first_pic else Pictures.blank_house_image
+            # Build the post dictionary
+            post_data = {
+                "id": post.id,
+                "title": post.title,
+                "price": post.house.Price,
+                "rating": post.rating,
+                "primary_image": url,
+            }
 
+            # Add to the dictionary under the correct city
+            if city_name not in posts_by_city:
+                posts_by_city[city_name] = []
+            posts_by_city[city_name].append(post_data)
     # format output
     return {
-        "id": host.id,
-        "full_name": host.full_name,
-        "gender": "male" if host.gender else "female",
-        "email": host.email,
-        "phone_number": phone_number,
-        "date_of_birth": host.date_of_birth,
-        "location": host_city,
-        "rating": host.rating,
-        "num_reviews": host.num_review,
-        "num_nooks": active_posts.count(),
-        "num_reservations": total_reservations,
-        "join_date": host.date_joined.date(),
-        "profile_picture": getattr(host.profile_picture, "url", None)
-        if host.profile_picture
-        else Account.default_profile_picture,
-        "posts_by_city": posts_by_city,
+    "id": host.id,
+    "full_name": host.full_name,
+    "gender": "male" if host.gender else "female",
+    "email": host.email,
+    "phone_number": phone_number,
+    "date_of_birth": host.date_of_birth,
+    "location": host_city,
+    "rating": host.rating,
+    "num_reviews": host.num_review,
+    "num_nooks": active_posts.count() if (host.type_of_user.upper() == "SELLER") else -255 ,
+    "num_reservations": total_reservations,
+    "join_date": host.date_joined.date(),
+    "profile_picture": Pic.get_picture_url(host , "profile_picture"),
+    "posts_by_city": posts_by_city if (host.type_of_user.upper() == "SELLER") else {"Become a Seller to be able to Post" : []} ,
     }
