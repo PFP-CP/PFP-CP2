@@ -1,11 +1,12 @@
 'use client'
-import { ChangeEvent, useState,useRef } from 'react'
+import { ChangeEvent, useState,useRef, useEffect } from 'react'
 import style from '@/styles/post_page_styles/house_information_and_booking.module.css'
 import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM } from '@/public/svg/svg'
 import Comment from './house_information_components/Comment'
 import { Slider } from '@mui/material'
 import MyDatePicker from './ui/date_picker'
 import { div } from 'motion/react-client'
+import { time } from 'console'
 
 
 
@@ -38,7 +39,7 @@ const POOL = <svg width="57" height="57" viewBox="0 0 57 57" fill="none" xmlns="
 
 
 let user = {
-  renterRated:true,
+  renterRated:false,
   renterRate:0,
 }
 
@@ -119,16 +120,16 @@ function Comment_review({setIsCommenting, setRatingValue}:{setIsCommenting:React
   }
   
   return(
-    <div className={style.nook_review}>
-      <div className={style.nook_rating_and_close_button}>
-        {<RateNookButton setRatingValue={setRatingValue} />}
-        <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
+      <div className={style.nook_review}>
+        <div className={style.nook_rating_and_close_button}>
+          {<RateNookButton setRatingValue={setRatingValue} />}
+          <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
+        </div>
+        <div className={style.comment_input}>
+          <textarea name="comment" id={style.comment} placeholder='Write your comment'></textarea>
+          <button onClick={handleCloseSubmit}>Submit</button>
+        </div>
       </div>
-      <div className={style.comment_input}>
-        <textarea name="comment" id={style.comment} placeholder='Write your comment'></textarea>
-        <button onClick={handleCloseSubmit}>Submit</button>
-      </div>
-    </div>
   )
 }
 
@@ -164,24 +165,24 @@ function Rules_categories_features(){
       <div className={style.features_container}>
         <div className={style.features_title}>Features</div>
         <div className={style.features}>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Sea View {POOL}</pre></div>
-          <div className={style.feature}><pre>Wifi {POOL}</pre></div>
-          <div className={style.feature}><pre>Heating {POOL}</pre></div>
-          <div className={style.feature}><pre>Cleaning Products {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
-          <div className={style.feature}><pre>Pool {POOL}</pre></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Sea View {POOL}</p></div>
+          <div className={style.feature}><p>Wifi {POOL}</p></div>
+          <div className={style.feature}><p>Heating {POOL}</p></div>
+          <div className={style.feature}><p>Cleaning Products {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
+          <div className={style.feature}><p>Pool {POOL}</p></div>
           
           
         </div>
@@ -194,11 +195,32 @@ function Rules_categories_features(){
 function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>}){
   const [isCommenting, setIsCommenting] = useState(false);
   const [ratingValue,setRatingValue] = useState<number>();
+  const [screenWidth, setScreenWidth] = useState(0);
+
+  useEffect(()=>{
+    setScreenWidth(window.innerWidth);
+    let timeId : NodeJS.Timeout | null = null;;
+    const handleResize = ()=> {
+      
+      if(timeId) return;
+
+      timeId =  setTimeout(()=>{
+        setScreenWidth(window.innerWidth);
+        timeId = null;
+
+      },300)
+    }
+    window.addEventListener('resize', handleResize);
+    return ()=> {
+      removeEventListener('resize', handleResize);
+      if(timeId) clearTimeout(timeId);
+    }
+  },[])
   return(
           <div className={style.nook_and_renter_rating}>
             <div className={style.rating_display}>
-              <div className={style.rating_and_ratingButton_container}>
-                <div onClick={()=>setShowComments((prev)=>!prev)} className={style.nook_rating_and_comments}>
+              <div className={`${style.rating_and_ratingButton_container} ${style.rating_and_ratingButton_container_desktop_view}`}>
+                <div onClick={ ()=>setShowComments((prev)=>!prev)} className={style.nook_rating_and_comments}>
                     <div className={style.nook_rating_value}>
                       4,93
                       {STAR_LOGO}
@@ -208,6 +230,7 @@ function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<Re
                     </div>
 
                 </div>
+                
                 {!isCommenting && (
                   !ratingValue?
                   <div onClick={()=>setIsCommenting(true)} className={style.rating_button}>Rate the nook</div>:
@@ -229,17 +252,47 @@ function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<Re
                     </div>
                   </div>
                 </div>
-                {!isCommenting && <RateRenterButton />}
+                {screenWidth>=700? <>{!isCommenting && <RateRenterButton />}</>:<RateRenterButton />}
               </div>
             </div>
             {isCommenting?
-              <Comment_review setIsCommenting={setIsCommenting} setRatingValue={setRatingValue}/>:
+              <div className={style.upper_comment_review_mobile_view}>
+                <Comment_review setIsCommenting={setIsCommenting} setRatingValue={setRatingValue}/>
+              </div>:
               <Description />
               }
             <Rules_categories_features />
+            <div className={style.rating_and_ratingButton_container_mobile_view}>
+              <div className={style.rating_display}>
+                <div className={style.rating_and_ratingButton_container}>
+                  <div onClick={screenWidth>700?(()=>{setShowComments((prev)=>!prev)}) : undefined} className={style.nook_rating_and_comments}>
+                      <div className={style.nook_rating_value}>
+                        4,93
+                        {STAR_LOGO}
+                      </div>
+                      <div className={style.comments_number}>
+                        3<br/><span>Comments</span>
+                      </div>
+
+                  </div>
+                  {!isCommenting && (
+                    !ratingValue?
+                    <div onClick={()=>setIsCommenting(true)} className={style.rating_button}>Rate the nook</div>:
+                    <div onClick={()=> setIsCommenting(true)} className={style.rated_button}>{ratingValue.toFixed(2)} {STAR_LOGO_SMALL}</div>
+                    )}
+
+                </div>
+              </div>
+              {/* this will be a component */}
+            </div>
+            {isCommenting&&
+            <div className={style.lower_comment_review_mobile_view}>
+                <Comment_review setIsCommenting={setIsCommenting} setRatingValue={setRatingValue}/>
+              </div>}
           </div>
   )
 }
+
 
 function Comments_visible({setShowComments}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>}){
   return(
@@ -300,6 +353,7 @@ export default function HouseInformationAndBooking(){
   return(
     <section className={style.nook_data_and_scheduler}>
         <div className={style.nook_data}>
+
           {!showComments?<Comments_invisible setShowComments={setShowComments} />:<Comments_visible setShowComments={setShowComments} />}
         </div>
         <div className={style.nook_scheduler}>

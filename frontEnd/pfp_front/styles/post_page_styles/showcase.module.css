@@ -211,3 +211,59 @@
   cursor:pointer;
   font-size: 1rem;
 }
+
+.mobile_view{
+  display: none;
+}
+
+.desktop_view{
+  display: block;
+}
+
+
+@media (max-width:1050px) {
+  .mobile_view{
+    display: block;
+  }
+  .desktop_view{
+    display: none;
+  }
+  .title_container .title{
+    font-size: 30px;
+  }
+  .show_pictures_container{
+    display: none;
+  }
+}
+
+@media (max-width:500px) {
+  .mobile_view{
+    display: block;
+  }
+  .desktop_view{
+    display: none;
+  }
+  .title_container{
+    gap: .4;
+  }
+  .title_container .title{
+    font-size: 20px;
+  }
+  .show_pictures_container{
+    display: none;
+  }
+  .title_logo svg{
+    height: 30px !important;
+    width: 30px !important;
+  }
+  .entire_home{
+    font-size: 20px;
+  }
+  .house_details{
+    font-size: 13px;
+  }
+  .post_showcase{
+    padding-bottom: .5rem;
+  }
+  
+}
