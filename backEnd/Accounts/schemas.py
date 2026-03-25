@@ -21,6 +21,7 @@ class AccountSignin(ModelSchema):
     gender: str
     state: str
     type_of_user: str = "GUEST"
+    phone_number: str
 
     class Meta:
         model = Account

@@ -26,15 +26,23 @@ router = Router()
 # function to sign in  a new user with given fields
 @router.post("/Signup")
 def Signin(request, Acc: AccountSignin):
+    # check is user already exist
     if Account.objects.filter(email__exact=Acc.email).exists():
         return {"Error": "User Already in Data Base"}
+
+    # 2. Check if phone number already exists (#noCrash)
+    if Contact.objects.filter(Phone_Number=Acc.phone_number).exists():
+        return {"Error": "Phone number is already registered"}
+
     # switches gender string to boolean
     gen = Acc.gender.lower() == "male"
+
     # json file that has all of algerias wilayas that gets parced to get the name from code
     main_dir = Path(__file__).parents[1]
     wilaya_dir = main_dir / "wilayas/wilayas.json"
     with open(wilaya_dir, "r") as file_json:
         wilayas = json.load(file_json)
+
     # create newuser with the data given
     # add email verification
     new_acc = Account.objects.create_user(
@@ -52,7 +60,11 @@ def Signin(request, Acc: AccountSignin):
         State=Acc.state,
         Country="Algeria",
     )
-
+    # CREATE contact object
+    Contact.objects.create(
+        Account=new_acc,
+        Phone_Number=Acc.phone_number,
+    )
     new_acc.save()
 
     refresh = RefreshToken.for_user(new_acc)
