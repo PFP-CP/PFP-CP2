@@ -30,6 +30,9 @@
   color: red;
 }
 
+.input_container input[type="date"]{
+  padding-right: 1rem;
+}
 
 
 

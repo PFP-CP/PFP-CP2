@@ -1,7 +1,15 @@
+
+.post_showcase img{
+  cursor: pointer;
+}
+
 .post_showcase{
 	width: 100%;
 	background-color: white;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-bottom: 2rem;
 }
 .showcase_header{
   display: flex;
@@ -75,4 +83,187 @@
 .title_container .title{
   font-size: 40px;
   font-family: "sansation-700";
+}
+
+
+.pictures_container{
+  display: flex;
+  min-height:500px;
+  background-color: transparent;
+  padding-left: 3rem;
+  gap: 5rem;
+  align-items: center;
+}
+
+.lessT3_pictures_container{
+  justify-content: center;
+
+}
+
+/* .moreT3_picture{
+  max-Width:475px;
+} */
+
+.pictures_container .main_picture{
+  height: inherit;
+  background-color: red;
+  flex-grow: 1;
+  max-width: 650px;
+  max-height: 500px;
+  overflow: hidden;
+  border-radius: 23px;
+}
+
+.pictures_container .side_pictures{
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(475px, 1fr));
+  grid-template-rows:max-content;
+  row-gap: 40px;
+  column-gap: 2rem;
+  height: inherit;
+  flex-grow: 1;
+  background-color: transparent;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.pictures_container .side_pictures .picture{
+  max-height: 230px;
+  justify-self: center;
+  max-width: 475px;
+  border-radius: 23px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.images_navigation{
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
+.entire_home{
+  font-family: "sansation-700","sans-sarif";
+  font-size:35px;
+}
+
+.house_details{
+  font-family: "sansation-400","sans-sarif";
+  font-size: 25px;
+}
+
+.show_pictures_container button{
+  height: 49px;
+  width: 257px;
+  border-radius:23px;
+  font-family: 'sansation-700', sans-serif;
+  font-size: 20px;
+  border: none;
+  background-color: var(--secondary-color);
+  color: white;
+  transition: background-color ease-out 100ms;
+  cursor: pointer;
+}
+
+
+.show_pictures_container button:hover{
+  background-color: var(--color-btn-hover);
+}
+
+.all_pictures_container{
+	background: #fff;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 2rem;
+	display: flex;
+
+}
+
+.all_pictures_container .show_pictures_container{
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(850px, 1fr));
+  grid-template-rows:auto;
+  row-gap: 40px;
+  column-gap: 2rem; 
+  max-width: 1732px;
+  align-self: center;
+  width: 100%;
+}
+
+.all_pictures_container .show_pictures_container .picture{
+  max-height: 470px;
+  justify-self: center;
+  max-width: 850px;
+  border-radius: 23px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.leave_show_pictures{
+  width:20px;
+  height:20px;
+  background-color:transparent;
+  border-radius:23px;
+  border:none;
+  cursor:pointer;
+  font-size: 1rem;
+}
+
+.mobile_view{
+  display: none;
+}
+
+.desktop_view{
+  display: block;
+}
+
+
+@media (max-width:1050px) {
+  .mobile_view{
+    display: block;
+  }
+  .desktop_view{
+    display: none;
+  }
+  .title_container .title{
+    font-size: 30px;
+  }
+  .show_pictures_container{
+    display: none;
+  }
+}
+
+@media (max-width:500px) {
+  .mobile_view{
+    display: block;
+  }
+  .desktop_view{
+    display: none;
+  }
+  .title_container{
+    gap: .4;
+  }
+  .title_container .title{
+    font-size: 20px;
+  }
+  .show_pictures_container{
+    display: none;
+  }
+  .title_logo svg{
+    height: 30px !important;
+    width: 30px !important;
+  }
+  .entire_home{
+    font-size: 20px;
+  }
+  .house_details{
+    font-size: 13px;
+  }
+  .post_showcase{
+    padding-bottom: .5rem;
+  }
+  
 }

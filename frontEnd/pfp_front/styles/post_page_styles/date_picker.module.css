@@ -1,0 +1,71 @@
+.datepicker_side_container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+  user-select: none;
+  flex-grow: 1;
+}
+
+.datepicker_side_container .container{
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.datepicker_side_container .calanders_container{
+  display: flex ;
+}
+
+.buttons_container{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row-reverse;
+  gap: 5rem;
+}
+
+.buttons_container button{
+  border: none;
+  background-color: #220E67;
+  color: white;
+  font-family: "sansation-700",sans-serif;
+  font-size: 15px;
+  border-radius: 23px;
+  width: 150px;
+  height: 60px;
+  
+}
+
+.date_container{
+  flex-basis: 254px;
+  max-width: 254px;
+  width: 100%;
+  border-radius: 23px;
+  font-family: "sansation-700", sans-serif;
+  cursor: pointer;
+  font-size: 25px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  min-height: 60px;
+}
+
+.date_container_before_choice{
+  color: black;
+  background-color: #D9D9D9;
+}
+
+.date_container_after_choice{
+  background-color: #220E67;
+  color: white;
+
+}
+
+
+@media (max-width:500px) {
+  .date_container{
+    font-size:17px;
+  }
+}

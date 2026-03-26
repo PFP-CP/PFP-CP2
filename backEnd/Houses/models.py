@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 #from django.db.models.functions import Extract 
 # Create your models here.
@@ -14,6 +15,9 @@ class AllowedPeople(models.TextChoices):
 class House(models.Model):
     Price = models.IntegerField(default=0)
     RoomNum = models.SmallIntegerField(default=1)
+    num_bedroom = models.SmallIntegerField(default=1)
+    num_bathroom = models.SmallIntegerField(default=1)
+
     Surface = models.FloatField()
     Description = models.TextField(max_length=1000)
     Created_at = models.DateTimeField(auto_now_add=True)
@@ -22,15 +26,15 @@ class House(models.Model):
     
 
     def __str__(self):
-        return str(self.Description)
+        return f"{str(self.Description) } id={self.id}"  
     
     def Creation_time(self):
         return self.Created_at
 
 class Pictures(models.Model):
     blank_house_image =  "https://images.template.net/465793/Blank-House-Clipart-edit-online.png"
-    house = models.ForeignKey(House,on_delete=models.CASCADE)
-    URL = models.URLField(max_length=200,default=blank_house_image,blank=True)
+    house = models.ForeignKey(House,on_delete=models.CASCADE,related_name="pictures")
+    picture = models.ImageField(upload_to="Houses/pictures",default="", blank=True)
     time_stamp = models.DateTimeField(auto_now_add=True)
 
 class FeatureList(models.Model):
@@ -40,7 +44,7 @@ class FeatureList(models.Model):
         return self.feature
 
 class Features(models.Model):
-    models.ForeignKey(House,on_delete=models.CASCADE)
+    house=models.ForeignKey(House,on_delete=models.CASCADE,related_name='features')
     features = models.ManyToManyField(FeatureList , blank=True)
 
 class AvalabilityCalendar(models.Model):
@@ -51,7 +55,7 @@ class AvalabilityCalendar(models.Model):
     # also add a function to print the day of said month that are booked
 
 class Location(models.Model):
-    house = models.ForeignKey(House,on_delete=models.CASCADE)
+    house = models.ForeignKey(House,on_delete=models.CASCADE,related_name='location')
     #BALADIA
     County = models.TextField(max_length=100)
     #Wilaya
@@ -61,4 +65,6 @@ class Location(models.Model):
     #coords
     Longitude = models.FloatField()
     Latitude = models.FloatField()
+    def __str__(self):
+        return f" {self.house.Description} location"
   

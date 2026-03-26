@@ -42,6 +42,11 @@ export type inputType = {
   input_ref?:any;
 }
 
+export type showPostPicturesState = {
+  setShowPictures:React.Dispatch<React.SetStateAction<boolean>>;
+  show_pictures:boolean;
+}
+
 export type keyValues_input = "email" | "gender" | "password" | "full_name" | "location" | "birth_date";
 
 export type FormType = {
