@@ -131,3 +131,8 @@ export const errMap= new Map([
   ["Email: email is required",8],
   ["Full Name: full name is required",9],
 ]);
+
+
+export const PROPERTY_TYPES = ["Apartment", "Villa", "Chalet"]
+
+export const FEATURES = ["Pool", "Wifi", "Parking", "Kitchen","Air conditioning", "Sea view",]
