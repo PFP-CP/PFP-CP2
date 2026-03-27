@@ -7,6 +7,7 @@ from decimal import Decimal
 import uuid
 from ninja import Schema
 from typing import Optional
+from Houses.models import Pictures
 
 
 class SearchCriteria(Schema):
@@ -103,7 +104,9 @@ class HouseLocationMiniOut(Schema):
 class HouseImageMiniOut(Schema):
     URL: str
 
-
+    @staticmethod
+    def resolve_URL(obj):
+        return obj.picture.url 
 # Comment schemas
 class CommentOut(Schema):
     id:          uuid.UUID
@@ -169,6 +172,14 @@ class PostOut(Schema):
         if locs and hasattr(locs, 'first'):
             return locs.first()
         return locs
+    @staticmethod
+    def resolve_house_pictures(obj):
+         pics = obj.house.pictures.all()
+
+         if pics.exists():
+           return pics
+         return [{"URL": Pictures.blank_house_image}]  
+      
 
 class PostListOut(Schema):
     """ used on the main page listing."""
@@ -185,13 +196,20 @@ class PostListOut(Schema):
     Surface:        Decimal
     RoomNum:       int
     Types_of_Renters: Optional[str]
+    Country:        Optional[str]
     County:           Optional[str]
-    # primary_image:  Optional[str]    # URL of primary image
-
+    State: Optional[str]
+    primary_image:  Optional[str]=None  # URL of primary image
+    @staticmethod
+    def resolve_State(obj):
+        return obj.State 
     @staticmethod
     def resolve_Price(obj):
         return obj.house.Price
-
+    @staticmethod
+    def resolve_Country(obj):
+        loc=obj.house.location.first()
+        return loc.Country if loc else None
     @staticmethod
     def resolve_Surface(obj):
         return obj.house.Surface
@@ -215,10 +233,10 @@ class PostListOut(Schema):
     @staticmethod
     def resolve_average_rating(obj):
         return obj.rating
-    # @staticmethod
-    # def resolve_primary_image(obj):
-    #     img = obj.house.pictures.first()
-    #     return img.URL if img else None
+    @staticmethod
+    def resolve_primary_image(obj):
+        img = obj.primary_image
+        return img
 
 class PostCreateSchema(Schema):
     # --- REQUIRED ---
