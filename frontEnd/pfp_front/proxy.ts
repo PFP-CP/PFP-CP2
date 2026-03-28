@@ -9,7 +9,7 @@ export function proxy(request: NextRequest) {
                            request.nextUrl.pathname.startsWith('/mynooks') ||
                            request.nextUrl.pathname.startsWith('/myfavorites')
   
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/authenticate') 
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/authentication') 
   
   if (isProtectedRoute && !token) {
     const loginUrl = new URL('/authentication', request.url)

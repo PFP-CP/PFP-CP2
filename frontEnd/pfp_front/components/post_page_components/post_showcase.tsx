@@ -6,7 +6,7 @@ import { showPostPicturesState } from "@/types/types"
 import 'react-photo-view/dist/react-photo-view.css';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import { SAVE_LOGO_ACTIVE,COPY_LINK_LOGO, TITLE_LOGO,LEAVE_TAB } from "@/public/svg/svg"
-import Carousel from "./carousel"
+import CarouselImages from "./carousel_images"
 import { div } from "motion/react-client"
 import { useState,useEffect } from "react"
 
@@ -169,7 +169,7 @@ export default function PostShowcase({setShowPictures,show_pictures}:showPostPic
             </>}
           </div>
           <div className={style.mobile_view}>
-            <Carousel/>
+            <CarouselImages/>
           </div>
               {image_navigation(setShowPictures)}
         </>

@@ -31,7 +31,7 @@ const LEFT_ARROW = <svg xmlns="http://www.w3.org/2000/svg"
   <polyline points="15 18 9 12 15 6"></polyline>
 </svg>
 
-export default function Carousel() {
+export default function CarouselImages() {
   const glideRef = useRef(null);
   const [screenWidth, setScreenWidth] = useState(0);
   
@@ -84,7 +84,7 @@ export default function Carousel() {
         >
           {mock_pictures.map((pic)=>{
             return(
-              <PhotoProvider>
+              <PhotoProvider key={pic}>
                 
 
                 <li 
