@@ -9,6 +9,7 @@ from django.db.models import Value
 from Houses.models import *
 from .models import *
 from django.db.models import Avg
+from .models import Comment
 from django.db.models import QuerySet
 from .schemas import *
 from ninja.pagination import PageNumberPagination , paginate
@@ -162,17 +163,19 @@ def search(request, Criteria: SearchCriteria):
     results = sorting(results, Criteria.order_by)
     return results
 #List Post with query parameter
-@router.get('/', response=List[PostListOut], tags=['List post'], auth=None)
+@router.get('/', response=List[PostListOut],auth=JWTAuth() ,tags=['List post'])
 def list_posts(
     request,
     # Filters
-    status:         str   = 'active',
+    status:         str   = None,
+    country:        str   = None,
     city:           str   = None,
     min_price:      float = None,
     max_price:      float = None,
     min_surface:    float = None,
     type_of_people: str   = None,
     min_rooms:      int   = None,
+
     # Sorting
     sort_by: str = 'newest',   # newest
     # Pagination 
@@ -181,16 +184,20 @@ def list_posts(
 ):
     """
     Main page 
-    Returns active posts houses info, location, and primary image.
+    Returns available posts houses info, location, and primary image.
     """
     qs = Post.objects.select_related(
         'house'
     ).prefetch_related(
         'house__pictures',
         Prefetch('comments', queryset=Comment.objects.order_by('-created_at')),
-    ).filter(status=status)
+    )
 
     # ── Filters 
+    if country:
+        qs = qs.filter(house__location__Country__icontains=country)
+    if status:
+        qs = qs.filter(status=status)
     if city:
         qs = qs.filter(house__location__State__icontains=city)
     if min_price is not None:
@@ -224,16 +231,16 @@ def list_posts(
     return qs
 # saved post bookmark -favorite post 
 
-@router.get('/saved', response=List[SavedPostOut], tags=['Saved Posts (my favorite)'])
+@router.get('/saved', response=List[SavedPostOut],auth=JWTAuth(), tags=['Saved Posts (my favorite)'])
 def list_saved_posts(request):
     """Return all posts saved by the authenticated user."""
     return SavedPost.objects.filter(user=request.user).select_related(
         'post', 'post__house',
-    ).prefetch_related('post__house__pictures', 'post__house__location')
+    ).prefetch_related('post__house__pictures', 'post__house__location') 
 
 
 @router.post('/{post_id}/save',
-             response={201: MessageSchema, 409: ErrorSchema, 404: ErrorSchema},
+             response={201: MessageSchema, 409: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
              tags=['Saved Posts (my favorite)'])
 def save_post(request, post_id: uuid.UUID):
     """favorite post """
@@ -251,7 +258,7 @@ def save_post(request, post_id: uuid.UUID):
 
 
 @router.delete('/{post_id}/save',
-               response={200: MessageSchema, 404: ErrorSchema},
+               response={200: MessageSchema, 404: ErrorSchema},auth=JWTAuth(),
                tags=['Saved Posts (my favorite)'])
 def unsave_post(request, post_id: uuid.UUID):
     """Remove a bookmark."""
@@ -264,9 +271,9 @@ def unsave_post(request, post_id: uuid.UUID):
 # SELLER  –  My posts dashboard
 
 @router.get('/my-posts', response=List[PostListOut],auth=JWTAuth(),tags=['Seller (My Nook)'])
-def my_posts(request, status: str ='active'):
+def my_posts(request, status: str = None):
     """Seller sees their own posts."""
-
+    print(request.user.id)
     qs = Post.objects.select_related(
         'house').prefetch_related('house__pictures','house__location').filter(seller_id=request.user.id)
  
@@ -276,7 +283,7 @@ def my_posts(request, status: str ='active'):
 # POST  –  CRUD
 
 @router.get('/{post_id}', response={200: PostOut, 404: ErrorSchema},
-            tags=['Posts'], auth=None)
+            tags=['Posts'] )
 def get_post(request, post_id: uuid.UUID):
     """Full post detail with house, seller, images, comments."""
     post = get_object_or_404(
@@ -293,11 +300,10 @@ def get_post(request, post_id: uuid.UUID):
     post.increment_views() 
     return 200, post
 
-@router.post('/', response={201: PostOut, 403: ErrorSchema,400: ErrorSchema}, tags=['Posts'])
+@router.post('/', response={201: PostOut, 403: ErrorSchema,400: ErrorSchema}, auth=JWTAuth( ),tags=['Posts'])
 @transaction.atomic
 def create_post(request, payload: PostCreateSchema):
     post_exists = Post.objects.filter(
-      
         seller=request.user,
         title=payload.title ,
         house__location__State=payload.state,
@@ -305,12 +311,24 @@ def create_post(request, payload: PostCreateSchema):
 
     if post_exists:
         return 400, {"detail": "You already have a post with this house ."}
+    
+    #map the user input to the corresponding code in AllowedPeople.choices
+    def map_types_of_renters(user_input: str) -> str:
 
+     user_input = user_input.strip().lower()  # make lowercase for comparison
+
+     for code, description in AllowedPeople.choices:
+
+        if user_input in code.lower() or user_input in description.lower():
+            return code
+
+     raise ValueError(f"Invalid types_of_renters: {user_input}")
+    types_of_renters = map_types_of_renters(payload.types_of_renters)
     house = House.objects.create(  #create house 
         Price=payload.price,
         Surface=payload.surface,
         RoomNum=payload.room_num,
-        Types_of_Renters=payload.types_of_renters,
+        Types_of_Renters=types_of_renters,
         Description=payload.house_description,
         num_bedroom=payload.num_bedroom,
         num_bathroom=payload.num_bathroom,
@@ -330,7 +348,7 @@ def create_post(request, payload: PostCreateSchema):
         description=payload.description,
         status=PostStatus.PENDING,
     )
-
+    
     # Update seller's post count
     from Accounts.models import Account
     Account.objects.filter(pk=request.user.pk).update(
@@ -376,7 +394,7 @@ def delete_post(request, post_id: uuid.UUID):
              response={200: MessageSchema, 400: ErrorSchema, 403: ErrorSchema},auth=JWTAuth(),
              tags=['Post Status'])
 def publish_post(request, post_id: uuid.UUID):
-    """Activate a pending post (seller or admin action)."""
+    """ make pending post available for rent."""
     post = get_object_or_404(Post, pk=post_id)
     if post.seller!= request.user and not request.user.is_staff:
         return 403, {'detail': 'Not allowed.'}
@@ -384,11 +402,11 @@ def publish_post(request, post_id: uuid.UUID):
         post.publish()
     except Exception as e:
         return 400, {'detail': str(e)}
-    return 200, {'message': 'Post is now active.'}
+    return 200, {'message': 'Post is now available.'}
 
 
 @router.post('/{post_id}/archive',
-             response={200: MessageSchema, 403: ErrorSchema},
+             response={200: MessageSchema, 403: ErrorSchema},auth=JWTAuth(),
              tags=['Post Status'])
 def archive_post(request, post_id: uuid.UUID):
     post = get_object_or_404(Post, pk=post_id)
@@ -399,7 +417,7 @@ def archive_post(request, post_id: uuid.UUID):
 
 
 @router.post('/{post_id}/mark-rented',
-             response={200: MessageSchema, 403: ErrorSchema},
+             response={200: MessageSchema, 403: ErrorSchema},auth=JWTAuth(),
              tags=['Post Status'])
 # we need to mark the house as rented too to exclude it from search results and prevent new reservations
 def mark_rented(request, post_id: uuid.UUID):
@@ -426,20 +444,20 @@ def reject_post(request, post_id: uuid.UUID):
 # COMMENTS  –  Review system
 
 @router.get('/{post_id}/comments',
-            response=List[CommentOut], tags=['Comments'], auth=None)
+            response=List[CommentOut], auth=JWTAuth(), tags=['Comments'])
 def list_comments(request, post_id: uuid.UUID):
     post = get_object_or_404(Post, pk=post_id)
     return post.comments.select_related('user').order_by('-created_at')
 
 
 @router.post('/{post_id}/comments',
-             response={201: CommentOut, 409: ErrorSchema, 404: ErrorSchema},
+             response={201: CommentOut, 409: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
              tags=['Comments'])
 def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
     """
     Guest leaves a review on a post.
     """
-    post = get_object_or_404(Post, pk=post_id, status=PostStatus.ACTIVE)
+    post = get_object_or_404(Post, pk=post_id)
 
     if Comment.objects.filter(post=post, user=request.user).exists():
         return 409, {'detail': 'You have already reviewed this post.'}
@@ -455,7 +473,7 @@ def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
 
 
 @router.patch('/{post_id}/comments/{comment_id}',
-              response={200: CommentOut, 403: ErrorSchema, 404: ErrorSchema},
+              response={200: CommentOut, 403: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
               tags=['Comments'])
 def update_comment(request, post_id: uuid.UUID,
                    comment_id: uuid.UUID, payload: CommentUpdate):
@@ -469,7 +487,7 @@ def update_comment(request, post_id: uuid.UUID,
 
 
 @router.delete('/{post_id}/comments/{comment_id}',
-               response={200: MessageSchema, 403: ErrorSchema, 404: ErrorSchema},
+               response={200: MessageSchema, 403: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
                tags=['Comments'])
 def delete_comment(request, post_id: uuid.UUID, comment_id: uuid.UUID):
     comment = get_object_or_404(Comment, pk=comment_id, post=post_id)
@@ -481,5 +499,3 @@ def delete_comment(request, post_id: uuid.UUID, comment_id: uuid.UUID):
     post._update_post_rating()
     seller._update_seller_rating()
     return 200, {'message': 'Comment deleted.'}
-
-

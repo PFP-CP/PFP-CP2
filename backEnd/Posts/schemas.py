@@ -7,6 +7,7 @@ from decimal import Decimal
 import uuid
 from ninja import Schema
 from typing import Optional
+from Houses.models import Pictures
 
 
 class SearchCriteria(Schema):
@@ -103,7 +104,9 @@ class HouseLocationMiniOut(Schema):
 class HouseImageMiniOut(Schema):
     URL: str
 
-
+    @staticmethod
+    def resolve_URL(obj):
+        return obj.picture.url 
 # Comment schemas
 class CommentOut(Schema):
     id:          uuid.UUID
@@ -169,6 +172,14 @@ class PostOut(Schema):
         if locs and hasattr(locs, 'first'):
             return locs.first()
         return locs
+    @staticmethod
+    def resolve_house_pictures(obj):
+         pics = obj.house.pictures.all()
+
+         if pics.exists():
+           return pics
+         return [{"URL": Pictures.blank_house_image}]  
+      
 
 class PostListOut(Schema):
     """ used on the main page listing."""
@@ -188,7 +199,7 @@ class PostListOut(Schema):
     Country:        Optional[str]
     County:           Optional[str]
     State: Optional[str]
-    primary_image:  Optional[str]    # URL of primary image
+    primary_image:  Optional[str]=None  # URL of primary image
     @staticmethod
     def resolve_State(obj):
         return obj.State 

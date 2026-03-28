@@ -4,10 +4,11 @@ from django.db.models import F, Avg
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
+from Houses.models import Pictures
 
 
 class PostStatus(models.TextChoices):
-    Available= 'available',   'Available'
+    Available = 'available', 'Available'
     ARCHIVED = 'archived', 'Archived'
     REJECTED = 'rejected', 'Rejected'
     PENDING  = 'pending',  'Pending'
@@ -48,7 +49,7 @@ class Post(models.Model):
     saves_count    = models.PositiveIntegerField(default=0,editable=False)
     comments_count = models.PositiveIntegerField(default=0,editable=False)
     Likes = models.IntegerField(default=0,editable=False)
-    rating = models.FloatField(default=0.0)
+    rating = models.FloatField(default=0.0,editable=False)
      
     @property
     def State(self):
@@ -57,12 +58,12 @@ class Post(models.Model):
     @property
     def primary_image(self):
         img = self.house.pictures.first()
-        return img.URL if img else "https://images.template.net/465793/Blank-House-Clipart-edit-online.png"
+        return img.picture.url if img.picture else Pictures.blank_house_image
     class Meta:
         db_table = 'post'
         ordering = ['-created_at']
-        #we use indexes on status and created_at for fast search for active posts and on seller_id and status 
-        #search fast for all posts of a seller with a specific status (e.g. active, archived, etc.)
+        #we use indexes on status and created_at for fast search for available posts and on seller_id and status 
+        #search fast for all posts of a seller with a specific status (e.g. available, archived, etc.)
         indexes  = [
             models.Index(fields=['status', '-created_at']),
             models.Index(fields=['seller', 'status']),  
@@ -73,12 +74,12 @@ class Post(models.Model):
 
     #bellow functions are for changing the status of the post and for incrementing the counters for views, saves and comments
     def publish(self):
-        """PENDING  → ACTIVE"""
+        """PENDING → avilable. ."""
         if self.status not in PostStatus.PENDING:
             raise ValidationError(
                 f"Cannot publish a post with status '{self.status}'."
             )
-        self.status = PostStatus.ACTIVE
+        self.status = PostStatus.AVAILABLE
         self.save(update_fields=['status', 'updated_at'])
 
     def archive(self):

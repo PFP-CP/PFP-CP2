@@ -2,19 +2,25 @@ import json
 import secrets
 import string as STRING
 import time
+import utilitymethods.Pictures as Pic
+from multiprocessing.context import AuthenticationError
 from pathlib import Path
-
+from Houses.models import Pictures
 from asgiref.sync import sync_to_async
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.cache import cache
 from django.core.mail import send_mail
+from django.db.models import Count
+from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.tokens import RefreshToken
+from Posts.models import Post, PostStatus
+from Reservations.models import Reservation
 
 from .models import *
 from .schemas import *
@@ -201,19 +207,83 @@ def password_forgotten(request, ResetCred: ResetPassword):
         return {"Message": "Account found , email sent"}
 
 
-# testing method
-@router.get("/display", auth=JWTAuth())
-def display(request):
-    User = request.user
-    return {
-        "name": User.full_name,
-        "Mail": User.email,
-        "gender": User.gender,
-    }
-
-
 @router.patch("/{User_id}", auth=JWTAuth())
 def change_name(request, name: str):
     User = request.user
     User.set_name(name)
     User.save()
+
+
+# fucntion that get a profile based on ID
+@router.get(
+    "/my-profile/", response=HostProfileOut, tags=["Account Profile"], auth=JWTAuth()
+)
+def get_host_profile(request):
+    """
+    Returns the complete profile page for a host, including their stats
+    and their active listings grouped by city.
+    """
+    # 1. Get the Host Account
+    host = request.user
+
+
+    # Get Phone & City
+    phone = getattr(host, "contact", None)
+    phone_number = str(phone.Phone_Number).zfill(10) if phone else None
+
+    loc = getattr(host, "location", None)
+    host_city = loc.State if loc and loc.State else "Unknown"
+
+    # Calculate total reservations made ON this host's posts
+    total_reservations = Reservation.objects.filter(post__seller=host).count()
+
+    # Group Posts by City
+    posts_by_city = {}
+
+    if host.type_of_user.upper() == "SELLER" or host.verified:
+        # Fetch hosts active posts
+        active_posts = (
+            Post.objects.filter(seller=host, status=PostStatus.ACTIVE)
+            .select_related("house")
+            .prefetch_related("house__location", "house__pictures")
+        )
+
+
+        for post in active_posts:
+            # get city
+            post_loc = post.house.location.first()
+            city_name = post_loc.State if post_loc and post_loc.State else "whatever"
+
+            # first image
+            first_pic = post.house.pictures.first()
+            url = Pic.get_picture_url(first_pic , "picture") if first_pic else Pictures.blank_house_image
+            # Build the post dictionary
+            post_data = {
+                "id": post.id,
+                "title": post.title,
+                "price": post.house.Price,
+                "rating": post.rating,
+                "primary_image": url,
+            }
+
+            # Add to the dictionary under the correct city
+            if city_name not in posts_by_city:
+                posts_by_city[city_name] = []
+            posts_by_city[city_name].append(post_data)
+    # format output
+    return {
+    "id": host.id,
+    "full_name": host.full_name,
+    "gender": "male" if host.gender else "female",
+    "email": host.email,
+    "phone_number": phone_number,
+    "date_of_birth": host.date_of_birth,
+    "location": host_city,
+    "rating": host.rating,
+    "num_reviews": host.num_review,
+    "num_nooks": active_posts.count() if (host.type_of_user.upper() == "SELLER") else -255 ,
+    "num_reservations": total_reservations,
+    "join_date": host.date_joined.date(),
+    "profile_picture": Pic.get_picture_url(host , "profile_picture"),
+    "posts_by_city": posts_by_city if (host.type_of_user.upper() == "SELLER") else {"Become a Seller to be able to Post" : []} ,
+    }

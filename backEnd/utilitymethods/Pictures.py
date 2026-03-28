@@ -1,4 +1,6 @@
 import urllib.request
+from Accounts.models import Account
+from Houses.models import Pictures
 """instance is either an account or a house model/object"""
 """field name is the name of the picture field"""
 """upload_picture is the picture instance"""
@@ -28,7 +30,14 @@ def get_picture_name(instance , field_name :str):
 
 def get_picture_url(instance, field_name: str):
     field = getattr(instance, field_name)
-    return field.url if field else None
+    if field == "" :
+        if field_name is "profile_picture":
+            return Account.default_profile_picture
+        elif field_name is "picture" :
+            return Pictures.blank_house_image
+        else :
+            raise ValueError("No field with such a name")
+    return field.url
 
 
 def replace_picture(instance, field_name: str, uploaded_picture):
