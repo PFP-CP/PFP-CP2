@@ -92,6 +92,10 @@
   gap: .5rem;
 }
 
+.password_container p{
+  align-self: flex-start;
+}
+
 .submit_signBtn_container{
   display: flex;
   width: 100%;

@@ -5,8 +5,7 @@ import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM } from '@/public/svg/svg'
 import Comment from './house_information_components/Comment'
 import { Slider } from '@mui/material'
 import MyDatePicker from './ui/date_picker'
-import { div } from 'motion/react-client'
-import { time } from 'console'
+import CarouselImages from "./carousel_images"
 
 
 
@@ -356,6 +355,7 @@ export default function HouseInformationAndBooking(){
 
           {!showComments?<Comments_invisible setShowComments={setShowComments} />:<Comments_visible setShowComments={setShowComments} />}
         </div>
+        
         <div className={style.nook_scheduler}>
           <div className={style.nook_scheduler_container}>
             <MyDatePicker setCalendarOpen={setCalendarOpen} calendarOpen={calendarOpen}/>

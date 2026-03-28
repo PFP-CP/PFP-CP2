@@ -11,7 +11,7 @@ export async function login(Identifier:string, password:string){
     body: JSON.stringify({password,Identifier}),
   });
   const data = await response.json();
-  if(data.tokens.access){
+  if(!data.Error){
     (await cookies()).set('token', data.tokens.access, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

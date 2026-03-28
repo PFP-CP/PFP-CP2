@@ -297,7 +297,7 @@
 }
 
 .nook_rating_and_close_button .rating_button,.nook_rating_and_close_button .rated_button{
-  flex-basis: 257px;
+  flex-basis: 150px;
   margin-left: 2rem;
   flex-grow: 0;
 }
@@ -580,9 +580,6 @@
   }
   .visitors_and_price .price_container{
     font-size: 17px;
-  }
-  .nook_rating_and_close_button .rated_button{
-    flex-basis: 100px;
   }
   .nook_rating_and_close_button{
     gap: .5rem;

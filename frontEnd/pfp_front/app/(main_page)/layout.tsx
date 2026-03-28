@@ -5,6 +5,8 @@ import style from '@/styles/nav_bar_styles/nav_bar.module.css'
 import { useState,useRef,useEffect,useLayoutEffect, RefObject } from "react";
 import { usePathname } from "next/navigation";
 import { logout } from '../(authentication)/actions/login';
+import "@/styles/global.css"
+
 
 const SEARCH_ICON = (
   <svg className={style.search_logo} width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -105,9 +107,7 @@ export default function RootLayout({
     
   },[current_page])
   return (
-    <html lang="en">
-      <body>
-        
+    <>  
         <nav id={style.navbar}>
           <div id={style.logo_container}>
               {LOGO}
@@ -135,7 +135,6 @@ export default function RootLayout({
           </div>
         </nav>
         {children}
-      </body>
-    </html>
+      </>
   );
 }

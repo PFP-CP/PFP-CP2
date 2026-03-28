@@ -4,31 +4,33 @@ import { FieldErrors, FieldValues, useForm, UseFormRegister } from "react-hook-f
 import { useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { login } from "@/app/(authentication)/actions/login";
+import { signup } from "@/app/(authentication)/actions/signup"
 import { useSearchParams, useRouter } from "next/navigation";
 import { forget,newPass } from "@/app/(authentication)/actions/forget";
+import { wilayas } from "@/data/auth_data/data";
  
 //animation function
 const email_settings = {required:"Email is required",
-          // pattern: {
-          //   value: /\S+@\S+\.\S+/,
-          //   message: "Entered value does not match email format",
-          // }
+          pattern: {
+            value: /\S+@\S+\.\S+/,
+            message: "Entered value does not match email format",
+          }
         }
 const phone_settings = {required:"Phone number is required",
-  // pattern: {
-  //           value: /^(0)(5|6|7)[0-9]{8}$/,
-  //           message: "Entered value does not match algerian phone format",
-  //         }
+  pattern: {
+            value: /^(0)(5|6|7)[0-9]{8}$/,
+            message: "Entered value does not match algerian phone format",
+          }
         }
 const password_settings = {
   required:"Password is required",
-  // minLength:{
-  //   value:8,
-  //   message:"Password must be at least 8 characters"},
-  // pattern:{
-  //   value:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/,
-  //   message: "at least one special and upper-case character"
-  // },
+  minLength:{
+    value:8,
+    message:"Password must be at least 8 characters"},
+  pattern:{
+    value:/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/,
+    message: "at least one special and upper-case character"
+  },
 }
 const logo = <svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
   <text x="0" y="60" font-family="sansation-700" font-weight="bold" font-size="72" fill="#2E1B7B">Nook</text>
@@ -42,7 +44,7 @@ function login_form(register:UseFormRegister<FieldValues>, setAuthState:React.Di
           <input className={errors.Email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
           <p className={style.error_message}>{errors.email?.message}</p>
           <div className={style.password_container}>
-            <input type="password" {...register("password",password_settings)} placeholder="Password" />
+            <input type="password" {...register("password",{required:'Enter a password man'})} placeholder="Password" />
             <p className={style.error_message}>{errors.password?.message}</p>
             <button type="button" onClick={()=>setAuthState("forget_password")} className={style.forgot_password}>Forget password?</button>
           </div>
@@ -58,22 +60,22 @@ function signup_form(register:UseFormRegister<FieldValues>,errors:FieldErrors<Fi
     <>
       <div className={style.form_fields_container}>
           <input type="text" {...register("full_name",{required:true,})} placeholder="Full name" />
-          <input type="date" {...register("Date",{required:true})} placeholder="Date of birth" />
-          <select {...register("Location",{required:true})} >
-            <option value="Adrar">adrar</option>
+          <input type="date" {...register("date",{required:true})} placeholder="Date of birth" />
+          <select {...register("location",{required:true})} >
+            {wilayas.map((wilaya)=> <option key={wilaya.code} value={wilaya.name}>{wilaya.name}</option>)}
           </select>
-          <input {...register("Gender",{required:true})} placeholder="Gender" />
+          <input {...register("gender",{required:true})} placeholder="gender" />
           
-          <input className={errors.Phone&&style.input_invalid} {...register("Phone",phone_settings)} placeholder="Phone number" />
-          {errors.Phone?.message&&<p className={style.error_message}>{errors.Phone?.message}</p>}
+          <input className={errors.phone&&style.input_invalid} {...register("phone",phone_settings)} placeholder="Phone number" />
+          {errors.phone?.message&&<p className={style.error_message}>{errors.phone?.message}</p>}
 
           <input type="password" {...register("password",password_settings)} placeholder="Password" />
-            {errors.Password?.message&&<p className={style.error_message}>{errors.password?.message}</p>}
+            {errors.password?.message&&<p className={style.error_message}>{errors.password?.message}</p>}
           
-          <input className={errors.Email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
-          {errors.Email?.message&&<p className={style.error_message}>{errors.email?.message}</p>}
-          <input type="password" {...register("Password",{required:true})} placeholder="Password" />
-          {errors.Password?.message&&<p className={style.error_message}>{errors.Password?.message}</p>}
+          <input className={errors.email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
+          {errors.email?.message&&<p className={style.error_message}>{errors.email?.message}</p>}
+          <input type="password" {...register("password",{required:true})} placeholder="password" />
+          {errors.Password?.message&&<p className={style.error_message}>{errors.password?.message}</p>}
       </div>
     </>
   )
@@ -104,7 +106,7 @@ function forgot_password_code(register:UseFormRegister<FieldValues>){
 }
 
 export default function AuthForm() {
-  const {register, handleSubmit,reset, watch,formState:{errors}} = useForm();
+  const {register, handleSubmit,setError,reset, watch,formState:{errors}} = useForm();
   const [authState, setAuthState] = useState('login');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -128,8 +130,13 @@ export default function AuthForm() {
             res = await login(form.email,form.password);
             if(res.success){
               router.push(redirectTo);
+            }else{
+              setError('password',{
+              type:'manual',
+              message:'Wrong password or email',
+            });
             }
-            console.log(redirectTo);
+            
             break;
           case "forget_password":
             res = await forget(form.email);
@@ -142,6 +149,9 @@ export default function AuthForm() {
             res= await newPass('a@g.com', form.password, form.key);
             if(res) setAuthState('login');
           break
+          case "signup":
+            res = await signup(form.gender,form.location,'GUEST',form.phone,form.full_name,form.email,form.password,form.date);    
+          break;
          
           default:
             break;
