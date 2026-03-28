@@ -8,6 +8,7 @@ import { signup } from "@/app/(authentication)/actions/signup"
 import { useSearchParams, useRouter } from "next/navigation";
 import { forget,newPass } from "@/app/(authentication)/actions/forget";
 import { wilayas } from "@/data/auth_data/data";
+import Image from "next/image";
  
 //animation function
 const email_settings = {required:"Email is required",
@@ -163,7 +164,9 @@ export default function AuthForm() {
   return (
     <div className={style.auth_page_container}>
       <div className={`${style.form_and_logo_container} ${authState!=="signup"&&style.form_and_logo_container_login}`}>
-        <div className={style.logo_container}></div>
+        <div className={style.logo_container}>
+          <Image loading="eager" src="/logo/logo.png" alt="logo_image" fill style={{objectFit:'contain'}} />
+        </div>
         <form className={style.form_container} onSubmit={handleSubmit((data)=>{
           handle_auth_submit(authState,data);
         })}>
