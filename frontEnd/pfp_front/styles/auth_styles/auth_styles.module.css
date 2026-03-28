@@ -23,7 +23,7 @@
 }
 
 .form_and_logo_container_login{
-  gap: 8rem;
+  gap: 5rem;
 }
 
 
@@ -31,10 +31,12 @@
   max-height: 243px;
   flex-basis: 243px;
   flex-grow: 1;
-  background-image: url(/logo/logo.png);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo_container img{
+  transform: scale(2);
 }
 
 
@@ -184,4 +186,67 @@
   padding-left: 1rem;
 }
 
+@media (max-width:1440px) {
+  .form_and_logo_container{
+  max-width: 490px;
+  border-top-right-radius: 90px;
+  border-bottom-right-radius: 90px;
+  
+}
+.signBTN_container{
+  font-size: 20px;
+}
 
+}
+
+@media (max-width:720px) {
+  .auth_page_container{
+    background-image: none;
+    background-color: #634AAD;
+  }
+  .form_and_logo_container{
+  width:100%;
+  max-width: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+}
+
+@media (max-width:500px) {
+  .form_and_logo_container{
+    gap: 2rem;
+    padding: 1rem;
+  }
+  .logo_container img{
+    width: 246px;
+    height: 85px;
+  }
+
+  .form_container input:not([type="submit"]),.form_container select{
+  font-size: 17px;
+}
+.form_container input[type="submit"]{
+  font-size: 23px;
+}
+.signBTN_container button,.signBTN_container div{
+  font-size: 18px;
+}
+.submit_signBtn_container_login{
+  gap: 4rem;
+}
+
+  .forget_pass_p{
+    font-size: 11px;
+  }
+}
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #220E67; 
+  font-family: "sansation-700",sans-serif;
+  font-size: 25px;
+}
