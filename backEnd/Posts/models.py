@@ -7,9 +7,7 @@ import uuid
 
 
 class PostStatus(models.TextChoices):
-    DRAFT    = 'draft',    'Draft'
-    ACTIVE   = 'active',   'Active'
-    INACTIVE = 'inactive', 'Inactive'
+    Available= 'available',   'Available'
     ARCHIVED = 'archived', 'Archived'
     REJECTED = 'rejected', 'Rejected'
     PENDING  = 'pending',  'Pending'
@@ -51,26 +49,15 @@ class Post(models.Model):
     comments_count = models.PositiveIntegerField(default=0,editable=False)
     Likes = models.IntegerField(default=0,editable=False)
     rating = models.FloatField(default=0.0)
-    
+     
     @property
-    def Price(self):
-        return self.house.Price
-
-    @property
-    def Surface(self):
-        return self.house.Surface
-
-    @property
-    def Type_of_Renters(self):
-        return self.house.Types_of_Renters
-
-    @property
-    def County(self):
+    def State(self):
         location=self.house.location.first()
-        return location.County if location else None
+        return location.State if location else None
     @property
-    def phone_number(self):
-        return self.seller.contact.Phone_Number
+    def primary_image(self):
+        img = self.house.pictures.first()
+        return img.URL if img else "https://images.template.net/465793/Blank-House-Clipart-edit-online.png"
     class Meta:
         db_table = 'post'
         ordering = ['-created_at']
@@ -86,8 +73,8 @@ class Post(models.Model):
 
     #bellow functions are for changing the status of the post and for incrementing the counters for views, saves and comments
     def publish(self):
-        """PENDING / DRAFT → ACTIVE"""
-        if self.status not in (PostStatus.PENDING, PostStatus.DRAFT):
+        """PENDING  → ACTIVE"""
+        if self.status not in PostStatus.PENDING:
             raise ValidationError(
                 f"Cannot publish a post with status '{self.status}'."
             )

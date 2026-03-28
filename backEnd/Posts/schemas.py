@@ -185,13 +185,20 @@ class PostListOut(Schema):
     Surface:        Decimal
     RoomNum:       int
     Types_of_Renters: Optional[str]
+    Country:        Optional[str]
     County:           Optional[str]
-    # primary_image:  Optional[str]    # URL of primary image
-
+    State: Optional[str]
+    primary_image:  Optional[str]    # URL of primary image
+    @staticmethod
+    def resolve_State(obj):
+        return obj.State 
     @staticmethod
     def resolve_Price(obj):
         return obj.house.Price
-
+    @staticmethod
+    def resolve_Country(obj):
+        loc=obj.house.location.first()
+        return loc.Country if loc else None
     @staticmethod
     def resolve_Surface(obj):
         return obj.house.Surface
@@ -215,10 +222,10 @@ class PostListOut(Schema):
     @staticmethod
     def resolve_average_rating(obj):
         return obj.rating
-    # @staticmethod
-    # def resolve_primary_image(obj):
-    #     img = obj.house.pictures.first()
-    #     return img.URL if img else None
+    @staticmethod
+    def resolve_primary_image(obj):
+        img = obj.primary_image
+        return img
 
 class PostCreateSchema(Schema):
     # --- REQUIRED ---

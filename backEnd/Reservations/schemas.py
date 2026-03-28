@@ -3,7 +3,6 @@ from typing import Optional
 from uuid import UUID
 
 from ninja import Schema
-from uuid import UUID 
 #  Renter block
 
 

@@ -3,12 +3,12 @@ import hashlib
 from pathlib import Path
 from django.core.cache import cache
 from ninja import Router
+from ninja.errors import HttpError
 from Accounts.models import Account
 from django.db.models import Value
 from Houses.models import *
 from .models import *
 from django.db.models import Avg
-from .models import Comment
 from django.db.models import QuerySet
 from .schemas import *
 from ninja.pagination import PageNumberPagination , paginate
@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.db.models import Prefetch, Q
 from typing import List, Optional
+from ninja_jwt.authentication import JWTAuth
 
 from .schemas import (
     PostOut, PostListOut, PostCreateSchema, PostUpdateSchema,
@@ -262,9 +263,10 @@ def unsave_post(request, post_id: uuid.UUID):
 
 # SELLER  –  My posts dashboard
 
-@router.get('/my-posts', response=List[PostListOut], tags=['Seller (My Nook)'])
+@router.get('/my-posts', response=List[PostListOut],auth=JWTAuth(),tags=['Seller (My Nook)'])
 def my_posts(request, status: str ='active'):
     """Seller sees their own posts."""
+
     qs = Post.objects.select_related(
         'house').prefetch_related('house__pictures','house__location').filter(seller_id=request.user.id)
  
@@ -282,7 +284,7 @@ def get_post(request, post_id: uuid.UUID):
             'house', 'seller' ).prefetch_related('house__location',
             'house__pictures',
             'house__features__features',
-        
+            
             Prefetch('comments',
                      queryset=Comment.objects.select_related('user').order_by('-created_at')),
         ),
@@ -302,7 +304,7 @@ def create_post(request, payload: PostCreateSchema):
         house__location__County=payload.county).exists()
 
     if post_exists:
-        return 400, {"detail": "You already have a post with this title. Please edit the existing one."}
+        return 400, {"detail": "You already have a post with this house ."}
 
     house = House.objects.create(  #create house 
         Price=payload.price,
@@ -339,7 +341,7 @@ def create_post(request, payload: PostCreateSchema):
 
 
 @router.patch('/{post_id}',
-              response={200: PostOut, 403: ErrorSchema, 404: ErrorSchema},
+              response={200: PostOut, 403: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
               tags=['Posts'])
 def update_post(request, post_id: uuid.UUID, payload: PostUpdateSchema):
     """Seller updates their own post title / description."""
@@ -355,7 +357,7 @@ def update_post(request, post_id: uuid.UUID, payload: PostUpdateSchema):
 
 
 @router.delete('/{post_id}',
-               response={200: MessageSchema, 403: ErrorSchema, 404: ErrorSchema},
+               response={200: MessageSchema, 403: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
                tags=['Posts'])
 def delete_post(request, post_id: uuid.UUID):
     """Seller deletes their own post."""
@@ -371,10 +373,10 @@ def delete_post(request, post_id: uuid.UUID):
 # POST STATUS  –  Business logic transitions
 
 @router.post('/{post_id}/publish',
-             response={200: MessageSchema, 400: ErrorSchema, 403: ErrorSchema},
+             response={200: MessageSchema, 400: ErrorSchema, 403: ErrorSchema},auth=JWTAuth(),
              tags=['Post Status'])
 def publish_post(request, post_id: uuid.UUID):
-    """Activate a pending/draft post (seller or admin action)."""
+    """Activate a pending post (seller or admin action)."""
     post = get_object_or_404(Post, pk=post_id)
     if post.seller!= request.user and not request.user.is_staff:
         return 403, {'detail': 'Not allowed.'}
@@ -399,6 +401,7 @@ def archive_post(request, post_id: uuid.UUID):
 @router.post('/{post_id}/mark-rented',
              response={200: MessageSchema, 403: ErrorSchema},
              tags=['Post Status'])
+# we need to mark the house as rented too to exclude it from search results and prevent new reservations
 def mark_rented(request, post_id: uuid.UUID):
     post = get_object_or_404(Post, pk=post_id)
     if post.seller!= request.user:
@@ -411,7 +414,7 @@ def mark_rented(request, post_id: uuid.UUID):
              response={200: MessageSchema, 403: ErrorSchema},
              tags=['Post Status'])
 def reject_post(request, post_id: uuid.UUID):
-    """Admin only — reject a pending post."""
+    #admin reject post if it doesn't meet the requirements for publication
     if not request.user.is_staff:
         return 403, {'detail': 'Only admins can reject posts.'}
     post = get_object_or_404(Post, pk=post_id)
