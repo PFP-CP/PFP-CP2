@@ -1,5 +1,6 @@
 'use client'
 import ComputerNav from "@/components/navs/computer_nav";
+import Mobile_nav from "@/components/navs/mobile_nav";
 import { usePathname } from "next/navigation";
 import { useState,useEffect } from "react";
 export default function RootLayout({
@@ -10,8 +11,7 @@ export default function RootLayout({
   const path = usePathname();
   const isPost = path.startsWith('/post')
   
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-    
+  const [screenWidth, setScreenWidth] = useState(0);
       useEffect(()=>{
         setScreenWidth(window.innerWidth);
         let timeId : NodeJS.Timeout | null = null;;
@@ -36,6 +36,7 @@ export default function RootLayout({
   return (
     <>  
       {screenWidth>=1100 && <ComputerNav/>}
+      {screenWidth<1100 && <Mobile_nav/>}
       {children}    
     </>
   );

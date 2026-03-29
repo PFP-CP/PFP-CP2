@@ -2,7 +2,7 @@
 import PostShowcase from "@/components/post_page_components/post_showcase"
 import HouseInformationAndBooking from "@/components/post_page_components/house_information_and_booking";
 import { useState } from "react";
-import Post_mobile_nav from "@/components/post_page_components/ui/mobile_post";
+import Post_mobile_nav from "@/components/post_page_components/ui/post_mobile_nav";
 import style from '@/styles/post_page_styles/general.module.css'
 export default function PostPage() {
   const [show_pictures,setShowPictures] = useState(false);
