@@ -25,18 +25,18 @@
 }
 
 
-.save_container,.copy_link_container,.title_container{
+.save_container,.copy_link_container,.title_container, .leave_post_container{
   display: flex;
   gap: .8rem;
   align-items: center;
 }
 
-.title_logo,.copy_link_logo,.save_logo{
+.title_logo,.leave_post_logo,.copy_link_logo,.save_logo{
   display: flex;
   align-items: center;
 }
 
-.title_logo{
+.title_logo, .leave_post_logo{
   height: 40px;
   width: 40px;
 }
@@ -80,7 +80,7 @@
 /* ^^^ handling hover when save is or is not active */
 
 
-.title_container .title{
+.title_container .title, .leave_post_container .leave_post_logo{
   font-size: 40px;
   font-family: "sansation-700";
 }
@@ -221,6 +221,14 @@
 }
 
 
+.showcase_header_mobile{
+	background-color: #D9D9D9;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1rem 2rem;
+}
+
 @media (max-width:1050px) {
   .mobile_view{
     display: block;
@@ -265,5 +273,12 @@
   .post_showcase{
     padding-bottom: .5rem;
   }
+  .showcase_header_mobile .post_actions{
+    font-size: 20px;
+  }
+  
+}
+
+@media (min-width:500px){
   
 }
