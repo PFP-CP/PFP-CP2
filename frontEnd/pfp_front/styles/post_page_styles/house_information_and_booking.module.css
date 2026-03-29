@@ -137,7 +137,8 @@
   font-family: "sansation-700", sans-serif;
   cursor: pointer;
   max-width: 257px;
-  margin-left: 2rem;
+  align-self: center;
+  width: 100%;
 }
 
 .rated_button{
@@ -392,6 +393,7 @@
   display: flex;
   flex-direction: column;
   gap: 4rem;
+  padding-left: .5rem;
 }
 
 .features_title{
@@ -574,7 +576,11 @@
   .rating_button{
     font-size: 17px;
   }
-  .visitors_and_price .visitors{
+  .visitors_and_price .visitors_before{
+    padding: .5rem;
+    font-size: 17px;
+  }
+  .visitors_and_price .visitors_after{
     padding: .5rem;
     font-size: 17px;
   }
@@ -590,4 +596,11 @@
   .nook_rating_and_comments .nook_rating_value,.nook_rating_and_comments .comments_number, .nook_rating_and_comments .comments_number span{
     font-size: 17px;
   }
+  .nook_scheduler_container>button{
+    font-size: 17px;
+  }
+  .nook_scheduler_container{
+    padding: .5rem;
+  }
+
 }
