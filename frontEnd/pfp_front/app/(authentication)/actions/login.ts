@@ -27,3 +27,7 @@ export async function login(Identifier:string, password:string){
 export async function logout() {
   (await cookies()).delete('token')
 }
+
+
+
+

@@ -11,6 +11,7 @@ import { wilayas } from "@/data/auth_data/data";
 import Image from "next/image";
 import RadioButton from "../ui/radio_input";
 import styles from "@/styles/auth_styles/ui_css/auth/radio.module.css"
+import { error } from "console";
 
 //animation function
 const email_settings = {required:"Email is required",
@@ -101,12 +102,13 @@ function forgot_password(register:UseFormRegister<FieldValues>, errors:FieldErro
   )
 }
 
-function forgot_password_code(register:UseFormRegister<FieldValues>){
+function forgot_password_code(register:UseFormRegister<FieldValues>, errors:FieldErrors<FieldValues>){
 
   return(
     <>
       <div className={style.form_fields_container}>
         <input type="text" {...register("new_password",password_settings)} placeholder="New Password" />
+        {errors.new_password?.message&&<p className={style.error_message}>{errors.new_password?.message}</p>}
         <input {...register("key",{required:true})} placeholder="Key" />
       </div>
     </>
@@ -136,6 +138,7 @@ export default function AuthForm() {
 
         switch (type) {
           case "login":
+            console.log(form.email,form.password);
             res = await login(form.email,form.password);
             if(res.success){
               router.push(redirectTo);
@@ -155,7 +158,7 @@ export default function AuthForm() {
           break;
 
           case "forget_password_code":
-            res= await newPass('a@g.com', form.password, form.key);
+            res= await newPass('a@g.com', form.new_password, form.key);
             console.log(res);
             if(res) location.reload();
           break
@@ -183,7 +186,7 @@ export default function AuthForm() {
           {authState==="login"&&login_form(register,setAuthState, errors)}
           {authState==="signup"&&signup_form(register, errors)}
           {authState==="forget_password"&&forgot_password(register,errors)}
-          {authState==="forget_password_code"&&forgot_password_code(register)}
+          {authState==="forget_password_code"&&forgot_password_code(register,errors)}
 
         <AnimatePresence>
           <div  className={ `${authState==="login"&&style.submit_signBtn_container_login} ${style.submit_signBtn_container} ${(authState!=="login")&&style.submit_signBtn_container_signup}`}>  
