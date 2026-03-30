@@ -97,7 +97,7 @@ export default function Mobile_nav(){
                 return (
                   <>
                     <div key={tab} onClick={()=>set_current_page(newPath)} className={style.nav_link} id={activeTab===tab?style.active:undefined} >
-                      <Link style={{zIndex:'1'}} href={newPath}> {tab} </Link>
+                      <Link style={{zIndex:'1'}} href={'/'+newPath}> {tab} </Link>
                       {activeTab===tab && <motion.div 
                       layoutId="active-pill"
                       className={style.active}

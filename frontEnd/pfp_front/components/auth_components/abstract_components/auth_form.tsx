@@ -9,7 +9,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { forget,newPass } from "@/app/(authentication)/actions/forget";
 import { wilayas } from "@/data/auth_data/data";
 import Image from "next/image";
- 
+import RadioButton from "../ui/radio_input";
+import styles from "@/styles/auth_styles/ui_css/auth/radio.module.css"
+
 //animation function
 const email_settings = {required:"Email is required",
           pattern: {
@@ -65,18 +67,23 @@ function signup_form(register:UseFormRegister<FieldValues>,errors:FieldErrors<Fi
           <select {...register("location",{required:true})} >
             {wilayas.map((wilaya)=> <option key={wilaya.code} value={wilaya.name}>{wilaya.name}</option>)}
           </select>
-          <input {...register("gender",{required:true})} placeholder="gender" />
-          
+          <div className={styles.radio_container}>
+            <div className={styles.left_container}> 
+              <input  {...register("gender")} className={styles.custom_radio} defaultChecked={true} type="radio" value={'male'} id="Male"/>
+              <label className={styles.label_left} htmlFor="Male">Male</label>
+            </div>
+            <div className={styles.right_container}> 
+              <input  {...register("gender")} className={styles.custom_radio} type="radio" value={'female'} id="Female"/>
+              <label className={styles.label_right} htmlFor="Female">Female</label>
+            </div>
+          </div>         
           <input className={errors.phone&&style.input_invalid} {...register("phone",phone_settings)} placeholder="Phone number" />
           {errors.phone?.message&&<p className={style.error_message}>{errors.phone?.message}</p>}
-
-          <input type="password" {...register("password",password_settings)} placeholder="Password" />
-            {errors.password?.message&&<p className={style.error_message}>{errors.password?.message}</p>}
           
           <input className={errors.email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
           {errors.email?.message&&<p className={style.error_message}>{errors.email?.message}</p>}
-          <input type="password" {...register("password",{required:true})} placeholder="password" />
-          {errors.Password?.message&&<p className={style.error_message}>{errors.password?.message}</p>}
+          <input type="password" {...register("password",password_settings)} placeholder="password" />
+          {errors.password?.message&&<p className={style.error_message}>{errors.password?.message}</p>}
       </div>
     </>
   )
@@ -126,6 +133,8 @@ export default function AuthForm() {
   const handle_auth_submit =async (type:string, form:object)=>{
       let res;
       console.log(type);
+                  console.log(form);
+
         switch (type) {
           case "login":
             res = await login(form.email,form.password);
