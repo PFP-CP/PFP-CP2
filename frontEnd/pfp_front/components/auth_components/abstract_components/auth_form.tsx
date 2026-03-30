@@ -132,8 +132,7 @@ export default function AuthForm() {
 
   const handle_auth_submit =async (type:string, form:object)=>{
       let res;
-      console.log(type);
-                  console.log(form);
+      console.log(form);
 
         switch (type) {
           case "login":
@@ -157,7 +156,8 @@ export default function AuthForm() {
 
           case "forget_password_code":
             res= await newPass('a@g.com', form.password, form.key);
-            if(res) setAuthState('login');
+            console.log(res);
+            if(res) location.reload();
           break
           case "signup":
             res = await signup(form.gender,form.location,'GUEST',form.phone,form.full_name,form.email,form.password,form.date);    

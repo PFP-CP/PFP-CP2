@@ -24,6 +24,7 @@ export async function signup(gender:string,state:string,type_of_user:string,phon
   const data = await response.json();
 
   if(!data.Error){
+    location.reload();
     return {success:true};
   }
   return {success:false};
