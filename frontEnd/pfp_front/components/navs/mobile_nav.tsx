@@ -15,7 +15,7 @@ const SEARCH_ICON = (
 )
 
 const LOGO = (
-  <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg className={style.logo} width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12.9248 3.87489C12.0044 2.92435 10.4799 2.92435 9.55954 3.87489L5.06411 8.51764C4.80593 8.78428 4.63244 9.12137 4.56549 9.48643C4.01954 12.4637 3.97924 15.5117 4.44629 18.5023L4.61164 19.5612C4.66387 19.8956 4.95192 20.1422 5.29041 20.1422H8.43161C8.69032 20.1422 8.90004 19.9324 8.90004 19.6737V13.1158H13.5843V19.6737C13.5843 19.9324 13.794 20.1422 14.0527 20.1422H17.1939C17.5323 20.1422 17.8204 19.8956 17.8726 19.5612L18.038 18.5023C18.505 15.5117 18.4647 12.4637 17.9188 9.48643C17.8518 9.12137 17.6783 8.78428 17.4202 8.51764L12.9248 3.87489Z" fill="#220E67"/>
 </svg>
 
@@ -71,7 +71,7 @@ export default function Mobile_nav(){
           <div className={style.upper_container}>
             <div id={style.logo_container}>
               {LOGO}
-              <div style={{position:'relative', height:'14px', width:'50px'}}>
+              <div className={style.nook} style={{position:'relative', height:'14px', width:'50px'}}>
                {NOOK}
               </div>
             </div>

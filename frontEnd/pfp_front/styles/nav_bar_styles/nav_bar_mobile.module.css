@@ -24,6 +24,8 @@
   font-family: "sansation-400", sans-serif;
   flex-basis: 118px;
   height: 26px;
+  flex-grow: 1;
+  max-width: 118px;
 }
 
 .upper_container .nav_search h3{
@@ -77,4 +79,33 @@
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+
+@media (min-width:500px) {
+  .user_profile, .settings{
+    height: 25px ;
+    width: 25px ;
+  }
+  .search_logo{
+    height: 15px;
+    width: 15px;
+  }
+  .logo{
+    height: 33px;
+    width: 33px;
+  }
+  .nook{
+    height: 20px !important;
+    width: 60px !important;
+  }
+  .upper_container .nav_search{
+    max-width: 150px;
+  }
+  .upper_container .nav_search h3{
+    font-size: 17px;
+  }
+  .lower_container{
+    font-size: 17px;
+  }
 }
