@@ -60,8 +60,8 @@
   align-items: center;
   padding-right: .2rem;
   padding-left: .2rem;
-  flex-grow: 1;
   background-color: transparent;
+  cursor: pointer;
 }
 
 .lower_container #active{

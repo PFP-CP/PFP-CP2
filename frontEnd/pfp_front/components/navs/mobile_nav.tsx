@@ -96,15 +96,16 @@ export default function Mobile_nav(){
                 let newPath = tab.toLowerCase().split(' ').join('');
                 return (
                   <>
-                    <div key={tab} onClick={()=>set_current_page(newPath)} className={style.nav_link} id={activeTab===tab?style.active:undefined} >
-                      <Link style={{zIndex:'1'}} href={'/'+newPath}> {tab} </Link>
-                      {activeTab===tab && <motion.div 
-                      layoutId="active-pill"
-                      className={style.active}
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    ></motion.div>}
-                    </div>
-                    
+                    <Link style={{flexGrow:'1'}} key={tab} href={'/'+newPath}>
+                      <div onClick={()=>set_current_page(newPath)} className={style.nav_link} id={activeTab===tab?style.active:undefined} >
+                        <div style={{zIndex:'1'}}> {tab} </div>
+                        {activeTab===tab && <motion.div 
+                        layoutId="active-pill"
+                        className={style.active}
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      ></motion.div>}
+                      </div>
+                    </Link>
                   </>
                   )
               })
