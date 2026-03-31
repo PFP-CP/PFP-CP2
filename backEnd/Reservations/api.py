@@ -1,9 +1,11 @@
-from Accounts.models import Account, Contact
 from django.shortcuts import get_object_or_404
-from Houses.models import Location, Pictures
 from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
+
+import utilitymethods.Pictures as Pic
+from Accounts.models import Account, Contact
+from Houses.models import Location, Pictures
 from Posts.models import Post
 
 from .models import Reservation
@@ -30,11 +32,15 @@ def _reservation_to_dict(r: Reservation) -> dict:
     except Contact.DoesNotExist:
         phone = None
     first_pic = Pictures.objects.filter(house=r.post.house).first()
-    photo = first_pic.URL if first_pic else Pictures.blank_house_image
+    photo = (
+        Pic.get_picture_url(first_pic, "picture")
+        if first_pic
+        else Pictures.blank_house_image
+    )
     return {
         "id": r.id,
         "renter": {
-            "id": r.renter.id,
+            "id": r.renter.pk,
             "full_name": r.renter.full_name,
             "email": r.renter.email,
             "phone": phone,  # matches RenterOut.phone
@@ -131,8 +137,8 @@ def delete_reservation(request, reservation_id: int):
         raise HttpError(404, "Reservation not found.")
 
     # Authorization rule
-    is_renter = reservation.renter_id == user.id
-    is_host = reservation.post.Poster_id == user.id
+    is_renter = reservation.renter.pk == user.pk
+    is_host = reservation.post.seller.pk == user.pk
 
     if not (is_renter or is_host):
         raise HttpError(403, "You are not allowed to delete this reservation.")
