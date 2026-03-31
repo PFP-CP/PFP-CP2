@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('Houses', '0006_alter_features_house'),
+       
         ('Posts', '0002_remove_post_likes_post_rating'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]

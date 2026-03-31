@@ -267,21 +267,6 @@ def unsave_post(request, post_id: uuid.UUID):
     get_object_or_404(Post, pk=post_id).decrement_saves()
     return 200, {'message': 'Post removed from saved.'}
 
-
-# SELLER  –  My posts dashboard
-
-@router.get('/my-posts', response=List[PostListOut],auth=JWTAuth(),tags=['Seller (My Nook)'])
-def my_posts(request, status: str = None):
-    """Seller sees their own posts."""
-    print(request.user.id)
-    qs = Post.objects.select_related(
-        'house').prefetch_related('house__pictures','house__location').filter(seller_id=request.user.id)
- 
-    if status:
-        qs = qs.filter(status=status)
-    return qs
-# POST  –  CRUD
-
 @router.get('/{post_id}', response={200: PostOut, 404: ErrorSchema},
             tags=['Posts'] )
 def get_post(request, post_id: uuid.UUID):
@@ -300,94 +285,6 @@ def get_post(request, post_id: uuid.UUID):
     post.increment_views() 
     return 200, post
 
-@router.post('/', response={201: PostOut, 403: ErrorSchema,400: ErrorSchema}, auth=JWTAuth( ),tags=['Posts'])
-@transaction.atomic
-def create_post(request, payload: PostCreateSchema):
-    post_exists = Post.objects.filter(
-        seller=request.user,
-        title=payload.title ,
-        house__location__State=payload.state,
-        house__location__County=payload.county).exists()
-
-    if post_exists:
-        return 400, {"detail": "You already have a post with this house ."}
-    
-    #map the user input to the corresponding code in AllowedPeople.choices
-    def map_types_of_renters(user_input: str) -> str:
-
-     user_input = user_input.strip().lower()  # make lowercase for comparison
-
-     for code, description in AllowedPeople.choices:
-
-        if user_input in code.lower() or user_input in description.lower():
-            return code
-
-     raise ValueError(f"Invalid types_of_renters: {user_input}")
-    types_of_renters = map_types_of_renters(payload.types_of_renters)
-    house = House.objects.create(  #create house 
-        Price=payload.price,
-        Surface=payload.surface,
-        RoomNum=payload.room_num,
-        Types_of_Renters=types_of_renters,
-        Description=payload.house_description,
-        num_bedroom=payload.num_bedroom,
-        num_bathroom=payload.num_bathroom,
-    )
-    Location.objects.create( #create location 
-        house=house, 
-        County=payload.county,
-        State=payload.state,
-        Country=payload.country,
-        Latitude=payload.latitude,
-        Longitude=payload.longitude
-    )
-    post = Post.objects.create( #create post
-        house=house,
-        seller=request.user,
-        title=payload.title,
-        description=payload.description,
-        status=PostStatus.PENDING,
-    )
-    
-    # Update seller's post count
-    from Accounts.models import Account
-    Account.objects.filter(pk=request.user.pk).update(
-        num_posts=request.user.num_posts + 1
-    )
-
-    return 201, post
-
-
-@router.patch('/{post_id}',
-              response={200: PostOut, 403: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
-              tags=['Posts'])
-def update_post(request, post_id: uuid.UUID, payload: PostUpdateSchema):
-    """Seller updates their own post title / description."""
-    post = get_object_or_404(Post, pk=post_id)
-   
-    if post.seller != request.user:
-        return 403, {'detail': 'You can only edit your own posts.'}
-
-    for field, value in payload.dict(exclude_none=True).items():
-        setattr(post, field, value)
-    post.save()
-    return 200, post
-
-
-@router.delete('/{post_id}',
-               response={200: MessageSchema, 403: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
-               tags=['Posts'])
-def delete_post(request, post_id: uuid.UUID):
-    """Seller deletes their own post."""
-    post = get_object_or_404(Post, pk=post_id)
-     
-    if post.seller != request.user:
-        return 403, {'detail': 'You can only delete your own posts.'}
-
-    post.delete() 
-    return 200, {'message': 'Post deleted.'}
-
-
 # POST STATUS  –  Business logic transitions
 
 @router.post('/{post_id}/publish',
@@ -404,18 +301,6 @@ def publish_post(request, post_id: uuid.UUID):
         return 400, {'detail': str(e)}
     return 200, {'message': 'Post is now available.'}
 
-
-@router.post('/{post_id}/archive',
-             response={200: MessageSchema, 403: ErrorSchema},auth=JWTAuth(),
-             tags=['Post Status'])
-def archive_post(request, post_id: uuid.UUID):
-    post = get_object_or_404(Post, pk=post_id)
-    if post.seller != request.user and not request.user.is_staff:
-        return 403, {'detail': 'Not allowed.'}
-    post.archive()
-    return 200, {'message': 'Post archived.'}
-
-
 @router.post('/{post_id}/mark-rented',
              response={200: MessageSchema, 403: ErrorSchema},auth=JWTAuth(),
              tags=['Post Status'])
@@ -426,19 +311,6 @@ def mark_rented(request, post_id: uuid.UUID):
         return 403, {'detail': 'Only the seller can mark as rented.'}
     post.mark_rented()
     return 200, {'message': 'Post and house marked as rented.'}
-
-
-@router.post('/{post_id}/reject',
-             response={200: MessageSchema, 403: ErrorSchema},
-             tags=['Post Status'])
-def reject_post(request, post_id: uuid.UUID):
-    #admin reject post if it doesn't meet the requirements for publication
-    if not request.user.is_staff:
-        return 403, {'detail': 'Only admins can reject posts.'}
-    post = get_object_or_404(Post, pk=post_id)
-    post.reject()
-    return 200, {'message': 'Post rejected.'}
-
 
 
 # COMMENTS  –  Review system

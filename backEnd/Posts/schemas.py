@@ -58,7 +58,7 @@ class SearchResult(Schema):
 
     @staticmethod
     def resolve_description(obj):
-        return obj.description
+        return obj.house.Description
 
     @staticmethod
     def resolve_phone_number(obj):
@@ -179,7 +179,9 @@ class PostOut(Schema):
          if pics.exists():
            return pics
          return [{"URL": Pictures.blank_house_image}]  
-      
+    @staticmethod
+    def resolve_description(obj):
+        return obj.house.Description  
 
 class PostListOut(Schema):
     """ used on the main page listing."""
