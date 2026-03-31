@@ -128,35 +128,33 @@ export const api = {
         return await fetchAPI<ApiResponse<Property[]>>("/properties/my")
     },
     
-    // ============================================
-    // الحجوزات (Reservations)
-    // ============================================
-    
-    getReservations: async () => {
-        return await fetchAPI<ApiResponse<Reservation[]>>("/reservations")
-    },
-    
-    getReservationById: async (id: number) => {
-        return await fetchAPI<ApiResponse<Reservation>>(`/reservations/${id}`)
-    },
-    
-    createReservation: async (data: ReservationRequest) => {
-        return await fetchAPI<ApiResponse<Reservation>>("/reservations", {
-            method: "POST",
-            body: JSON.stringify(data),
-        })
-    },
-    
-    cancelReservation: async (id: number) => {
-        return await fetchAPI<ApiResponse<Reservation>>(`/reservations/${id}/cancel`, {
-            method: "POST",
-        })
-    },
-    
-    getMyReservations: async () => {
-        return await fetchAPI<ApiResponse<Reservation[]>>("/reservations/my")
-    },
-    
+
+// ========== الحجوزات (Reservations) ==========
+
+getMyReservations: async () => {
+    return await fetchAPI<ApiResponse<Reservation[]>>("/reservations/my")
+},
+
+getReservations: async () => {
+    return await fetchAPI<ApiResponse<Reservation[]>>("/reservations")
+},
+
+getReservationById: async (id: number) => {
+    return await fetchAPI<ApiResponse<Reservation>>(`/reservations/${id}`)
+},
+
+createReservation: async (data: ReservationRequest) => {
+    return await fetchAPI<ApiResponse<Reservation>>("/reservations", {
+        method: "POST",
+        body: JSON.stringify(data),
+    })
+},
+
+cancelReservation: async (id: number) => {
+    return await fetchAPI<ApiResponse<Reservation>>(`/reservations/${id}/cancel`, {
+        method: "POST",
+    })
+},
     // ============================================
     //  المفضلة (Favorites)
     // ============================================
@@ -198,4 +196,27 @@ export const api = {
         const queryString = new URLSearchParams(params as Record<string, string>).toString()
         return await fetchAPI<ApiResponse<Property[]>>(`/properties/search?${queryString}`)
     },
+    // ========== العقارات (Properties/Nooks) ==========
+// ... الدوال الموجودة مسبقاً ...
+
+getMyNooks: async () => {
+    return await fetchAPI<ApiResponse<Property[]>>("/properties/my")
+},
+
+deleteNook: async (id: number) => {
+    return await fetchAPI<ApiResponse<void>>(`/properties/${id}`, {
+        method: "DELETE",
+    })
+},
+
+updateNookStatus: async (id: number, status: "reserved" | "available") => {
+    return await fetchAPI<ApiResponse<Property>>(`/properties/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+    })
+},
+
+
 }
+
+
