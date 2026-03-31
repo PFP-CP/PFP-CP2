@@ -3,9 +3,9 @@ from typing import Optional
 from uuid import UUID
 
 from ninja import Schema
+
+
 #  Renter block
-
-
 class RenterOut(Schema):
     id: int
     full_name: str
