@@ -280,7 +280,7 @@ def get_host_profile(request):
         "profile_picture": Pic.get_picture_url(host, "profile_picture"),
         "posts_by_city": posts_by_city
         if (host.type_of_user.upper() == "HOST")
-        else {"Become a Seller to be able to Post": []},
+        else {"Become an HOST to be able to Post": []},
     }
 
 
