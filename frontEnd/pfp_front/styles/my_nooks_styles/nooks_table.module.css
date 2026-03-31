@@ -1,0 +1,147 @@
+.table_wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+}
+
+.table_header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.header_cell {
+    padding: 16px;
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table_row {
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s;
+}
+
+.table_row:hover {
+    background-color: #f8f9fa;
+}
+
+.table_cell {
+    padding: 16px;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* الصورة */
+.image_container {
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.table_image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* الوصف */
+.description {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.price {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+}
+
+.rating {
+    font-size: 0.85rem;
+    color: #ffc107;
+}
+
+/* الولاية */
+.wilaya {
+    font-weight: 500;
+    color: #555;
+}
+
+/* معلومات المستأجر */
+.tenant_name,
+.mobile,
+.email {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* العمليات */
+.operations {
+    display: flex;
+    gap: 8px;
+}
+
+.operation_btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+    font-size: 1.1rem;
+}
+
+.operation_btn:hover {
+    background-color: #e9ecef;
+}
+
+/* الحالة الفارغة */
+.empty_state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 1.1rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* للتجاوب مع الشاشات الصغيرة */
+@media (max-width: 768px) {
+    .table_wrapper {
+        border-radius: 8px;
+    }
+
+    .header_cell,
+    .table_cell {
+        padding: 12px 8px;
+        font-size: 0.8rem;
+    }
+
+    .image_container {
+        width: 60px;
+        height: 45px;
+    }
+}

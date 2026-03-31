@@ -1,0 +1,107 @@
+.page {
+    padding: 40px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.title_section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.page_title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: #dc3545;
+    margin: 0;
+}
+
+.add_new_btn {
+    padding: 12px 24px;
+    background-color: #7c5cdb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add_new_btn:hover {
+    background-color: #6a4bc4;
+}
+
+.loading,
+.error {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.loading h1,
+.error h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.loading p,
+.error p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.error_message {
+    color: #dc3545 !important;
+}
+
+.retry_btn {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #7c5cdb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.retry_btn:hover {
+    background-color: #6a4bc4;
+}
+
+/* للتجاوب */
+@media (max-width: 768px) {
+    .page {
+        padding: 24px 16px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .page_title {
+        font-size: 1.5rem;
+    }
+
+    .add_new_btn {
+        width: 100%;
+    }
+}
