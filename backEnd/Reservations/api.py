@@ -62,7 +62,7 @@ def _reservation_to_dict(r: Reservation) -> dict:
     }
 
 
-@router.get("/", response=list[ReservationOut], auth=JWTAuth())
+@router.get("/", response=list[ReservationOut], auth=JWTAuth(), tags=["Reservations"])
 def list_reservations(request):
     user: Account = request.user
 
@@ -79,11 +79,7 @@ def list_reservations(request):
     return [_reservation_to_dict(r) for r in reservations]
 
 
-@router.post(
-    "/",
-    response={201: ReservationOut},
-    auth=JWTAuth(),
-)
+@router.post("/", response={201: ReservationOut}, auth=JWTAuth(), tags=["Reservations"])
 def create_reservation(request, payload: ReservationIn):
     user: Account = request.user
 
@@ -117,7 +113,12 @@ def create_reservation(request, payload: ReservationIn):
     return 201, _reservation_to_dict(reservation)
 
 
-@router.delete("/{reservation_id}", auth=JWTAuth(), response=DeleteReservationOut)
+@router.delete(
+    "/{reservation_id}",
+    auth=JWTAuth(),
+    tags=["Reservations"],
+    response=DeleteReservationOut,
+)
 def delete_reservation(request, reservation_id: int):
     """
     Delete a reservation.
