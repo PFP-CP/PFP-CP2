@@ -37,7 +37,7 @@ class Account_status(models.TextChoices):
 
 class UserType(models.TextChoices):
     GUEST = "GUEST", "Guest"
-    RENTER = "RENTER", "Renter"
+    Host = "Host", "Host"
 
 
 class Account(AbstractUser):
@@ -66,7 +66,6 @@ class Account(AbstractUser):
     date_of_birth = models.DateField(default="2000-01-01", null=True, blank=True)
     profile_picture = models.ImageField(upload_to="Account/PFP", default="", blank=True)
     rating = models.FloatField(default=5, blank=True)
-    verified = models.BooleanField(default=False)
 
     # fields added to match supabase
     num_review = models.IntegerField(default=0, blank=True)
