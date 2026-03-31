@@ -1,17 +1,11 @@
 import json
 import secrets
 import string as STRING
-import time
-from multiprocessing.context import AuthenticationError
 from pathlib import Path
 
-from asgiref.sync import sync_to_async
-from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.cache import cache
 from django.core.mail import send_mail
-from django.db.models import Count
-from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from ninja import Router
@@ -342,3 +336,15 @@ def update_profile(request, payload: AccountUpdateIn):
         loc.save()
 
     return {"message": "Profile updated successfully."}
+
+
+@router.patch("/changePassword/", auth=JWTAuth(), response={400: dict, 200: dict})
+def change_password(request, passwords: ChangePassword):
+    user = request.user
+    if not user.check_password(passwords.old_password):
+        return 400, {"Error": "Wrong password"}
+
+    user.set_password(passwords.new_password)
+    user.save()
+
+    return 200, {"Success": "Password changed"}

@@ -84,3 +84,8 @@ class AccountUpdateIn(Schema):
     gender: Optional[str] = None
     phone_number: Optional[str] = None
     email: Optional[str] = None
+
+
+class ChangePassword(Schema):
+    old_password: str
+    new_password: str
