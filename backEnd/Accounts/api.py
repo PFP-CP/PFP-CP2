@@ -228,7 +228,7 @@ def get_host_profile(request):
     # Group Posts by City
     posts_by_city = {}
     active_posts = []
-    if host.type_of_user.upper() == "SELLER" or host.verified:
+    if host.type_of_user.upper() == "HOST" :
         # Fetch hosts active posts
         active_posts = (
             Post.objects.filter(seller=host)
@@ -273,14 +273,14 @@ def get_host_profile(request):
         "rating": host.rating,
         "num_reviews": host.num_review,
         "num_nooks": len(active_posts)
-        if (host.type_of_user.upper() == "SELLER")
+        if (host.type_of_user.upper() == "HOST")
         else -255,
         "num_reservations": total_reservations,
         "join_date": host.date_joined.date(),
         "profile_picture": Pic.get_picture_url(host, "profile_picture"),
         "posts_by_city": posts_by_city
-        if (host.type_of_user.upper() == "SELLER")
-        else {"Become a Seller to be able to Post": []},
+        if (host.type_of_user.upper() == "HOST")
+        else {"Become an HOST to be able to Post": []},
     }
 
 
