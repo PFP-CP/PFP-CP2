@@ -204,7 +204,11 @@ class PostListOut(Schema):
     primary_image:  Optional[str]=None  # URL of primary image
     @staticmethod
     def resolve_State(obj):
-        return obj.State 
+        loc = getattr(obj.house, 'location', None)
+        if loc and hasattr(loc, 'first'):
+            loc_obj = loc.first()
+            return loc_obj.State if loc_obj else None
+        return None
     @staticmethod
     def resolve_Price(obj):
         return obj.house.Price
