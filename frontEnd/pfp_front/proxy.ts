@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+export let USER_TOKEN:string; 
+
 export function proxy(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   
@@ -15,6 +17,7 @@ export function proxy(request: NextRequest) {
   }
   
   if (isAuthRoute && token) {
+    USER_TOKEN = token;
     return NextResponse.redirect(new URL('/home', request.url))
   }
   

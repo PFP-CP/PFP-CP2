@@ -11,7 +11,7 @@ export default function RootLayout({
   const path = usePathname();
   const isPost = path.startsWith('/post')
   
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [screenWidth, setScreenWidth] = useState(()=> 0);
       useEffect(()=>{
         setScreenWidth(window.innerWidth);
         let timeId : NodeJS.Timeout | null = null;;
@@ -27,17 +27,16 @@ export default function RootLayout({
         }
         window.addEventListener('resize', handleResize);
         return ()=> {
-          removeEventListener('resize', handleResize);
+          window.removeEventListener('resize', handleResize);
           if(timeId) clearTimeout(timeId);
         }
       },[])
 
-  console.log(isPost)
   return (
     <>  
-      {screenWidth>=1100 && <ComputerNav/>}
+      {/* {screenWidth>=1100 && <ComputerNav/>}
       { isPost && screenWidth>=700&& screenWidth<1100 && <Mobile_nav/>}
-      { !isPost && screenWidth<1100 && <Mobile_nav/>}
+      { !isPost && screenWidth<1100 && <Mobile_nav/>} */}
       {children}    
     </>
   );

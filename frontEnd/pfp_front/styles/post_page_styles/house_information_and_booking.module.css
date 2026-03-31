@@ -248,6 +248,7 @@
   height: 49px;
   padding: .5rem;
   max-width: 257px;
+  align-items: center;
 }
 
 .confirm_rating_button{
@@ -258,6 +259,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 30px;
+  width: 30px;
 }
 
 .rating_slider{
@@ -512,6 +515,10 @@
   .nook_review{
     align-self: center;
     width: 100%;
+  }
+  .rating_slider_container .confirm_rating_button{
+    height: 20px;
+    width: 20px;
   }
 }
 

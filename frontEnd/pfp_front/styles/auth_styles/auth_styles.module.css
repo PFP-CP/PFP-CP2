@@ -60,7 +60,7 @@
   font-family: "sansation-700",sans-serif;
   outline: none;
   color: #220E67;
-  
+  background-position: calc(100% - 12px) center;
 }
 
 .form_container input:not([type="submit"]),.form_container select{
@@ -154,7 +154,7 @@
   background-color: transparent;
   border: none;
   font-size: 20px;
-  font-family: "sansation-400", sans-serif;
+  font-family: "sansation-700", sans-serif;
   color: #220E67;
 }
 

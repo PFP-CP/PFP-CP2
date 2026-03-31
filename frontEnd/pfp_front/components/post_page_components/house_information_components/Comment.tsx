@@ -2,7 +2,7 @@ import style from '@/styles/post_page_styles/house_information_and_booking.modul
 import { START_LOGO_X_SMALL } from '@/public/svg/svg'
 
 
-export default function Comment(){
+export default function Comment({comment}:{comment:string}){
   return(
     <div className={style.comment}>
       <div className={style.user_container}>

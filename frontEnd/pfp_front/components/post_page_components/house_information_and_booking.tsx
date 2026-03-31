@@ -82,7 +82,6 @@ function RateNookButton({setRatingValue}:{setRatingValue:React.Dispatch<React.Se
   const [isRating, setIsRating] = useState(true);
   const [value, setValue] = useState(0);
   const [isNookRated, setIsNookRated] = useState(false); // this has to be taken from api
-  console.log(value);
   const handleValueChange = (e:Event, rating:number)=>{
     setValue(rating);
   }
