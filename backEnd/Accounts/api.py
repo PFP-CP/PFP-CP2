@@ -2,10 +2,9 @@ import json
 import secrets
 import string as STRING
 import time
-import utilitymethods.Pictures as Pic
 from multiprocessing.context import AuthenticationError
 from pathlib import Path
-from Houses.models import Pictures
+
 from asgiref.sync import sync_to_async
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -19,6 +18,9 @@ from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.tokens import RefreshToken
+
+import utilitymethods.Pictures as Pic
+from Houses.models import Pictures
 from Posts.models import Post, PostStatus
 from Reservations.models import Reservation
 
@@ -226,7 +228,6 @@ def get_host_profile(request):
     # 1. Get the Host Account
     host = request.user
 
-
     # Get Phone & City
     phone = getattr(host, "contact", None)
     phone_number = str(phone.Phone_Number).zfill(10) if phone else None
@@ -239,15 +240,14 @@ def get_host_profile(request):
 
     # Group Posts by City
     posts_by_city = {}
-
+    active_posts = []
     if host.type_of_user.upper() == "SELLER" or host.verified:
         # Fetch hosts active posts
         active_posts = (
-            Post.objects.filter(seller=host, status=PostStatus.ACTIVE)
+            Post.objects.filter(seller=host)
             .select_related("house")
             .prefetch_related("house__location", "house__pictures")
         )
-
 
         for post in active_posts:
             # get city
@@ -256,7 +256,11 @@ def get_host_profile(request):
 
             # first image
             first_pic = post.house.pictures.first()
-            url = Pic.get_picture_url(first_pic , "picture") if first_pic else Pictures.blank_house_image
+            url = (
+                Pic.get_picture_url(first_pic, "picture")
+                if first_pic
+                else Pictures.blank_house_image
+            )
             # Build the post dictionary
             post_data = {
                 "id": post.id,
@@ -272,18 +276,22 @@ def get_host_profile(request):
             posts_by_city[city_name].append(post_data)
     # format output
     return {
-    "id": host.id,
-    "full_name": host.full_name,
-    "gender": "male" if host.gender else "female",
-    "email": host.email,
-    "phone_number": phone_number,
-    "date_of_birth": host.date_of_birth,
-    "location": host_city,
-    "rating": host.rating,
-    "num_reviews": host.num_review,
-    "num_nooks": active_posts.count() if (host.type_of_user.upper() == "SELLER") else -255 ,
-    "num_reservations": total_reservations,
-    "join_date": host.date_joined.date(),
-    "profile_picture": Pic.get_picture_url(host , "profile_picture"),
-    "posts_by_city": posts_by_city if (host.type_of_user.upper() == "SELLER") else {"Become a Seller to be able to Post" : []} ,
+        "id": host.id,
+        "full_name": host.full_name,
+        "gender": "male" if host.gender else "female",
+        "email": host.email,
+        "phone_number": phone_number,
+        "date_of_birth": host.date_of_birth,
+        "location": host_city,
+        "rating": host.rating,
+        "num_reviews": host.num_review,
+        "num_nooks": len(active_posts)
+        if (host.type_of_user.upper() == "SELLER")
+        else -255,
+        "num_reservations": total_reservations,
+        "join_date": host.date_joined.date(),
+        "profile_picture": Pic.get_picture_url(host, "profile_picture"),
+        "posts_by_city": posts_by_city
+        if (host.type_of_user.upper() == "SELLER")
+        else {"Become a Seller to be able to Post": []},
     }
