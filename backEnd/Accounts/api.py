@@ -203,7 +203,7 @@ def password_forgotten(request, ResetCred: ResetPassword):
         return {"Message": "Account found , email sent"}
 
 
-# fucntion that get a profile based on ID
+# fucntion that get a profile of the current user
 @router.get(
     "/my-profile/", response=HostProfileOut, tags=["Account Profile"], auth=JWTAuth()
 )
