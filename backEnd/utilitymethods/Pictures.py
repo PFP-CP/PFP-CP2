@@ -31,9 +31,9 @@ def get_picture_name(instance , field_name :str):
 def get_picture_url(instance, field_name: str):
     field = getattr(instance, field_name)
     if field == "" :
-        if field_name is "profile_picture":
+        if field_name == "profile_picture":
             return Account.default_profile_picture
-        elif field_name is "picture" :
+        elif field_name == "picture" :
             return Pictures.blank_house_image
         else :
             raise ValueError("No field with such a name")

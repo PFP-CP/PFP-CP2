@@ -75,3 +75,8 @@ class HostProfileOut(Schema):
 
     # Dictionary where keys are City names, and values are lists of posts
     posts_by_city: Dict[str, List[HostPostOut]]
+
+class ChangePassword(Schema):
+
+    old_password : str
+    new_password : str
