@@ -1,24 +1,20 @@
 import json
 import secrets
 import string as STRING
-import time
-import utilitymethods.Pictures as Pic
-from multiprocessing.context import AuthenticationError
 from pathlib import Path
-from Houses.models import Pictures
-from asgiref.sync import sync_to_async
-from django.contrib.auth.hashers import check_password, make_password
+
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.cache import cache
 from django.core.mail import send_mail
-from django.db.models import Count
-from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.tokens import RefreshToken
+
+import utilitymethods.Pictures as Pic
+from Houses.models import Pictures
 from Posts.models import Post, PostStatus
 from Reservations.models import Reservation
 
@@ -207,14 +203,7 @@ def password_forgotten(request, ResetCred: ResetPassword):
         return {"Message": "Account found , email sent"}
 
 
-@router.patch("/{User_id}", auth=JWTAuth())
-def change_name(request, name: str):
-    User = request.user
-    User.set_name(name)
-    User.save()
-
-
-# fucntion that get a profile based on ID
+# fucntion that get a profile of the current user
 @router.get(
     "/my-profile/", response=HostProfileOut, tags=["Account Profile"], auth=JWTAuth()
 )
@@ -225,7 +214,6 @@ def get_host_profile(request):
     """
     # 1. Get the Host Account
     host = request.user
-
 
     # Get Phone & City
     phone = getattr(host, "contact", None)
@@ -239,15 +227,14 @@ def get_host_profile(request):
 
     # Group Posts by City
     posts_by_city = {}
-
-    if host.type_of_user.upper() == "SELLER" or host.verified:
+    active_posts = []
+    if host.type_of_user.upper() == "HOST" :
         # Fetch hosts active posts
         active_posts = (
-            Post.objects.filter(seller=host, status=PostStatus.ACTIVE)
+            Post.objects.filter(seller=host)
             .select_related("house")
             .prefetch_related("house__location", "house__pictures")
         )
-
 
         for post in active_posts:
             # get city
@@ -256,7 +243,11 @@ def get_host_profile(request):
 
             # first image
             first_pic = post.house.pictures.first()
-            url = Pic.get_picture_url(first_pic , "picture") if first_pic else Pictures.blank_house_image
+            url = (
+                Pic.get_picture_url(first_pic, "picture")
+                if first_pic
+                else Pictures.blank_house_image
+            )
             # Build the post dictionary
             post_data = {
                 "id": post.id,
@@ -272,18 +263,88 @@ def get_host_profile(request):
             posts_by_city[city_name].append(post_data)
     # format output
     return {
-    "id": host.id,
-    "full_name": host.full_name,
-    "gender": "male" if host.gender else "female",
-    "email": host.email,
-    "phone_number": phone_number,
-    "date_of_birth": host.date_of_birth,
-    "location": host_city,
-    "rating": host.rating,
-    "num_reviews": host.num_review,
-    "num_nooks": active_posts.count() if (host.type_of_user.upper() == "SELLER") else -255 ,
-    "num_reservations": total_reservations,
-    "join_date": host.date_joined.date(),
-    "profile_picture": Pic.get_picture_url(host , "profile_picture"),
-    "posts_by_city": posts_by_city if (host.type_of_user.upper() == "SELLER") else {"Become a Seller to be able to Post" : []} ,
+        "id": host.id,
+        "full_name": host.full_name,
+        "gender": "male" if host.gender else "female",
+        "email": host.email,
+        "phone_number": phone_number,
+        "date_of_birth": host.date_of_birth,
+        "location": host_city,
+        "rating": host.rating,
+        "num_reviews": host.num_review,
+        "num_nooks": len(active_posts)
+        if (host.type_of_user.upper() == "HOST")
+        else -255,
+        "num_reservations": total_reservations,
+        "join_date": host.date_joined.date(),
+        "profile_picture": Pic.get_picture_url(host, "profile_picture"),
+        "posts_by_city": posts_by_city
+        if (host.type_of_user.upper() == "HOST")
+        else {"Become an HOST to be able to Post": []},
     }
+
+
+# patch endpoint for updating profile
+@router.patch("/profile/", auth=JWTAuth(), tags=["Account Profile"])
+def update_profile(request, payload: AccountUpdateIn):
+    user = request.user
+
+    # Check if the new email is already taken by another user
+    if (
+        payload.email
+        and Account.objects.exclude(id=user.id).filter(email=payload.email).exists()
+    ):
+        return 400, {"message": "Email already in use."}
+
+    # Check if the new phone number is already taken by another contact
+    if (
+        payload.phone_number
+        and Contact.objects.exclude(Account=user)
+        .filter(Phone_Number=payload.phone_number)
+        .exists()
+    ):
+        return 400, {"message": "Phone number already in use."}
+
+    # Update main Account fields if provided
+    if payload.full_name is not None:
+        user.full_name = payload.full_name
+    if payload.email is not None:
+        user.email = payload.email
+    if payload.date_of_birth is not None:
+        user.date_of_birth = payload.date_of_birth
+    if payload.gender is not None:
+        # baroudi 9alek dir M ou F rigl
+        gender_val = payload.gender.upper()
+        if gender_val.startswith("M"):
+            user.gender = Account.GenderType.MALE
+        elif gender_val.startswith("F"):
+            user.gender = Account.GenderType.FEMALE
+
+    # Save Account changes
+    user.save()
+
+    # Update Phone Number in the Contact model
+    if payload.phone_number is not None:
+        contact, _ = Contact.objects.get_or_create(Account=user)
+        contact.Phone_Number = payload.phone_number
+        contact.save()
+
+    # Update State in the location model
+    if payload.state is not None:
+        loc, _ = location.objects.get_or_create(Account=user)
+        loc.State = payload.state
+        loc.save()
+
+    return {"message": "Profile updated successfully."}
+
+
+@router.patch("/changePassword/", auth=JWTAuth(), response={400: dict, 200: dict})
+def change_password(request, passwords: ChangePassword):
+    user = request.user
+    if not user.check_password(passwords.old_password):
+        return 400, {"Error": "Wrong password"}
+
+    user.set_password(passwords.new_password)
+    user.save()
+
+    return 200, {"Success": "Password changed"}

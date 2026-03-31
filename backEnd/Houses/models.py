@@ -1,6 +1,5 @@
 from django.db import models
 import uuid
-
 #from django.db.models.functions import Extract 
 # Create your models here.
 
@@ -17,6 +16,8 @@ class House(models.Model):
     RoomNum = models.SmallIntegerField(default=1)
     num_bedroom = models.SmallIntegerField(default=1)
     num_bathroom = models.SmallIntegerField(default=1)
+    num_beds = models.SmallIntegerField(default=1)      
+    max_tenants = models.SmallIntegerField(default=1)
 
     Surface = models.FloatField()
     Description = models.TextField(max_length=1000)
@@ -42,9 +43,8 @@ class FeatureList(models.Model):
 
     def __str__(self):
         return self.feature
-
 class Features(models.Model):
-    house=models.ForeignKey(House,on_delete=models.CASCADE,related_name='features')
+    house=models.ForeignKey(House,on_delete=models.CASCADE,related_name='features',db_column='house_id')
     features = models.ManyToManyField(FeatureList , blank=True)
 
 class AvalabilityCalendar(models.Model):
@@ -67,4 +67,8 @@ class Location(models.Model):
     Latitude = models.FloatField()
     def __str__(self):
         return f" {self.house.Description} location"
-  
+class houseRules(models.Model):
+    house=models.OneToOneField('House',on_delete=models.CASCADE,related_name='rules')
+    allows_animals = models.BooleanField(default=False)
+    allows_smoking = models.BooleanField(default=False)
+    allows_noise = models.BooleanField(default=False)

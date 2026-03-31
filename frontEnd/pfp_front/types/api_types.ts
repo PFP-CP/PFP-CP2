@@ -1,4 +1,4 @@
-// ========== أنواع العقار ==========
+// ========== أنواع العقار (Property) ==========
 export interface Property {
     id: number;
     title: string;
@@ -21,23 +21,51 @@ export interface Property {
         couple: boolean;
     };
     ownerId: number;
+    status: "reserved" | "available";  // ← تأكد من وجود هذا
+    tenant?: {                         // ← تأكد من وجود هذا
+        name: string;
+        mobile: string;
+        email: string;
+    };
     createdAt: string;
     updatedAt: string;
 }
-
 // ========== أنواع الحجز ==========
+// ========== أنواع الحجز (Reservation) ==========
 export interface Reservation {
     id: number;
     propertyId: number;
+    property: {
+        id: number;
+        title: string;
+        location: string;
+        wilaya: string;
+        price: number;
+        rating: number;
+        image: string;
+    };
     userId: number;
+    renter: {
+        name: string;
+        mobile: string;
+        email: string;
+    };
     arrivalDate: string;
     departureDate: string;
     visitors: number;
     totalPrice: number;
     status: "pending" | "confirmed" | "cancelled";
     createdAt: string;
+    updatedAt: string;
 }
 
+// ========== طلبات إنشاء الحجز ==========
+export interface ReservationRequest {
+    propertyId: number;
+    arrivalDate: string;
+    departureDate: string;
+    visitors: number;
+}
 // ========== أنواع المستخدم ==========
 export interface User {
     id: number;
@@ -145,4 +173,79 @@ export interface Wilaya {
     name: string;
     nameAr?: string;
     propertyCount?: number;
+}
+
+
+// ========== أنواع صفحة My Nooks ==========
+export interface Nook {
+    id: number;
+    title: string;
+    location: string;
+    wilaya: string;
+    price: number;
+    rating: number;
+    image: string;
+    images: string[];
+    description: string;
+    features: string[];
+    rules: {
+        smoking: boolean;
+        animals: boolean;
+        noise: boolean;
+    };
+    categories: {
+        family: boolean;
+        single: boolean;
+        couple: boolean;
+    };
+    ownerId: number;
+    status: "reserved" | "available";
+    tenant?: {
+        name: string;
+        mobile: string;
+        email: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+}
+
+// ========== طلبات إنشاء/تحديث عقار ==========
+export interface CreateNookRequest {
+    title: string;
+    location: string;
+    wilaya: string;
+    price: number;
+    description: string;
+    images: string[];
+    features: string[];
+    rules: {
+        smoking: boolean;
+        animals: boolean;
+        noise: boolean;
+    };
+    categories: {
+        family: boolean;
+        single: boolean;
+        couple: boolean;
+    };
+}
+
+export interface UpdateNookRequest {
+    title?: string;
+    location?: string;
+    price?: number;
+    description?: string;
+    images?: string[];
+    features?: string[];
+    rules?: {
+        smoking: boolean;
+        animals: boolean;
+        noise: boolean;
+    };
+    categories?: {
+        family: boolean;
+        single: boolean;
+        couple: boolean;
+    };
+    status?: "reserved" | "available";
 }

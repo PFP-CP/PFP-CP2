@@ -37,10 +37,14 @@ class Account_status(models.TextChoices):
 
 class UserType(models.TextChoices):
     GUEST = "GUEST", "Guest"
-    RENTER = "RENTER", "Renter"
+    Host = "Host", "Host"
 
 
 class Account(AbstractUser):
+    class GenderType(models.TextChoices):
+      MALE = 'M', 'Male'
+      FEMALE = 'F', 'Female'
+  
     default_profile_picture = (
         "https://i.pinimg.com/1200x/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg"
     )
@@ -54,11 +58,14 @@ class Account(AbstractUser):
     first_name = None
     last_name = None
     full_name = models.TextField(max_length=150)
-    gender = models.BooleanField(default=True)
+    gender = models.CharField(
+        max_length=1,
+        choices=GenderType.choices,
+        default=GenderType.MALE
+    )
     date_of_birth = models.DateField(default="2000-01-01", null=True, blank=True)
     profile_picture = models.ImageField(upload_to="Account/PFP", default="", blank=True)
     rating = models.FloatField(default=5, blank=True)
-    verified = models.BooleanField(default=False)
 
     # fields added to match supabase
     num_review = models.IntegerField(default=0, blank=True)
@@ -70,7 +77,7 @@ class Account(AbstractUser):
     )
 
     def __str__(self):
-        return self.full_name or self.email
+        return f"{self.full_name} ,id={self.id}" or self.email
 
     def set_name(self, new_name: str):
         name = new_name.split(" ")

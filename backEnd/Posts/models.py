@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.db import models
 from Accounts.models import Account
 from django.db.models import F, Avg
@@ -33,9 +35,7 @@ class Post(models.Model):
         related_name='posts',
         db_column='seller_id',
     )
-
     title       = models.CharField(max_length=400)
-    description = models.TextField(blank=True)
     status      = models.CharField(
         max_length=10,
         choices=PostStatus.choices,
@@ -57,8 +57,22 @@ class Post(models.Model):
         return location.State if location else None
     @property
     def primary_image(self):
-        img = self.house.pictures.first()
-        return img.picture.url if img.picture else Pictures.blank_house_image
+     img = self.house.pictures.first()
+
+     if  not img or not img.picture:
+        return Pictures.blank_house_image
+     return img.picture.url
+    
+    def current_tenant(self):
+        """Finds the reservation happening right now."""
+        today = timezone.localdate()
+        res= self.reservations.filter(
+            arrival_date__lte=today,
+            departure_date__gte=today
+        ).select_related('renter', 'renter__contact').first()
+        return res.renter if res else None
+
+    
     class Meta:
         db_table = 'post'
         ordering = ['-created_at']
