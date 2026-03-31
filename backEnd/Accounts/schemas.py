@@ -75,3 +75,12 @@ class HostProfileOut(Schema):
 
     # Dictionary where keys are City names, and values are lists of posts
     posts_by_city: Dict[str, List[HostPostOut]]
+
+
+class AccountUpdateIn(Schema):
+    full_name: Optional[str] = None
+    date_of_birth: Optional[date] = None
+    state: Optional[str] = None
+    gender: Optional[str] = None
+    phone_number: Optional[str] = None
+    email: Optional[str] = None
