@@ -35,7 +35,23 @@ from .schemas import (
 router = Router()
 search_router = Router()
 
-
+#main page
+@router.get("/mainpage", response=List[PostListOut])
+def get_house_list(request, filter_by: str = "newest",size:int = 5):
+    posts = Post.objects.select_related('house').prefetch_related(
+    'house__location',
+    'house__pictures',
+)
+    if filter_by == "rating":
+        posts = posts.order_by("-rating") 
+    elif filter_by == "state":
+        posts = posts.order_by("house__location__State")
+    elif filter_by == "county":
+        posts = posts.order_by("house__location__County")
+    else:
+        posts = posts.order_by("-created_at")
+    posts=posts[:size]
+    return posts
 # Filter helpers — all updated to teammate's lowercase field names    #
 def post_rating_query(
     previous_search: QuerySet, rating: float | None = None
@@ -436,4 +452,7 @@ def delete_comment(request, post_id: uuid.UUID, comment_id: uuid.UUID):
     comment.delete()
     post._update_post_rating()
     seller._update_seller_rating()
-    return 200, {"message": "Comment deleted."}
+    return 200, {'message': 'Comment deleted.'}
+
+
+
