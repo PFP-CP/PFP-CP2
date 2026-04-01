@@ -29,7 +29,7 @@ export default function NooksTable({ nooks, onRefresh }: NooksTableProps) {
         setDeletingId(id)
         
         try {
-            await api.deleteNook(id)
+            await api.deleteProperty(id)
             onRefresh() // إعادة تحميل البيانات
         } catch (error) {
             console.error("Failed to delete:", error)

@@ -21,8 +21,8 @@ export interface Property {
         couple: boolean;
     };
     ownerId: number;
-    status: "reserved" | "available";  // ← تأكد من وجود هذا
-    tenant?: {                         // ← تأكد من وجود هذا
+    status: "reserved" | "available"; 
+    tenant?: {                         
         name: string;
         mobile: string;
         email: string;
@@ -30,7 +30,6 @@ export interface Property {
     createdAt: string;
     updatedAt: string;
 }
-// ========== أنواع الحجز ==========
 // ========== أنواع الحجز (Reservation) ==========
 export interface Reservation {
     id: number;
@@ -103,14 +102,6 @@ export interface RegisterRequest {
     password: string;
     name: string;
     phone?: string;
-}
-
-// ========== طلبات إنشاء الحجز ==========
-export interface ReservationRequest {
-    propertyId: number;
-    arrivalDate: string;
-    departureDate: string;
-    visitors: number;
 }
 
 // ========== طلبات إنشاء عقار ==========

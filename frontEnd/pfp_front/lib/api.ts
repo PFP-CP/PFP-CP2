@@ -18,20 +18,17 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/a
 
 // ========== دالة مساعدة لإرسال الطلبات ==========
 async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    // جلب Token من localStorage إن وجد
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
     
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
         headers: {
             "Content-Type": "application/json",
-            // إضافة Token إن وجد
             ...(token && { "Authorization": `Bearer ${token}` }),
             ...options?.headers,
         },
     })
     
-    // معالجة الأخطاء
     if (!response.ok) {
         const error = await response.json().catch(() => ({ error: "Unknown error" }))
         throw new Error(error.error || error.message || `API Error: ${response.status}`)
@@ -44,15 +41,13 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
 export const api = {
     
     // ============================================
-    // المصادقة (Authentication)
+    // (Authentication)
     // ============================================
-    
     login: async (data: LoginRequest) => {
         const response = await fetchAPI<ApiResponse<LoginResponse>>("/auth/login", {
             method: "POST",
             body: JSON.stringify(data),
         })
-        // حفظ Token بعد نجاح تسجيل الدخول
         if (response.data.token) {
             localStorage.setItem("token", response.data.token)
         }
@@ -66,126 +61,89 @@ export const api = {
         })
     },
     
-    logout: () => {
-        localStorage.removeItem("token")
-    },
+    logout: () => localStorage.removeItem("token"),
     
-    getProfile: async () => {
-        return await fetchAPI<ApiResponse<User>>("/auth/profile")
-    },
+    getProfile: async () => fetchAPI<ApiResponse<User>>("/auth/profile"),
     
-    updateProfile: async (data: Partial<User>) => {
-        return await fetchAPI<ApiResponse<User>>("/auth/profile", {
-            method: "PUT",
-            body: JSON.stringify(data),
-        })
-    },
+    updateProfile: async (data: Partial<User>) => fetchAPI<ApiResponse<User>>("/auth/profile", {
+        method: "PUT",
+        body: JSON.stringify(data),
+    }),
     
-    changePassword: async (oldPassword: string, newPassword: string) => {
-        return await fetchAPI<ApiResponse<void>>("/auth/change-password", {
-            method: "POST",
-            body: JSON.stringify({ oldPassword, newPassword }),
-        })
-    },
+    changePassword: async (oldPassword: string, newPassword: string) => fetchAPI<ApiResponse<void>>("/auth/change-password", {
+        method: "POST",
+        body: JSON.stringify({ oldPassword, newPassword }),
+    }),
     
     // ============================================
-    // العقارات (Properties)
+    // (Properties / Nooks)
     // ============================================
+    getProperties: async () => fetchAPI<ApiResponse<Property[]>>("/properties"),
     
-    getProperties: async () => {
-        return await fetchAPI<ApiResponse<Property[]>>("/properties")
-    },
+    getPropertyById: async (id: number) => fetchAPI<ApiResponse<Property>>(`/properties/${id}`),
     
-    getPropertyById: async (id: number) => {
-        return await fetchAPI<ApiResponse<Property>>(`/properties/${id}`)
-    },
+    getPropertiesByWilaya: async (wilaya: string) => fetchAPI<ApiResponse<Property[]>>(`/properties?wilaya=${wilaya}`),
     
-    getPropertiesByWilaya: async (wilaya: string) => {
-        return await fetchAPI<ApiResponse<Property[]>>(`/properties?wilaya=${wilaya}`)
-    },
-    
-    createProperty: async (data: CreatePropertyRequest) => {
-        return await fetchAPI<ApiResponse<Property>>("/properties", {
-            method: "POST",
-            body: JSON.stringify(data),
-        })
-    },
-    
-    updateProperty: async (id: number, data: UpdatePropertyRequest) => {
-        return await fetchAPI<ApiResponse<Property>>(`/properties/${id}`, {
-            method: "PUT",
-            body: JSON.stringify(data),
-        })
-    },
-    
-    deleteProperty: async (id: number) => {
-        return await fetchAPI<ApiResponse<void>>(`/properties/${id}`, {
-            method: "DELETE",
-        })
-    },
-    
-    getMyProperties: async () => {
-        return await fetchAPI<ApiResponse<Property[]>>("/properties/my")
-    },
-    
-
-// ========== الحجوزات (Reservations) ==========
-
-getMyReservations: async () => {
-    return await fetchAPI<ApiResponse<Reservation[]>>("/reservations/my")
-},
-
-getReservations: async () => {
-    return await fetchAPI<ApiResponse<Reservation[]>>("/reservations")
-},
-
-getReservationById: async (id: number) => {
-    return await fetchAPI<ApiResponse<Reservation>>(`/reservations/${id}`)
-},
-
-createReservation: async (data: ReservationRequest) => {
-    return await fetchAPI<ApiResponse<Reservation>>("/reservations", {
+    createProperty: async (data: CreatePropertyRequest) => fetchAPI<ApiResponse<Property>>("/properties", {
         method: "POST",
         body: JSON.stringify(data),
-    })
-},
+    }),
+    
+    updateProperty: async (id: number, data: UpdatePropertyRequest) => fetchAPI<ApiResponse<Property>>(`/properties/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+    }),
+    
+    deleteProperty: async (id: number) => fetchAPI<ApiResponse<void>>(`/properties/${id}`, {
+        method: "DELETE",
+    }),
+    
+    // ملاحظة: getMyNooks و getMyProperties يشيران لنفس الـ Endpoint
+    getMyNooks: async () => fetchAPI<ApiResponse<Property[]>>("/properties/my"),
+    
+    // Alias لـ getMyNooks للحفاظ على التوافقية إذا استخدمتها أماكن أخرى
+    getMyProperties: async () => fetchAPI<ApiResponse<Property[]>>("/properties/my"),
 
-cancelReservation: async (id: number) => {
-    return await fetchAPI<ApiResponse<Reservation>>(`/reservations/${id}/cancel`, {
+    // ============================================
+    // (Reservations)
+    // ============================================
+    getMyReservations: async () => fetchAPI<ApiResponse<Reservation[]>>("/reservations/my"),
+    
+    getReservations: async () => fetchAPI<ApiResponse<Reservation[]>>("/reservations"),
+    
+    getReservationById: async (id: number) => fetchAPI<ApiResponse<Reservation>>(`/reservations/${id}`),
+    
+    createReservation: async (data: ReservationRequest) => fetchAPI<ApiResponse<Reservation>>("/reservations", {
         method: "POST",
-    })
-},
-    // ============================================
-    //  المفضلة (Favorites)
-    // ============================================
+        body: JSON.stringify(data),
+    }),
     
-    getFavorites: async () => {
-        return await fetchAPI<ApiResponse<Favorite[]>>("/favorites")
-    },
-    
-    addFavorite: async (propertyId: number) => {
-        return await fetchAPI<ApiResponse<Favorite>>("/favorites", {
-            method: "POST",
-            body: JSON.stringify({ propertyId }),
-        })
-    },
-    
-    removeFavorite: async (propertyId: number) => {
-        return await fetchAPI<ApiResponse<void>>(`/favorites/${propertyId}`, {
-            method: "DELETE",
-        })
-    },
-    
-
-    
-    getWilayas: async () => {
-        return await fetchAPI<ApiResponse<Wilaya[]>>("/wilayas")
-    },
+    cancelReservation: async (id: number) => fetchAPI<ApiResponse<Reservation>>(`/reservations/${id}/cancel`, {
+        method: "POST",
+    }),
     
     // ============================================
-    //  البحث (Search)
+    // (Favorites)
     // ============================================
+    getFavorites: async () => fetchAPI<ApiResponse<Favorite[]>>("/favorites"),
     
+    addFavorite: async (propertyId: number) => fetchAPI<ApiResponse<Favorite>>("/favorites", {
+        method: "POST",
+        body: JSON.stringify({ propertyId }),
+    }),
+    
+    removeFavorite: async (propertyId: number) => fetchAPI<ApiResponse<void>>(`/favorites/${propertyId}`, {
+        method: "DELETE",
+    }),
+    
+    // ============================================
+    // (Wilayas)
+    // ============================================
+    getWilayas: async () => fetchAPI<ApiResponse<Wilaya[]>>("/wilayas"),
+    
+    // ============================================
+    // (Search)
+    // ============================================
     searchProperties: async (params: {
         wilaya?: string;
         minPrice?: number;
@@ -194,29 +152,6 @@ cancelReservation: async (id: number) => {
         features?: string[];
     }) => {
         const queryString = new URLSearchParams(params as Record<string, string>).toString()
-        return await fetchAPI<ApiResponse<Property[]>>(`/properties/search?${queryString}`)
+        return fetchAPI<ApiResponse<Property[]>>(`/properties/search?${queryString}`)
     },
-    // ========== العقارات (Properties/Nooks) ==========
-// ... الدوال الموجودة مسبقاً ...
-
-getMyNooks: async () => {
-    return await fetchAPI<ApiResponse<Property[]>>("/properties/my")
-},
-
-deleteNook: async (id: number) => {
-    return await fetchAPI<ApiResponse<void>>(`/properties/${id}`, {
-        method: "DELETE",
-    })
-},
-
-updateNookStatus: async (id: number, status: "reserved" | "available") => {
-    return await fetchAPI<ApiResponse<Property>>(`/properties/${id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-    })
-},
-
-
 }
-
-

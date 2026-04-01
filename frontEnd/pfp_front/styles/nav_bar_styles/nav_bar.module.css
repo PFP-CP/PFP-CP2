@@ -1,115 +1,228 @@
 
+:root {
+  --nav-bg: rgba(99, 74, 173, 0.95); 
+  --nav-height: 98px;
+  --primary-dark: rgb(34, 14, 103);
+  --text-white: #ffffff;
+  --indicator-color: transparent;
+}
+
 body {
   background-color: grey;
   min-height: 100vh;
+  margin: 0;
 }
 
-
-#navbar{
-  min-width: 100%;
-  height: 98px;
-  background-color: rgba(99, 74, 173, 0.85);
+#navbar {
+  width: 100%;
+  height: var(--nav-height);
+  background-color: var(--nav-bg);
   display: flex;
   align-items: center;
-  padding-right: 4rem;
+  padding: 0 4rem; 
+  box-sizing: border-box; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-#navbar #logo_container{
+#navbar #logo_container {
   height: 50px;
   display: flex;
+  align-items: center;
   flex-grow: 1;
   max-width: 300px;
+  cursor: pointer; 
 }
 
-#navbar #logo_container #nav_logo{
+#navbar #logo_container #nav_logo {
   background-color: red;
   height: 40px;
   width: 50px;
-}
-#navbar #navigation{
-  display: flex;
-  gap: 4rem;
-  align-items: center;
-  padding-right: 2rem;
+  object-fit: contain;
 }
 
-#navbar #navigation #navigation_links{
+#navbar #navigation {
+  display: flex;
+  gap: 2rem; 
+  align-items: center;
+  padding-right: 1rem;
+  flex-grow: 2;
+}
+
+#navbar #navigation #navigation_links {
   display: grid;
-  grid-template-columns: repeat(4,minmax(min-content,max-content) );
-  grid-template-rows: max-content 2px;
-  column-gap: 4rem;
-  row-gap: .5rem;
-  flex-grow: 4;
+  grid-template-columns: repeat(4, minmax(min-content, max-content));
+  grid-template-rows: max-content 4px; 
+  column-gap: 3rem;
+  row-gap: 0.5rem;
   align-items: center;
   grid-template-areas: 
-  ". . . ."
-  "indicator . . .";
-  
+    ". . . ."
+    "indicator . . .";
+  position: relative;
 }
 
-#navbar #navigation .nav_text{
-  color: white;
+#navbar #navigation .nav_text {
+  color: var(--text-white);
   font-size: 20px;
   cursor: pointer;
-  font-family: "sansation-400";
+  font-family: "sansation-400", sans-serif;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
 }
 
-#navbar #navigation .nav_indicator{
+#navbar #navigation .nav_text:hover {
+  opacity: 0.8;
+}
+
+#navbar #navigation .nav_indicator {
   grid-area: indicator;
   height: 4px;
-  background-color: transparent;
-  bottom: -.2rem;
+  background-color: var(--indicator-color);
+  transform: translateY(-2px); 
   width: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease, background-color 0.3s ease;
 }
 
-#navbar .nav_search{
+#navbar .nav_search {
   min-width: 215px;
   height: 48px;
-  background-color: rgb(34, 14, 103, 1);
+  background-color: var(--primary-dark);
   display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 23px;
-  padding-left: 1rem;
+  padding: 0 1.5rem;
   gap: 1rem;
-  cursor:pointer;
-
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s;
+  position: relative;
 }
 
-#navbar .nav_search .find_retals_h3_container{
+#navbar .nav_search:hover {
+  transform: scale(1.02);
+  background-color: rgb(44, 24, 113);
+}
+
+#navbar .nav_search .find_retals_h3_container {
   background-color: transparent;
   height: 100%;
   display: flex;
-  color: white;
-  font-size: 20px;
+  align-items: center;
+  color: var(--text-white);
+  font-size: 18px;
+  font-family: "sansation-700", sans-serif;
+  margin: 0;
 }
 
-#navbar .nav_search .find_retals_h3{
-  position: absolute;
-  align-self: center;
-  justify-self: center;
-  font-family: "sansation-700";
-}
-
-#navbar .nav_search .search_logo_container{
+/* تحسين: إزالة absolute غير الضروري إذا كان الأب flex */
+#navbar .nav_search .search_logo_container {
   display: flex;
+  align-items: center;
 }
 
-#navbar .nav_search .search_logo{
+#navbar .nav_search .search_logo {
   height: 20px;
   width: 20px;
-  align-self: center;
+  filter: brightness(0) invert(1);
 }
 
-#navbar #user_controls{
+#navbar #user_controls {
   display: flex;
   gap: 1.5rem;
-  flex-grow: 2;
-  
-  justify-content: end;
+  flex-grow: 1;
+  justify-content: flex-end;
+  align-items: center;
 }
 
-#navbar #user_controls .settings,#navbar #user_controls .user_profile{
+#navbar #user_controls .settings,
+#navbar #user_controls .user_profile {
   cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
 }
 
+#navbar #user_controls .settings:hover,
+#navbar #user_controls .user_profile:hover {
+  transform: scale(1.1);
+}
 
+/* =========================================
+   تحسينات التجاوب (Responsive Improvements)
+   ========================================= */
 
+/* Tablet & Small Desktop (أقل من 1200px) */
+@media (max-width: 1200px) {
+  #navbar {
+    padding: 0 2rem;
+  }
+  
+  #navbar #navigation {
+    gap: 1rem;
+  }
+
+  #navbar #navigation #navigation_links {
+    column-gap: 1.5rem;
+  }
+
+  #navbar .nav_search {
+    min-width: 180px;
+    font-size: 16px;
+  }
+  
+  #navbar #navigation .nav_text {
+    font-size: 18px;
+  }
+}
+
+/* Mobile Landscape & Large Mobile (أقل من 900px) */
+@media (max-width: 900px) {
+  #navbar {
+    height: 70px;
+    padding: 0 1.5rem;
+    justify-content: space-between;
+  }
+
+  #navbar #logo_container {
+    max-width: 200px;
+  }
+
+  /* إخفاء الروابط والبحث في الشاشات الصغيرة (يفترض وجود قائمة هامبرغر في ملف منفصل) */
+  #navbar #navigation {
+    display: none; /* سيتم استبداله بقائمة الموبايل */
+  }
+
+  #navbar .nav_search {
+    display: none; /* إخفاء البحث في الموبايل لتوفير المساحة */
+  }
+
+  #navbar #user_controls {
+    gap: 1rem;
+  }
+  
+  #navbar #user_controls .settings,
+  #navbar #user_controls .user_profile {
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+  }
+}
+
+/* Small Mobile (أقل من 480px) */
+@media (max-width: 480px) {
+  #navbar {
+    padding: 0 1rem;
+  }
+  
+  #navbar #logo_container #nav_logo {
+    height: 30px;
+    width: 35px;
+  }
+}

@@ -1,147 +1,158 @@
 .table_wrapper {
-    width: 100%;
-    overflow-x: auto;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  overflow-x: auto;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  -webkit-overflow-scrolling: touch; 
 }
 
 .table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 1000px;
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px; 
 }
 
 .table_header {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #e9ecef;
+  background-color: #f4f4f4;
+  text-align: left;
 }
 
 .header_cell {
-    padding: 16px;
-    text-align: left;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #495057;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  padding: 18px 15px;
+  font-family: 'sansation-700';
+  font-size: 0.95rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #eee;
+  white-space: nowrap;
 }
 
 .table_row {
-    border-bottom: 1px solid #e9ecef;
-    transition: background-color 0.2s;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.table_row:last-child {
+  border-bottom: none;
 }
 
 .table_row:hover {
-    background-color: #f8f9fa;
+  background-color: #fafafa;
 }
 
 .table_cell {
-    padding: 16px;
-    vertical-align: middle;
-    font-size: 0.9rem;
-    color: #333;
+  padding: 15px;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: #333;
+  white-space: nowrap;
 }
 
-/* الصورة */
 .image_container {
-    width: 80px;
-    height: 60px;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
+  width: 80px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
 }
 
 .table_image {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 
-/* الوصف */
 .description {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 200px;
 }
 
 .title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: #2E1B7B;
+  white-space: normal;
+  line-height: 1.3;
 }
 
 .price {
-    font-size: 0.85rem;
-    color: #666;
-    margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
 }
 
 .rating {
-    font-size: 0.85rem;
-    color: #ffc107;
+  font-size: 0.8rem;
+  color: #f39c12;
+  font-weight: bold;
 }
 
-/* الولاية */
-.wilaya {
-    font-weight: 500;
-    color: #555;
+.wilaya, .tenant_name, .mobile, .email {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
 }
 
-/* معلومات المستأجر */
-.tenant_name,
-.mobile,
-.email {
-    color: #555;
-    font-size: 0.9rem;
-}
-
-/* العمليات */
 .operations {
-    display: flex;
-    gap: 8px;
+  display: flex;
+  gap: 10px;
 }
 
 .operation_btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-    font-size: 1.1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px;
+  border-radius: 5px;
+  transition: background 0.2s;
 }
 
 .operation_btn:hover {
-    background-color: #e9ecef;
+  background-color: #eee;
 }
 
-/* الحالة الفارغة */
 .empty_state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #666;
-    font-size: 1.1rem;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  background: white;
+  border-radius: 15px;
 }
 
-/* للتجاوب مع الشاشات الصغيرة */
+/* Mobile Adjustments */
 @media (max-width: 768px) {
-    .table_wrapper {
-        border-radius: 8px;
-    }
-
-    .header_cell,
-    .table_cell {
-        padding: 12px 8px;
-        font-size: 0.8rem;
-    }
-
-    .image_container {
-        width: 60px;
-        height: 45px;
-    }
+  .table_wrapper {
+    border-radius: 10px;
+    margin: 0 -10px; 
+    width: calc(100% + 20px);
+  }
+  
+  .header_cell {
+    font-size: 0.8rem;
+    padding: 12px 10px;
+  }
+  
+  .table_cell {
+    padding: 12px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .image_container {
+    width: 60px;
+    height: 45px;
+  }
+  
+  .title {
+    font-size: 0.9rem;
+  }
+  
 }

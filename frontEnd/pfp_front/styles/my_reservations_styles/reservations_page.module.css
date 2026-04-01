@@ -70,7 +70,7 @@
     background-color: #6a4bc4;
 }
 
-/* للتجاوب */
+
 @media (max-width: 768px) {
     .page {
         padding: 24px 16px;

@@ -25,7 +25,6 @@ export default function NookRow({ nook, onEdit, onDelete }: NookRowProps) {
                 </div>
             </td>
 
-            {/* الوصف */}
             <td className={styles.table_cell}>
                 <div className={styles.description}>
                     <h4 className={styles.title}>{nook.title}</h4>
@@ -33,39 +32,32 @@ export default function NookRow({ nook, onEdit, onDelete }: NookRowProps) {
                     <span className={styles.rating}>★ {nook.rating}</span>
                 </div>
             </td>
-
-            {/* الولاية */}
             <td className={styles.table_cell}>
                 <span className={styles.wilaya}>{nook.wilaya}</span>
             </td>
 
-            {/* الحالة */}
             <td className={styles.table_cell}>
                 <StatusBadge status={nook.status as "reserved" | "available"} />
             </td>
 
-            {/* اسم المستأجر */}
             <td className={styles.table_cell}>
                 <span className={styles.tenant_name}>
                     {nook.tenant?.name || "-"}
                 </span>
             </td>
 
-            {/* الهاتف */}
             <td className={styles.table_cell}>
                 <span className={styles.mobile}>
                     {nook.tenant?.mobile || "-"}
                 </span>
             </td>
 
-            {/* البريد */}
             <td className={styles.table_cell}>
                 <span className={styles.email}>
                     {nook.tenant?.email || "-"}
                 </span>
             </td>
 
-            {/* العمليات */}
             <td className={styles.table_cell}>
                 <div className={styles.operations}>
                     <button 

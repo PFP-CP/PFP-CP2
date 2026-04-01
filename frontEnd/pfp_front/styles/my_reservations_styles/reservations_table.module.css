@@ -43,7 +43,7 @@
     color: #333;
 }
 
-/* الصورة */
+
 .image_container {
     width: 80px;
     height: 60px;
@@ -58,7 +58,7 @@
     height: 100%;
 }
 
-/* الوصف */
+
 .description {
     display: flex;
     flex-direction: column;
@@ -83,13 +83,13 @@
     color: #ffc107;
 }
 
-/* الولاية */
+
 .wilaya {
     font-weight: 500;
     color: #555;
 }
 
-/* معلومات المؤجر */
+
 .renter_name,
 .mobile,
 .email {
@@ -97,14 +97,14 @@
     font-size: 0.9rem;
 }
 
-/* التواريخ */
+
 .date {
     color: #555;
     font-size: 0.9rem;
     white-space: nowrap;
 }
 
-/* الحالة الفارغة */
+
 .empty_state {
     text-align: center;
     padding: 60px 20px;
@@ -115,7 +115,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* للتجاوب */
+
 @media (max-width: 768px) {
     .table_wrapper {
         border-radius: 8px;

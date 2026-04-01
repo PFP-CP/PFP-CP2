@@ -1,31 +1,135 @@
 .hero {
-    background-color: #7c5cdb;
+    background-color: #7c5cdb; 
     color: white;
-    padding: 60px 20px;
+    padding: 80px 5%; 
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%; 
+    box-sizing: border-box;
+    min-height: 60vh; 
+    position: relative;
+    overflow: hidden;
 }
 
 .hero_content {
     flex: 1;
+    max-width: 600px; 
+    z-index: 2;
+    padding-right: 20px;
 }
 
 .hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    font-size: 3rem; 
+    margin-bottom: 20px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -1px;
 }
 
 .hero p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    max-width: 500px;
+    font-size: 1.2rem;
+    opacity: 0.95;
+    max-width: 100%;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    font-family: 'sansation-400', sans-serif;
 }
 
 .hero_image {
     flex: 1;
     display: flex;
     justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero_image img {
+    max-width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); 
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Tablet & Small Desktop */
+@media (max-width: 1024px) {
+    .hero {
+        padding: 60px 4%;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero p {
+        font-size: 1.1rem;
+    }
+    
+    .hero_image img {
+        max-height: 400px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column-reverse; 
+        text-align: center;
+        padding: 40px 20px;
+        min-height: auto;
+    }
+
+    .hero_content {
+        max-width: 100%;
+        padding-right: 0;
+        margin-top: 30px;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    .hero_image {
+        width: 100%;
+    }
+
+    .hero_image img {
+        max-height: 250px;
+        width: 100%;
+        object-fit: contain;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .hero {
+        padding: 30px 15px;
+    }
+
+    .hero h1 {
+        font-size: 1.6rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+    }
+    
+    .hero_image img {
+        max-height: 200px;
+    }
 }

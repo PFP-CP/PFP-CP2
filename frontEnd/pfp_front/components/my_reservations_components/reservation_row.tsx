@@ -20,7 +20,6 @@ export default function ReservationRow({ reservation, onCancel }: ReservationRow
 
     return (
         <tr className={styles.table_row}>
-            {/* الصورة */}
             <td className={styles.table_cell}>
                 <div className={styles.image_container}>
                     <Image 
@@ -33,7 +32,6 @@ export default function ReservationRow({ reservation, onCancel }: ReservationRow
                 </div>
             </td>
 
-            {/* الوصف */}
             <td className={styles.table_cell}>
                 <div className={styles.description}>
                     <h4 className={styles.title}>{reservation.property.title}</h4>
@@ -42,32 +40,25 @@ export default function ReservationRow({ reservation, onCancel }: ReservationRow
                 </div>
             </td>
 
-            {/* الولاية */}
             <td className={styles.table_cell}>
                 <span className={styles.wilaya}>{reservation.property.wilaya}</span>
             </td>
-
-            {/* اسم المؤجر */}
             <td className={styles.table_cell}>
                 <span className={styles.renter_name}>{reservation.renter.name}</span>
             </td>
 
-            {/* الهاتف */}
             <td className={styles.table_cell}>
                 <span className={styles.mobile}>{reservation.renter.mobile}</span>
             </td>
 
-            {/* البريد */}
             <td className={styles.table_cell}>
                 <span className={styles.email}>{reservation.renter.email}</span>
             </td>
 
-            {/* تاريخ الوصول */}
             <td className={styles.table_cell}>
                 <span className={styles.date}>{formatDate(reservation.arrivalDate)}</span>
             </td>
 
-            {/* تاريخ المغادرة */}
             <td className={styles.table_cell}>
                 <span className={styles.date}>{formatDate(reservation.departureDate)}</span>
             </td>
