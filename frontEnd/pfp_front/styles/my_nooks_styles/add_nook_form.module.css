@@ -1,0 +1,242 @@
+.page {
+    padding: 40px 5%;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+.form_container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.section:last-of-type {
+    border-bottom: none;
+}
+
+.section_title {
+    font-size: 1.2rem;
+    color: #220E67;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Photos */
+.photos_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.upload_box {
+    aspect-ratio: 1;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #888;
+    font-size: 0.8rem;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.upload_box:hover {
+    border-color: #7c5cdb;
+    color: #7c5cdb;
+    background: #f4f0ff;
+}
+
+.photo_preview {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Inputs & Selects */
+.row {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.input_group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input_group label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.text_input, .select_input {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.text_input:focus, .select_input:focus {
+    border-color: #7c5cdb;
+}
+
+/* Toggles & Checkboxes */
+.toggle_group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.toggle_switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.toggle_switch input {
+    accent-color: #7c5cdb;
+    width: 18px;
+    height: 18px;
+}
+
+/* Counters */
+.grid_2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.counters {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.counter_box {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.counter_controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f4f4f4;
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.counter_controls button {
+    background: white;
+    border: 1px solid #ddd;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #7c5cdb;
+}
+
+.features_grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.feature_tag {
+    padding: 8px 16px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.feature_tag.active {
+    background: #7c5cdb;
+    color: white;
+}
+
+.textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+}
+
+.textarea:focus {
+    border-color: #7c5cdb;
+}
+
+.submit_btn {
+    background: #7c5cdb;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 20px;
+}
+
+.submit_btn:hover {
+    background: #6a42c9;
+}
+
+.submit_btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+
+@media (max-width: 768px) {
+    .form_container {
+        padding: 25px;
+    }
+    
+    .row {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .counters {
+        flex-direction: column;
+    }
+}

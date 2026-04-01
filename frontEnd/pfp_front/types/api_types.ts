@@ -1,12 +1,13 @@
 // ========== أنواع العقار (Property) ==========
 export interface Property {
-    id: number;
+    id: string;
     title: string;
     location: string;
-    wilaya: string;
-    price: number;
-    rating: number;
-    image: string;
+    state: string;
+    price: string;
+    city: string;
+    average_rating: number;
+    primary_image: string;
     images: string[];
     description: string;
     features: string[];
@@ -27,10 +28,9 @@ export interface Property {
         mobile: string;
         email: string;
     };
-    createdAt: string;
+    created_at: string;
     updatedAt: string;
 }
-// ========== أنواع الحجز ==========
 // ========== أنواع الحجز (Reservation) ==========
 export interface Reservation {
     id: number;
@@ -88,13 +88,16 @@ export interface Favorite {
 
 // ========== طلبات تسجيل الدخول ==========
 export interface LoginRequest {
-    email: string;
     password: string;
+    Identifier: string;
 }
 
 export interface LoginResponse {
-    token: string;
-    user: User;
+    token?: string;
+    user?: User;
+    refresh?: string;
+    access?: string;
+    message?: string;
 }
 
 // ========== طلبات تسجيل المستخدم ==========
@@ -116,7 +119,7 @@ export interface ReservationRequest {
 // ========== طلبات إنشاء عقار ==========
 export interface CreatePropertyRequest {
     title: string;
-    location: string;
+    country: string;
     wilaya: string;
     price: number;
     description: string;
@@ -232,7 +235,7 @@ export interface CreateNookRequest {
 
 export interface UpdateNookRequest {
     title?: string;
-    location?: string;
+    country?: string;
     price?: number;
     description?: string;
     images?: string[];
