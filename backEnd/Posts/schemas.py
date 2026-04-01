@@ -79,7 +79,7 @@ class SellerMiniOut(Schema):
     email:           str
     profile_picture: str
     rating:          Decimal
-    verified:        bool
+    verified:        bool=False
     
 
 
@@ -103,7 +103,6 @@ class HouseLocationMiniOut(Schema):
     Longitude: float
 class HouseImageMiniOut(Schema):
     URL: str
-
     @staticmethod
     def resolve_URL(obj):
         return obj.picture.url 

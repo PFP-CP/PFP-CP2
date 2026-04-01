@@ -3,8 +3,9 @@ from typing import Optional, List
 from Accounts.models import Account
 from Reservations.models import Reservation  # avoid circular import
 from uuid import UUID
-
+from Houses.models import Pictures
 from Posts.models import PostStatus
+
 
 # Sub-schemas (reusable pieces)
 class LocationOut(Schema):
@@ -14,11 +15,14 @@ class LocationOut(Schema):
     Longitude: float
     Latitude:  float
 
-
 class PictureOut(Schema):
-    id:  int
-    URL: str
+    url: str
 
+    @staticmethod
+    def resolve_url(obj):
+        if obj.picture:
+            return obj.picture.url
+        return Pictures.blank_house_image 
 
 class FeatureOut(Schema):
     id:      int
@@ -172,8 +176,6 @@ class NookPrivateOut(Schema):
         return None
 
 
-     
-
 
 
 # Post a new nook  (image 2 — CREATE)
@@ -230,7 +232,7 @@ class PostNookIn(Schema):
 # All fields optional — only sent fields are updated
 
 class UpdateNookIn(Schema):
-    title:       Optional[str]   = Field(None, max_length=400)
+    house_type:       Optional[str]   = "Apartment"
     description: Optional[str]   = Field(None, max_length=1000)
 
     price:        Optional[int]   = Field(None, gt=0)
@@ -251,7 +253,7 @@ class UpdateNookIn(Schema):
     longitude: Optional[float] = None
     latitude:  Optional[float] = None
 
-    feature_ids: Optional[List[int]] = None
+    feature_ids: Optional[List[int]] = [ ]
 
     allows_animals: Optional[bool] = None
     allows_smoking: Optional[bool] = None
@@ -267,28 +269,30 @@ class UpdateNookIn(Schema):
             beds = self.num_beds if self.num_beds is not None else self.num_bedroom
             if self.max_tenants < beds:
                 raise ValueError("max tenants cannot be less than number of beds")
-    
+        
+
+       
  # Full nook detail  (pre-fills the Modify form)
 
 class NookDetailOut(Schema):
     id:            UUID
-    title:         str
-    description:   str
-    status:        str
-    rating:        float
-    views_count:   int
-    saves_count:   int
-    comments_count: int
-    created_at:    str
-    updated_at:    str
+    title:         Optional[str]
+    description:   Optional[str]    
+    status:        Optional[str]
+    rating:        Optional[float]
+    views_count:   Optional[int]
+    saves_count:   Optional[int]
+    comments_count: Optional[int]
+    created_at:   Optional[str]
+    updated_at:    Optional[str]
 
     # House
-    price_per_night:  int
-    room_num:         int
-    num_bedroom:      int
-    num_bathroom:     int
-    surface:          float
-    types_of_renters: str
+    price_per_night:  Optional[int]
+    room_num:         Optional[int]
+    num_bedroom:     Optional[int]
+    num_bathroom:     Optional[int]
+    surface:          Optional[float]
+    types_of_renters: Optional[str]
 
     # Location
     location: Optional[LocationOut] = None
@@ -297,13 +301,15 @@ class NookDetailOut(Schema):
     features: List[FeatureOut] = []
 
     # Pictures
-    pictures: List[PictureOut] = []
-    primary_image: str
+    pictures: List[PictureOut]= []
+    primary_image: Optional[str] 
 
     # Toggles stored on House (you can add these fields to House model)
     house_rules: Optional[dict[str, bool]] = None
     types_of_renters: str = "AL"  
-
+    @staticmethod
+    def resolve_primary_image(obj):
+        return obj.primary_image
     @staticmethod 
     def resolve_house_rules(obj):
         rules = obj.house.rules  # assuming OneToOne relation
@@ -350,15 +356,10 @@ class NookDetailOut(Schema):
     def resolve_features(obj):
         f = obj.house.features.first()
         return list(f.features.all()) if f else []
-
     @staticmethod
     def resolve_pictures(obj):
-        return list(obj.house.pictures.all())
-
-    @staticmethod
-    def resolve_primary_image(obj):
-        return obj.primary_image
-
+     return list(obj.house.pictures.all())  # blank fallback handled in PictureOut.resolve_url
+ 
     @staticmethod
     def resolve_created_at(obj):
         return obj.created_at.isoformat()
@@ -367,10 +368,15 @@ class NookDetailOut(Schema):
     def resolve_updated_at(obj):
         return obj.updated_at.isoformat()
 
-
+        
 # Picture upload response
 
 class PictureUploadOut(Schema):
     id:      int
-    URL:     str
+    url:     str
     message: str = "Picture uploaded successfully"
+    @staticmethod
+    def resolve_url(obj):
+        if obj.picture:
+            return obj.picture.url
+    

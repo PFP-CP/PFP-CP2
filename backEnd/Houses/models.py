@@ -45,7 +45,6 @@ class Pictures(models.Model):
     picture = models.ImageField(upload_to="Houses/pictures", default="", blank=True)
     time_stamp = models.DateTimeField(auto_now_add=True)
 
-
 class FeatureList(models.Model):
     feature = models.CharField(max_length=75, unique=True)
 
