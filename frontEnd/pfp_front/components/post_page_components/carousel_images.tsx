@@ -33,7 +33,7 @@ const LEFT_ARROW = <svg xmlns="http://www.w3.org/2000/svg"
 
 export default function CarouselImages() {
   const glideRef = useRef(null);
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [screenWidth, setScreenWidth] = useState(0);
   
     useEffect(()=>{
       setScreenWidth(window.innerWidth);

@@ -6,7 +6,7 @@ import { SAVE_LOGO_ACTIVE, COPY_LINK_LOGO, LEAVE_ARROW } from "@/public/svg/svg"
 import Link from 'next/link';
 
 export default function Post_mobile_nav() {
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [screenWidth, setScreenWidth] = useState(0);
     
       useEffect(()=>{
         setScreenWidth(window.innerWidth);
