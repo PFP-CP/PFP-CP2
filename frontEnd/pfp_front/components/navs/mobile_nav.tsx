@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { logout } from '@/app/(authentication)/actions/login'
 import { motion } from "framer-motion";
+import { string } from 'zod'
 
 const SEARCH_ICON = (
   <svg className={style.search_logo} width="9" height="9" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,7 +40,7 @@ const SETTINGS = (
 
 )
 function getPathName(){
-  return usePathname().split('/')[1] as nav_link_names;
+  return usePathname().split('/')[1] as string;
 }
 
 
@@ -95,8 +96,8 @@ export default function Mobile_nav(){
               tabs.map((tab)=>{
                 let newPath = tab.toLowerCase().split(' ').join('');
                 return (
-                  <>
-                    <Link style={{flexGrow:'1'}} key={tab} href={'/'+newPath}>
+                  <div key={tab} style={{display: 'contents'}}>
+                    <Link style={{flexGrow:'1'}} href={'/'+newPath}>
                       <div onClick={()=>set_current_page(newPath)} className={style.nav_link} id={activeTab===tab?style.active:undefined} >
                         <div style={{zIndex:'1'}}> {tab} </div>
                         {activeTab===tab && <motion.div 
@@ -106,7 +107,7 @@ export default function Mobile_nav(){
                       ></motion.div>}
                       </div>
                     </Link>
-                  </>
+                  </div>
                   )
               })
             }

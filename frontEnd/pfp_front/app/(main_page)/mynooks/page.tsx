@@ -1,22 +1,28 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { api } from "@/lib/api"
 import { Property } from "@/types/api_types"
 import NooksTable from "@/components/my_nooks_components/nooks_table"
 import styles from "@/styles/my_nooks_styles/nooks_page.module.css"
 
 export default function MyNooksPage() {
+    const router = useRouter()
+    
     const [nooks, setNooks] = useState<Property[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    // جلب بيانات Nooks
+
     const fetchNooks = async () => {
         try {
+            setLoading(true)
             const response = await api.getMyNooks()
-            const data = response.data || response
-            setNooks(Array.isArray(data) ? data : [])
+ 
+            const data = Array.isArray(response) ? response : []
+            
+            setNooks(data)
             setError(null)
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to fetch Nooks")
@@ -26,32 +32,38 @@ export default function MyNooksPage() {
         }
     }
 
+    const handleDelete = async (id: number) => {
+        const confirmed = confirm("Are you sure you want to delete this Nook?")
+        if (!confirmed) return
+
+        try {
+            await api.deleteNook(id)
+            await fetchNooks()
+        } catch (error) {
+            console.error("Failed to delete:", error)
+            alert("Failed to delete Nook")
+        }
+    }
+
     useEffect(() => {
         fetchNooks()
     }, [])
 
-    // عرض حالة التحميل
     if (loading) {
         return (
             <main className={styles.page}>
-                <div className={styles.loading}>
-                    <h1>Nooks</h1>
-                    <p>Loading your Nooks...</p>
-                </div>
+                <div className={styles.loading}>Loading your Nooks...</div>
             </main>
         )
     }
 
-    // عرض حالة الخطأ
     if (error) {
         return (
             <main className={styles.page}>
                 <div className={styles.error}>
-                    <h1>Nooks</h1>
+                    <h1>My Nooks</h1>
                     <p className={styles.error_message}>Error: {error}</p>
-                    <button onClick={fetchNooks} className={styles.retry_btn}>
-                        Retry
-                    </button>
+                    <button onClick={fetchNooks} className={styles.retry_btn}>Retry</button>
                 </div>
             </main>
         )
@@ -61,17 +73,22 @@ export default function MyNooksPage() {
         <main className={styles.page}>
             <div className={styles.header}>
                 <div className={styles.title_section}>
-                    <h1 className={styles.page_title}>Nooks</h1>
-                    <p className={styles.subtitle}>
-                        Please keep in mind that the list is sorted by Wilaya
-                    </p>
+                    <h1 className={styles.page_title}>My Nooks</h1>
+                    <p className={styles.subtitle}>Manage your properties and reservations</p>
                 </div>
-                <button className={styles.add_new_btn}>
+                <button 
+                    className={styles.add_new_btn}
+                    onClick={() => router.push("/mynooks/add")}
+                >
                     Add new
                 </button>
             </div>
 
-            <NooksTable nooks={nooks} onRefresh={fetchNooks} />
+            <NooksTable 
+                nooks={nooks} 
+                onRefresh={fetchNooks}
+                onDelete={handleDelete} 
+            />
         </main>
     )
 }

@@ -9,19 +9,17 @@ import { api } from "@/lib/api"
 type NooksTableProps = {
     nooks: Property[];
     onRefresh: () => void;
+    onDelete: (id: number) => void;
 }
 
 export default function NooksTable({ nooks, onRefresh }: NooksTableProps) {
     const [deletingId, setDeletingId] = useState<number | null>(null)
 
-    // معالجة التعديل
     const handleEdit = (id: number) => {
-        // لاحقاً: نفتح صفحة أو Modal للتعديل
         console.log("Edit nook:", id)
         alert("Edit functionality will be added soon!")
     }
 
-    // معالجة الحذف
     const handleDelete = async (id: number) => {
         const confirmed = confirm("Are you sure you want to delete this Nook?")
         if (!confirmed) return
@@ -30,7 +28,7 @@ export default function NooksTable({ nooks, onRefresh }: NooksTableProps) {
         
         try {
             await api.deleteNook(id)
-            onRefresh() // إعادة تحميل البيانات
+            onRefresh() 
         } catch (error) {
             console.error("Failed to delete:", error)
             alert("Failed to delete Nook")

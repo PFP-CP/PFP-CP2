@@ -11,7 +11,7 @@ export default function RootLayout({
   const path = usePathname();
   const isPost = path.startsWith('/post')
   
-  const [screenWidth, setScreenWidth] = useState(0);
+  const [screenWidth, setScreenWidth] = useState(0); // Edit "set useState to 0"
       useEffect(()=>{
         setScreenWidth(window.innerWidth);
         let timeId : NodeJS.Timeout | null = null;;
@@ -27,7 +27,7 @@ export default function RootLayout({
         }
         window.addEventListener('resize', handleResize);
         return ()=> {
-          window.removeEventListener('resize', handleResize);
+          window.removeEventListener('resize', handleResize); // Edit From Alae "add window. "
           if(timeId) clearTimeout(timeId);
         }
       },[])
