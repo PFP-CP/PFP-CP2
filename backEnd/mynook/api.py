@@ -1,7 +1,4 @@
-import uuid
 from typing import List
-
-from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db import transaction
 from django.shortcuts import get_object_or_404
@@ -246,13 +243,6 @@ def update_mynook(request,post_id: str,payload:UpdateNookIn):
 #     Upload a picture for the nook (max 10)
 
 max_pictures = 10
-def _upload_picture(file: UploadedFile) -> str:
-    ext = file.name.split('.')[-1].lower()
-    filename = f"houses/{uuid.uuid4()}.{ext}"
-    
-    # This uses your Supabase S3 backend from settings.py automatically
-    saved_path = default_storage.save(filename, ContentFile(file.read()))
-    return saved_path  
 @router.post(
     '/{post_id}/pictures',
     response={201: PictureUploadOut},auth=JWTAuth(),
@@ -264,8 +254,7 @@ def upload_picture(request, post_id: str, file: UploadedFile = File(...)):
     # limit to 10 pictures
     if house.pictures.count() >=max_pictures:
         raise HttpError(400, "Maximum 10 pictures allowed per nook.")
-    path= _upload_picture(file)
-    picture = Pictures.objects.create(house=house, picture=path)
+    picture = Pictures.objects.create(house=house, picture=file)
     return 201, picture
 
 

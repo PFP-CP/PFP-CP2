@@ -237,7 +237,7 @@ class UpdateNookIn(Schema):
     num_bedroom:  Optional[int]   = Field(None, ge=1)
     num_bathroom: Optional[int]   = Field(None, ge=1)
     num_beds:      Optional[int]   = Field(None, ge=1)
-    max__tenants:   Optional[int]   = Field(None, ge=1)
+    max_tenants:   Optional[int]   = Field(None, ge=1)
     surface:      Optional[float] = Field(None, gt=0)
     types_of_renters:Optional[str] = Field(
         "AL",
