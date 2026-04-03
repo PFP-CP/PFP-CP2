@@ -26,10 +26,7 @@ class PictureOut(Schema):
 
 class FeatureOut(Schema):
     id:      int
-    feature: str
-
-#get public and private schemas
- 
+    feature: str 
 
 #  SHARED
 class NookCardOut(Schema):
@@ -312,7 +309,7 @@ class NookDetailOut(Schema):
         return obj.primary_image
     @staticmethod 
     def resolve_house_rules(obj):
-        rules = obj.house.rules  # assuming OneToOne relation
+        rules = obj.house.rules  
         if rules:
             return {
                 "allows_animals": rules.allows_animals,
@@ -358,7 +355,7 @@ class NookDetailOut(Schema):
         return list(f.features.all()) if f else []
     @staticmethod
     def resolve_pictures(obj):
-     return list(obj.house.pictures.all())  # blank fallback handled in PictureOut.resolve_url
+     return list(obj.house.pictures.all())
  
     @staticmethod
     def resolve_created_at(obj):
@@ -379,4 +376,6 @@ class PictureUploadOut(Schema):
     def resolve_url(obj):
         if obj.picture:
             return obj.picture.url
+class PictureDeleted(Schema):
+    message: str
     

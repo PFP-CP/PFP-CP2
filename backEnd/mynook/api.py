@@ -15,7 +15,7 @@ from ninja.errors import HttpError
 from .schemas import (
     NookDetailOut,
     NookPrivateOut,
-    PictureUploadOut,
+    PictureUploadOut,PictureDeleted,
     PostNookIn,
     SellerPublicProfileOut,
     UpdateNookIn,
@@ -118,8 +118,7 @@ def _apply_features(house: House, feature_ids: List[int]):
 # create a nook (house + post) — pictures uploaded separately
 @router.post(
     "/",
-    response={201: NookDetailOut},
-     
+    response={201: NookDetailOut},auth=JWTAuth(),
     summary="Create a new nook post new nook",
 )
 @transaction.atomic
@@ -189,13 +188,13 @@ def delete_nook(request, post_id: str):
 
 #update a nook (house + post) — pictures updated separately
 @router.patch(
-    "/{post_id}",response=NookDetailOut,summary="Update a nook (house and post details, features) ")
+    "/{post_id}",response=NookDetailOut,auth=JWTAuth(),summary="Update a nook (house and post details, features) ")
 def update_mynook(request,post_id: str,payload:UpdateNookIn):
     post = _get_seller_post(post_id, request.user)
     house = post.house
+    payload.validate_rules()#validate num_beds and max_tenatns 
     data = payload.dict(exclude_unset=True)
-
-    # -- House scalar fields --
+    # -- update house fields --
     house_payload_maps = {'Price':'price', 'RoomNum':'room_num', 'num_bedroom':'num_bedroom', 'num_bathroom':'num_bathroom', 'num_beds':'num_beds', 'max_tenants':'max_tenants', 'Surface':'surface', 'Types_of_Renters':'types_of_renters', 'Description':'description'}
     house_update_fields=[]  
     for field, payload_key in house_payload_maps.items():
@@ -256,7 +255,7 @@ def _upload_picture(file: UploadedFile) -> str:
     return saved_path  
 @router.post(
     '/{post_id}/pictures',
-    response={201: PictureUploadOut},
+    response={201: PictureUploadOut},auth=JWTAuth(),
     summary='Upload a picture to a nook ',
 )
 def upload_picture(request, post_id: str, file: UploadedFile = File(...)):
@@ -274,12 +273,12 @@ def upload_picture(request, post_id: str, file: UploadedFile = File(...)):
 #     Delete a specific picture
 
 @router.delete(
-    '/{post_id}/pictures/{picture_id}',
-    response={204: None},
+    '/{post_id}/pictures/{picture_id}',auth=JWTAuth(),
+    response={200:PictureDeleted},
     summary='Delete a picture from a nook',
 )
 def delete_picture(request, post_id: str, picture_id: int):
     post = _get_seller_post(post_id, request.user)
     picture = get_object_or_404(Pictures, id=picture_id, house=post.house)
     picture.delete()
-    return 204, None
+    return 200,{'message':'picture deleted successfuly.'}
