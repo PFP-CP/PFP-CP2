@@ -34,9 +34,9 @@ export default function RootLayout({
 
   return (
     <>  
-      {screenWidth>=1100 && <ComputerNav/>}
+      {/* {screenWidth>=1100 && <ComputerNav/>}
       { isPost && screenWidth>=700&& screenWidth<1100 && <Mobile_nav/>}
-      { !isPost && screenWidth<1100 && <Mobile_nav/>}
+      { !isPost && screenWidth<1100 && <Mobile_nav/>} */}
       {children}    
     </>
   );
