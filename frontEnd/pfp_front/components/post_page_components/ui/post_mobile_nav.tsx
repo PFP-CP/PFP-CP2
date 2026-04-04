@@ -34,7 +34,7 @@ export default function Post_mobile_nav() {
     {screenWidth<700 &&<nav className={style.showcase_header_mobile}>
       <div className={style.showcase_header}>
           <div className={style.leave_post_container}>
-            <div className={style.leave_post_logo}><Link href={"#"}>{LEAVE_ARROW}</Link></div>
+            <div className={style.leave_post_logo}>{LEAVE_ARROW}</div>
           </div>
       </div>
       <div className={style.post_actions}>

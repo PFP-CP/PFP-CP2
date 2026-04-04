@@ -226,7 +226,10 @@
   display: flex;
   justify-content: space-between;
   gap: 2rem;
-  padding: 1rem 2rem;
+  height: 50px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  align-items: center;
 }
 
 @media (max-width:1050px) {
@@ -245,6 +248,9 @@
 }
 
 @media (max-width:500px) {
+  .copy_link,.save{
+      font-size: 17px;
+  }
   .mobile_view{
     display: block;
   }
