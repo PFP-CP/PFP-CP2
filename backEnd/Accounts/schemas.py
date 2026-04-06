@@ -14,9 +14,6 @@ class AccountSchema(ModelSchema):
 
     Gender: str
 
-    @staticmethod
-    def resolve_Gender(obj: Account):
-        return "Male" if obj.gender else "Female"
 
 
 class AccountSignin(ModelSchema):

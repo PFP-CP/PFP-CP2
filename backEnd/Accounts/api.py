@@ -36,8 +36,7 @@ def Signin(request, Acc: AccountSignin):
     if Contact.objects.filter(Phone_Number=Acc.phone_number).exists():
         return {"Error": "Phone number is already registered"}
 
-    # switches gender string to boolean
-    gen = Acc.gender.lower() == "male"
+    gen = Account.GenderType.MALE if Acc.gender.lower() == "male" else Account.GenderType.FEMALE
 
     # json file that has all of algerias wilayas that gets parced to get the name from code
     main_dir = Path(__file__).parents[1]
@@ -265,7 +264,7 @@ def get_host_profile(request):
     return {
         "id": host.id,
         "full_name": host.full_name,
-        "gender": "male" if host.gender else "female",
+        "gender": "male" if host.gender.upper() == "M" else "female",
         "email": host.email,
         "phone_number": phone_number,
         "date_of_birth": host.date_of_birth,
