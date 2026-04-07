@@ -5,7 +5,7 @@ import CreatePostComputer from "./create_post_computer";
 export default function Home() {
   const [screenWidth, setScreenWidth] = useState(()=>window.innerWidth);
         useEffect(()=>{
-          console.log('hh');
+          console.log(screenWidth)
           setScreenWidth(window.innerWidth);
           let timeId : NodeJS.Timeout | null = null;;
           const handleResize = ()=> {
@@ -26,6 +26,6 @@ export default function Home() {
         },[screenWidth])
   return (
 
-    <>{screenWidth>=800 ? <CreatePostComputer />:<CreatePostMobile/>}</>
+    <>{screenWidth>=850 ? <CreatePostComputer />:<CreatePostMobile/>}</>
   );
 }

@@ -17,7 +17,7 @@ const UPLOAD = (<svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmln
 </svg>
 )
 const REMOVE_IMG = (
-  <svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <svg style={{cursor:'pointer'}} width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <circle cx="50" cy="50" r="48" fill="red" />
 
   <line x1="30" y1="30" x2="70" y2="70" stroke="white" stroke-width="10" strokeLinecap="round"/>
@@ -26,7 +26,7 @@ const REMOVE_IMG = (
 )
 
 const ADD_IMG = (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg  width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_143_204)">
 <path d="M5.25 11.6667C5.25 11.9888 5.51117 12.25 5.83333 12.25H8.16667C8.48883 12.25 8.75 11.9888 8.75 11.6667V8.75L11.6667 8.75C11.9888 8.75 12.25 8.48883 12.25 8.16667V5.83333C12.25 5.51117 11.9888 5.25 11.6667 5.25H8.75L8.75 2.33333C8.75 2.01117 8.48883 1.75 8.16667 1.75H5.83333C5.51117 1.75 5.25 2.01117 5.25 2.33333V5.25H2.33333C2.01117 5.25 1.75 5.51117 1.75 5.83333V8.16667C1.75 8.48883 2.01117 8.75 2.33333 8.75H5.25V11.6667Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 </g>

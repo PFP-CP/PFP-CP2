@@ -17,6 +17,8 @@
 
 .house_information_firstSection{
   display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
 
 .type_categores_rules_container,.location_numberOf_container{
@@ -170,6 +172,7 @@ input:focus{
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  padding: .5remz;
 }
 
 #price_per_night_div{
@@ -202,6 +205,7 @@ input:focus{
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  padding: .5rem;
 }
 .number_of_buttons input{
   width: 100%;
@@ -281,12 +285,3 @@ input:focus{
   align-self: center;
 }
 
-
-@media (max-width:1300px){
-  .create_post_container{
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-
-}

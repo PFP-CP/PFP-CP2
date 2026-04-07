@@ -80,7 +80,7 @@
 
 
 
-@media (min-width:800px) {
+@media (min-width:850px) {
   .image_uploader_container{
     display: grid;
     grid-template-columns: repeat(auto-fit,minmax(190px,1fr));
