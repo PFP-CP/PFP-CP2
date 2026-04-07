@@ -193,7 +193,7 @@ function Rules_categories_features(){
 function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>}){
   const [isCommenting, setIsCommenting] = useState(false);
   const [ratingValue,setRatingValue] = useState<number>();
-  const [screenWidth, setScreenWidth] = useState(0);
+  const [screenWidth, setScreenWidth] = useState(()=>window.innerWidth);
 
   useEffect(()=>{
     setScreenWidth(window.innerWidth);

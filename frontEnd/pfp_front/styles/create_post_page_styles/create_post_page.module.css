@@ -112,6 +112,7 @@
 }
 .section_container input[type="url"]::placeholder{
   text-align: center;
+  color: black;
 }
 
 .tenants_and_price{
@@ -153,6 +154,7 @@ input:focus{
   padding-left: 2ch;
   padding-top: 1ch;
   font-size: 11px;
+  font-family: "sansation-400",sans-serif;
 }
 
 .description:focus{
@@ -170,3 +172,4 @@ input:focus{
   border: none;
   border-radius: 10px;
 }
+

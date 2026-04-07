@@ -75,6 +75,9 @@ export default function CreatePostMobile() {
     if(tenantsAndPriceActive[2]) setFocus('price_per_night');
     if(!numberOf_Values[1]) number() 
   },[NumberOf_Inputs,tenantsAndPriceActive])
+  
+  
+  
   return(<> 
     <Create_post_mobile_nav />
     <form onSubmit={handleSubmit((data)=> console.log(data))}>
@@ -130,7 +133,7 @@ export default function CreatePostMobile() {
               {tenantsAndPriceActive[1] ?<input type="number" {...register('max_tenants')} min={0} onBlur={()=>setTenantsAndPriceActive((prev)=>{return {...prev,1:false}})}/>:`${tenantsAndPrice_Values[1] || "Max number of tenants"}`} 
             </div>
             <div onClick={()=>setTenantsAndPriceActive((prev)=>{return{...prev,2:true}})} className={ tenantsAndPrice_Values[2] ? style.filled_input:undefined}>
-              {tenantsAndPriceActive[2] ?<input type="number" {...register('price_per_night')} min={0} onBlur={()=>setTenantsAndPriceActive((prev)=>{return {...prev,2:false}})} />:`${tenantsAndPrice_Values[2] || "Price per night"}`}
+              {tenantsAndPriceActive[2] ?<input type="number" {...register('price_per_night')} min={0} onBlur={()=>setTenantsAndPriceActive((prev)=>{return {...prev,2:false}})} />:`${tenantsAndPrice_Values[2]?.length>0?tenantsAndPrice_Values[2]+" DA":"Price per night"}`}
             </div>
           </div>
       </div>

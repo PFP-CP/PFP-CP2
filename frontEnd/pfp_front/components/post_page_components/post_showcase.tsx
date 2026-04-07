@@ -12,7 +12,7 @@ import { useState,useEffect } from "react"
 
 
 function PostHeader(){
-  const [screenWidth, setScreenWidth] = useState(0);
+  const [screenWidth, setScreenWidth] = useState(()=>window.innerWidth);
   
     useEffect(()=>{
       setScreenWidth(window.innerWidth);

@@ -8,7 +8,7 @@
 	background-color: white;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   padding-bottom: 2rem;
 }
 .showcase_header{
@@ -140,6 +140,12 @@
 .images_navigation{
   display: flex;
   justify-content: space-between;
+}
+
+.location_details{
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
 }
 
 

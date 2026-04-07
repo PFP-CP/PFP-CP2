@@ -6,7 +6,7 @@ import {LEAVE_ARROW } from "@/public/svg/svg"
 import Link from 'next/link';
 
 export default function Create_post_mobile_nav() {
-  const [screenWidth, setScreenWidth] = useState(0);
+  const [screenWidth, setScreenWidth] = useState(()=>window.innerWidth);
     
       useEffect(()=>{
         setScreenWidth(window.innerWidth);
@@ -26,7 +26,7 @@ export default function Create_post_mobile_nav() {
           removeEventListener('resize', handleResize);
           if(timeId) clearTimeout(timeId);
         }
-      },[])
+      },[screenWidth])
   return (
 
     <>
