@@ -42,7 +42,7 @@ export default function Home() {
     }, []);
 
    useEffect(() => {
-        api.getProperties()
+        api.getMainPageProperties()
             .then((response) => {
                 const data = Array.isArray(response) ? response : (response as any).data || [];
                 

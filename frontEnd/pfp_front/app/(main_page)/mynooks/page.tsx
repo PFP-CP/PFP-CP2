@@ -18,7 +18,7 @@ export default function MyNooksPage() {
     const fetchNooks = async () => {
         try {
             setLoading(true)
-            const response = await api.getMyNooks()
+            const response = await api.getMyNooksDash()
  
             const data = Array.isArray(response) ? response : []
             

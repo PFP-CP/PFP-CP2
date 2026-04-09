@@ -88,8 +88,8 @@ export interface Favorite {
 
 // ========== طلبات تسجيل الدخول ==========
 export interface LoginRequest {
+    Identifier: string; // email
     password: string;
-    Identifier: string;
 }
 
 export interface LoginResponse {
@@ -102,10 +102,23 @@ export interface LoginResponse {
 
 // ========== طلبات تسجيل المستخدم ==========
 export interface RegisterRequest {
+    full_name: string;
     email: string;
     password: string;
-    name: string;
-    phone?: string;
+    date_of_birth: string; // YYYY-MM-DD
+    gender: "male" | "female";
+    state: string;
+    type_of_user?: "GUEST" | "HOST";
+    phone_number: string;
+}
+
+export interface UpdateProfileRequest {
+    full_name?: string;
+    date_of_birth?: string; // YYYY-MM-DD
+    state?: string;
+    gender?: string; // MALE or FEMALE
+    phone_number?: string;
+    email?: string;
 }
 
 // ========== طلبات إنشاء الحجز ==========
@@ -118,43 +131,48 @@ export interface ReservationRequest {
 
 // ========== طلبات إنشاء عقار ==========
 export interface CreatePropertyRequest {
-    title: string;
-    country: string;
-    wilaya: string;
-    price: number;
+    house_type: string;
     description: string;
-    images: string[];
-    features: string[];
-    rules: {
-        smoking: boolean;
-        animals: boolean;
-        noise: boolean;
-    };
-    categories: {
-        family: boolean;
-        single: boolean;
-        couple: boolean;
-    };
+    price: number;
+    room_num: number;
+    num_bedroom: number;
+    num_bathroom: number;
+    num_beds?: number;
+    max_tenants?: number;
+    surface: number;
+    types_of_renters: string;
+    county: string;
+    state: string;
+    country: string;
+    longitude: number;
+    latitude: number;
+    feature_ids: number[];
+    allows_animals: boolean;
+    allows_smoking: boolean;
+    allows_noise: boolean;
 }
 
 // ========== طلبات تحديث عقار ==========
 export interface UpdatePropertyRequest {
     title?: string;
-    location?: string;
-    price?: number;
     description?: string;
-    images?: string[];
-    features?: string[];
-    rules?: {
-        smoking: boolean;
-        animals: boolean;
-        noise: boolean;
-    };
-    categories?: {
-        family: boolean;
-        single: boolean;
-        couple: boolean;
-    };
+    price?: number;
+    room_num?: number;
+    num_bedroom?: number;
+    num_bathroom?: number;
+    num_beds?: number;
+    max_tenants?: number;
+    surface?: number;
+    types_of_renters?: string;
+    county?: string;
+    state?: string;
+    country?: string;
+    longitude?: number;
+    latitude?: number;
+    feature_ids?: number[];
+    allows_animals?: boolean;
+    allows_smoking?: boolean;
+    allows_noise?: boolean;
 }
 
 // ========== ردود API العامة ==========
@@ -214,41 +232,45 @@ export interface Nook {
 
 // ========== طلبات إنشاء/تحديث عقار ==========
 export interface CreateNookRequest {
-    title: string;
-    location: string;
-    wilaya: string;
-    price: number;
+    house_type: string;
     description: string;
-    images: string[];
-    features: string[];
-    rules: {
-        smoking: boolean;
-        animals: boolean;
-        noise: boolean;
-    };
-    categories: {
-        family: boolean;
-        single: boolean;
-        couple: boolean;
-    };
+    price: number;
+    room_num: number;
+    num_bedroom: number;
+    num_bathroom: number;
+    num_beds?: number;
+    max_tenants?: number;
+    surface: number;
+    types_of_renters: string;
+    county: string;
+    state: string;
+    country: string;
+    longitude: number;
+    latitude: number;
+    feature_ids: number[];
+    allows_animals: boolean;
+    allows_smoking: boolean;
+    allows_noise: boolean;
 }
 
 export interface UpdateNookRequest {
     title?: string;
-    country?: string;
-    price?: number;
     description?: string;
-    images?: string[];
-    features?: string[];
-    rules?: {
-        smoking: boolean;
-        animals: boolean;
-        noise: boolean;
-    };
-    categories?: {
-        family: boolean;
-        single: boolean;
-        couple: boolean;
-    };
-    status?: "reserved" | "available";
+    price?: number;
+    room_num?: number;
+    num_bedroom?: number;
+    num_bathroom?: number;
+    num_beds?: number;
+    max_tenants?: number;
+    surface?: number;
+    types_of_renters?: string;
+    county?: string;
+    state?: string;
+    country?: string;
+    longitude?: number;
+    latitude?: number;
+    feature_ids?: number[];
+    allows_animals?: boolean;
+    allows_smoking?: boolean;
+    allows_noise?: boolean;
 }

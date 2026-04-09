@@ -43,25 +43,32 @@ export default function AddNookPage() {
                 return;
             }
 
+            // Map categories to types_of_renters code
+            // AL=All  FA=Families  NM=No Males  NC=No Couples  NP=No Pets
+            let types_of_renters = "AL";
+            if (formData.family && !formData.single && !formData.couple) {
+                types_of_renters = "FA";
+            }
 
             const payload = {
-                title: formData.title,
-                country: "Algeria", 
-                wilaya: formData.wilaya, 
-                price: priceValue,       
+                house_type: formData.type,
                 description: formData.description,
-                images: formData.images.length > 0 ? formData.images : ["https://via.placeholder.com/400"],
-                features: formData.features,
-                rules: {
-                    smoking: formData.smoking,
-                    animals: formData.pets, 
-                    noise: formData.noise,
-                },
-                categories: {
-                    family: formData.family,
-                    single: formData.single,
-                    couple: formData.couple,
-                },
+                price: priceValue,
+                room_num: formData.bedrooms + formData.bathrooms,
+                num_bedroom: formData.bedrooms,
+                num_bathroom: formData.bathrooms,
+                max_tenants: formData.guests,
+                surface: 0,  // placeholder — form doesn't collect surface yet
+                types_of_renters: types_of_renters,
+                county: formData.location,
+                state: formData.wilaya,
+                country: "Algeria",
+                longitude: 0,  // placeholder — form doesn't collect coords yet
+                latitude: 0,   // placeholder — form doesn't collect coords yet
+                feature_ids: [] as number[],  // features are uploaded separately by name on backend seed
+                allows_animals: formData.pets,
+                allows_smoking: formData.smoking,
+                allows_noise: formData.noise,
             };
 
             console.log("Sending Payload:", payload); 
