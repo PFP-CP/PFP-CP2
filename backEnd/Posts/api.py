@@ -25,10 +25,8 @@ from .schemas import (
     CommentUpdate,
     ErrorSchema,
     MessageSchema,
-    PostCreateSchema,
     PostListOut,
     PostOut,
-    PostUpdateSchema,
     SavedPostOut,
 )
 
