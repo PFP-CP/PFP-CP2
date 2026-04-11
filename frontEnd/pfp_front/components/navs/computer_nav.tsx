@@ -10,7 +10,7 @@ import UserSettings from './user_settings';
 
 
 const SEARCH_ICON = (
-  <svg onClick={()=>logout()} className={style.search_logo} width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg className={style.search_logo} width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M15.8333 15.8333L22.5 22.5M10.2778 18.0556C5.98223 18.0556 2.5 14.5733 2.5 10.2778C2.5 5.98223 5.98223 2.5 10.2778 2.5C14.5733 2.5 18.0556 5.98223 18.0556 10.2778C18.0556 14.5733 14.5733 18.0556 10.2778 18.0556Z" stroke="white" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 

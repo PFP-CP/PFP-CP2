@@ -57,3 +57,9 @@ export type FormType = {
   location: string;
   birth_date: string;
 }
+
+export type imageItem = {
+  id:number;
+  file:File;
+  url:string;
+}

@@ -17,7 +17,14 @@ export async function login(Identifier:string, password:string){
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7
-    })
+    });
+    (await cookies()).set('refresh', data.tokens.refresh, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7
+    });
+    
     return {success: true};
   }
 
@@ -25,7 +32,8 @@ export async function login(Identifier:string, password:string){
 }
 
 export async function logout() {
-  (await cookies()).delete('token')
+  (await cookies()).delete('token');
+  (await cookies()).delete('refresh');
 }
 
 
