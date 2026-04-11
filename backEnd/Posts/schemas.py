@@ -102,6 +102,7 @@ class HouseLocationMiniOut(Schema):
     Latitude:  float
     Longitude: float
 class HouseImageMiniOut(Schema):
+    id: int
     URL: str
     @staticmethod
     def resolve_URL(obj):
@@ -242,25 +243,7 @@ class PostListOut(Schema):
     def resolve_primary_image(obj):
         img = obj.primary_image
         return img
-
-class PostCreateSchema(Schema):
-    # --- REQUIRED ---
-    title: str
-    price: Decimal
-    surface: Decimal
-    room_num: int
-    county: str
-    state: str
-    
-    # --- OPTIONAL
-    description: str = ""  
-    house_description: str = "" 
-    types_of_renters: Optional[str] = "Al"
-    country: str = "Algeria"
-    num_bedroom: Optional[int] = None
-    num_bathroom: Optional[int] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+ 
   
     @field_validator('title')
     @classmethod
@@ -269,11 +252,7 @@ class PostCreateSchema(Schema):
             raise ValueError('Title cannot be empty.')
         return v
 
-class PostUpdateSchema(Schema):
-    title:       Optional[str] = None
-    description: Optional[str] = None
-    status:         Optional[str]
-    
+ 
 
 # SavedPost schemas
 class SavedPostOut(Schema):
