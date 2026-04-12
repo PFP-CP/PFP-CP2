@@ -21,7 +21,7 @@ export async function submitHouseImages(postId:string, images:Array<Blob>){
   const uploadPromises = images.map((img,i)=>{
     const formData = new FormData();
       console.log("compressed image :", img);
-    formData.append('file', img, `image_${i}.jpg`);
+    formData.append('file', img, `image_${i}.webp`);
 
     return fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
       method: "POST",
@@ -65,8 +65,8 @@ export async function submitHouseInformation(data:object){
       Couple: data.categories.includes('couple'),
       Single: data.categories.includes('single'),
     },
-    county:data.wilaya,
-    state:'hh',
+    county:'hh',
+    state:data.wilaya,
     country:"Algeria",
     longitude:1,
     latitude:1,
@@ -104,7 +104,6 @@ export async function submitHouseInformation(data:object){
     
   })
   const response = await res.json();
-  console.log(await res);
   const res_status = await res.ok;
   if(res_status){
     return {success:true, post_id:response.id}
