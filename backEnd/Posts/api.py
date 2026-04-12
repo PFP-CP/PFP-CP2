@@ -112,12 +112,22 @@ def wilaya_query(previous_search: QuerySet, wilaya: str | None = None) -> QueryS
 
 
 def allowed_people_query(
-    previous_search: QuerySet, allowed_people: list[str] = []
+    previous_search: QuerySet, allowed_people: TypeOfPeople
 ) -> QuerySet:
     """Filter by House.Types_of_Renters (adjust field name if needed)."""
+    
     if not allowed_people:
         return previous_search
-    return previous_search.filter(house__Types_of_Renters__in=allowed_people)
+    
+    people = "AL" 
+    
+    if not allowed_people.Couple and not allowed_people.Single:
+        people = "FA"
+    if not allowed_people.Couple :
+        people = "NC"
+    if not allowed_people.Single:
+        people = "NM"
+    return previous_search.filter(house__Types_of_Renters=people)
 
 
 def features_query(previous_search: QuerySet, features: list[str] = []) -> QuerySet:

@@ -9,6 +9,12 @@ from ninja import Schema
 from typing import Optional
 from Houses.models import Pictures
 
+class TypeOfPeople(Schema):
+
+    Families : bool = True
+    Couple : bool = True
+    Single : bool = True
+
 
 class SearchCriteria(Schema):
     house_type :      Optional[str]       = None
@@ -19,7 +25,7 @@ class SearchCriteria(Schema):
     min_price:        Optional[int]       = None
     max_price:        Optional[int]       = None
     features:         Optional[list[str]] = []
-    allowed_people:   Optional[list[str]] = []
+    allowed_people:   Optional[TypeOfPeople]
     rules:            Optional[list[str]] = []
     order_by:         Optional[str]       = "newest"
 
