@@ -128,6 +128,10 @@ def features_query(previous_search: QuerySet, features: list[str] = []) -> Query
         )
     return previous_search
 
+def type_query(previous_search: QuerySet , House_type : str) -> QuerySet:
+    if House_type:
+        return previous_search.filter(title__contains = House_type)
+    return previous_search
 
 # Sorting — operates on serialised dicts, keys are SearchResult names #
 
@@ -177,6 +181,7 @@ def search(request, Criteria: SearchCriteria):
             "seller__contact",
             "seller",
         ).prefetch_related(
+            "house__pictures",
             "house__location",
             "house__features__features",
             "comments",
@@ -192,7 +197,7 @@ def search(request, Criteria: SearchCriteria):
         results_query = wilaya_query(results_query, Criteria.wilaya)
         results_query = allowed_people_query(results_query, Criteria.allowed_people)
         results_query = features_query(results_query, Criteria.features)
-
+        results_query = type_query(results_query , Criteria.house_type)
         # Serialise to plain dicts for caching
         results = [SearchResult.from_orm(post).dict() for post in results_query]
 
