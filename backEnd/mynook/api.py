@@ -16,6 +16,7 @@ from .schemas import (
     PostNookIn,
     SellerPublicProfileOut,
     UpdateNookIn,
+    TypeOfPeople,
 )
 
 # add feature for the icons shown in create and update post
@@ -111,6 +112,16 @@ def _apply_features(house: House, feature_ids: List[int]):
     else:
         features_obj.features.clear()
 
+def Type_of_renter_helper(Allowed : TypeOfPeople):
+    if Allowed.Families and Allowed.Couple and Allowed.Single:
+        return "AL"
+    if not Allowed.Couple and not Allowed.Single:
+        return "FA"
+    if not Allowed.Couple :
+        return "NC"
+    if not Allowed.Single:
+        return "NM"
+    
 
 # create a nook (house + post) — pictures uploaded separately
 @router.post(
@@ -122,7 +133,7 @@ def _apply_features(house: House, feature_ids: List[int]):
 def post_new_nook(
     request,
     payload: PostNookIn,
-):
+): 
     # 1. Create the House
     payload.validate_rules()
     house = House.objects.create(
@@ -134,7 +145,7 @@ def post_new_nook(
         max_tenants=payload.max_tenants,
         Surface=payload.surface,
         Description=payload.description,
-        Types_of_Renters=payload.types_of_renters,
+        Types_of_Renters=Type_of_renter_helper(payload.types_of_renters),
     )
     # 2. Create the Rules (Linked to House)
     houseRules.objects.create(

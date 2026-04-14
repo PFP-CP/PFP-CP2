@@ -1,6 +1,7 @@
 'use client'
 import ComputerNav from "@/components/navs/computer_nav";
 import Mobile_nav from "@/components/navs/mobile_nav";
+import { useMediaQuery } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useState,useEffect } from "react";
 export default function RootLayout({
@@ -11,32 +12,16 @@ export default function RootLayout({
   const path = usePathname();
   const isPost = path.startsWith('/post')
   
-  const [screenWidth, setScreenWidth] = useState(()=>window.innerWidth); // Edit "set useState to 0"
-      useEffect(()=>{
-        setScreenWidth(window.innerWidth);
-        let timeId : NodeJS.Timeout | null = null;;
-        const handleResize = ()=> {
-          
-          if(timeId) return;
-    
-          timeId =  setTimeout(()=>{
-            setScreenWidth(window.innerWidth);
-            timeId = null;
-    
-          },300)
-        }
-        window.addEventListener('resize', handleResize);
-        return ()=> {
-          window.removeEventListener('resize', handleResize); // Edit From Alae "add window. "
-          if(timeId) clearTimeout(timeId);
-        }
-      },[])
+  const computer_nav = useMediaQuery('(min-width:1100px)')
+  const mobile_nav_and_post = useMediaQuery('(min-width:700px) and (max-width:1100px)')
+  const mobile_nav_no_post = useMediaQuery('(max-width:1100px)')
+
 
   return (
     <>  
-      {screenWidth>=1100 && <ComputerNav/>}
-      { isPost && screenWidth>=700&& screenWidth<1100 && <Mobile_nav/>}
-      { !isPost && screenWidth<1100 && <Mobile_nav/>}
+      {computer_nav && <ComputerNav/>}
+      { isPost && mobile_nav_and_post && <Mobile_nav/>}
+      { !isPost && mobile_nav_no_post && <Mobile_nav/>}
       {children}    
     </>
   );

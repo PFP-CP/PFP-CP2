@@ -9,8 +9,15 @@ from ninja import Schema
 from typing import Optional
 from Houses.models import Pictures
 
+class TypeOfPeople(Schema):
+
+    Families : bool = True
+    Couple : bool = True
+    Single : bool = True
+
 
 class SearchCriteria(Schema):
+    house_type :      Optional[str]       = None
     number_of_rooms:  Optional[int]       = None
     wilaya:           Optional[str]       = None
     renter_rating:    Optional[float]     = None
@@ -18,21 +25,21 @@ class SearchCriteria(Schema):
     min_price:        Optional[int]       = None
     max_price:        Optional[int]       = None
     features:         Optional[list[str]] = []
-    allowed_people:   Optional[list[str]] = []
+    allowed_people:   Optional[TypeOfPeople]
     rules:            Optional[list[str]] = []
     order_by:         Optional[str]       = "newest"
 
 
 class SearchResult(Schema):
     renter_name:   str
-    wilaya:        str
+    wilaya:        Optional[str] = None
     price:         int
     rating:        float
     description:   str
     phone_number:  Optional[str]=None
     contact:       str
     creation_time: str
-
+    picture: str 
     class Config:
         from_attributes = True
 
@@ -71,6 +78,13 @@ class SearchResult(Schema):
     @staticmethod
     def resolve_creation_time(obj):
         return obj.created_at.isoformat()
+    
+    @staticmethod
+    def resolve_picture(obj):
+        first_pic = obj.house.pictures.first()
+        if first_pic:
+            return first_pic.picture.url
+        return Pictures.blank_house_image
 #  helper schemas for nested data in PostOut 
 
 class SellerMiniOut(Schema):
@@ -102,6 +116,7 @@ class HouseLocationMiniOut(Schema):
     Latitude:  float
     Longitude: float
 class HouseImageMiniOut(Schema):
+    id: int
     URL: str
     @staticmethod
     def resolve_URL(obj):
@@ -242,25 +257,7 @@ class PostListOut(Schema):
     def resolve_primary_image(obj):
         img = obj.primary_image
         return img
-
-class PostCreateSchema(Schema):
-    # --- REQUIRED ---
-    title: str
-    price: Decimal
-    surface: Decimal
-    room_num: int
-    county: str
-    state: str
-    
-    # --- OPTIONAL
-    description: str = ""  
-    house_description: str = "" 
-    types_of_renters: Optional[str] = "Al"
-    country: str = "Algeria"
-    num_bedroom: Optional[int] = None
-    num_bathroom: Optional[int] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+ 
   
     @field_validator('title')
     @classmethod
@@ -269,11 +266,7 @@ class PostCreateSchema(Schema):
             raise ValueError('Title cannot be empty.')
         return v
 
-class PostUpdateSchema(Schema):
-    title:       Optional[str] = None
-    description: Optional[str] = None
-    status:         Optional[str]
-    
+ 
 
 # SavedPost schemas
 class SavedPostOut(Schema):

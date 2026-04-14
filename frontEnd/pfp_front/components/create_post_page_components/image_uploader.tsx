@@ -2,8 +2,7 @@
 import { useEffect,useState,useRef, ChangeEvent } from 'react';
 import style from '@/styles/create_post_page_styles/img_uploader.module.css'
 import Image from 'next/image';
-import { div } from 'motion/react-client';
-
+import { imageItem } from '@/types/types';
 
 const UPLOAD = (<svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clipPath="url(#clip0_143_191)">
@@ -50,16 +49,12 @@ function removeAboveTenImages(images:object){
   return newImages;
 }
 
-type imageItem = {
-  id:number;
-  file:File;
-  url:string;
-}
 
-export default function Uploader() {
+
+export default function Uploader({images, setImages}:{images:imageItem[],setImages:React.Dispatch<React.SetStateAction<imageItem[]>>}) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [images, setImages] = useState<imageItem[]>([]);
   const imagesIDs = useRef(0);
+
 
   const numberOfEmptyImages = 10-images.length>0?10-images.length:0;
   const arr_numberOfEmptyImages = new Array(numberOfEmptyImages).fill(1);
@@ -126,7 +121,6 @@ export default function Uploader() {
         )
       })
       }
-      
     </div>
   )
 }

@@ -132,7 +132,23 @@ export const errMap= new Map([
   ["Full Name: full name is required",9],
 ]);
 
-
 export const PROPERTY_TYPES = ["Apartment", "Villa", "Chalet"]
 
-export const FEATURES = ["Pool", "Wifi", "Parking", "Kitchen","Air conditioning", "Sea view",]
+export const FEATURES = new Map([
+  ['pool', 1],
+  ['wifi', 2],
+  ['heating', 3],
+  ['air_conditioning', 4],
+  ['television', 5],
+  ['kitchen', 6],
+  ['microwave', 7],
+  ['fridge', 8],
+  ['washing_machine', 9],
+  ['cleaning_product', 10],
+  ['sea_view', 11],
+  ['parking', 12],
+  ['dishes', 13],
+  ['freezer', 14],
+  ['stove', 15],
+  ['oven', 16]
+]);

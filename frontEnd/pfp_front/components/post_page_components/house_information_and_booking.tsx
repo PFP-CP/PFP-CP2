@@ -3,7 +3,7 @@ import { ChangeEvent, useState,useRef, useEffect } from 'react'
 import style from '@/styles/post_page_styles/house_information_and_booking.module.css'
 import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM } from '@/public/svg/svg'
 import Comment from './house_information_components/Comment'
-import { Slider } from '@mui/material'
+import { Slider, useMediaQuery } from '@mui/material'
 import MyDatePicker from './ui/date_picker'
 import CarouselImages from "./carousel_images"
 
@@ -193,27 +193,8 @@ function Rules_categories_features(){
 function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>}){
   const [isCommenting, setIsCommenting] = useState(false);
   const [ratingValue,setRatingValue] = useState<number>();
-  const [screenWidth, setScreenWidth] = useState(()=>window.innerWidth);
+  const screenWidth = useMediaQuery(('min-width:700px'));
 
-  useEffect(()=>{
-    setScreenWidth(window.innerWidth);
-    let timeId : NodeJS.Timeout | null = null;;
-    const handleResize = ()=> {
-      
-      if(timeId) return;
-
-      timeId =  setTimeout(()=>{
-        setScreenWidth(window.innerWidth);
-        timeId = null;
-
-      },300)
-    }
-    window.addEventListener('resize', handleResize);
-    return ()=> {
-      removeEventListener('resize', handleResize);
-      if(timeId) clearTimeout(timeId);
-    }
-  },[])
   return(
           <div className={style.nook_and_renter_rating}>
             <div className={style.rating_display}>
@@ -250,7 +231,7 @@ function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<Re
                     </div>
                   </div>
                 </div>
-                {screenWidth>=700? <>{!isCommenting && <RateRenterButton />}</>:<RateRenterButton />}
+                {screenWidth? <>{!isCommenting && <RateRenterButton />}</>:<RateRenterButton />}
               </div>
             </div>
             {isCommenting?
@@ -263,7 +244,7 @@ function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<Re
             <div className={style.rating_and_ratingButton_container_mobile_view}>
               <div className={style.rating_display}>
                 <div className={style.rating_and_ratingButton_container}>
-                  <div onClick={screenWidth>700?(()=>{setShowComments((prev)=>!prev)}) : undefined} className={style.nook_rating_and_comments}>
+                  <div onClick={screenWidth?(()=>{setShowComments((prev)=>!prev)}) : undefined} className={style.nook_rating_and_comments}>
                       <div className={style.nook_rating_value}>
                         4,93
                         {STAR_LOGO}

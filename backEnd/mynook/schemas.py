@@ -177,6 +177,12 @@ class NookPrivateOut(Schema):
 
 # Post a new nook  (image 2 — CREATE)
 
+class TypeOfPeople(Schema):
+
+    Families : bool = True
+    Couple : bool = True
+    Single : bool = True
+
 class PostNookIn(Schema):
     """
     Payload for 'Post a new nook'.
@@ -193,11 +199,8 @@ class PostNookIn(Schema):
     num_beds:     Optional[int]   = Field(None, ge=1)
     max_tenants:  Optional[int]   = Field(None, ge=1)
     surface:      float = Field(..., gt=0, description="Surface in m²")
-    types_of_renters: str = Field(
-        "AL",
-        description="AL=All  FA=Families  NM=No Males  NC=No Couples  NP=No Pets",
-    )
-
+    types_of_renters: TypeOfPeople
+    
     # Location
     county:    str   
     state:     str   
