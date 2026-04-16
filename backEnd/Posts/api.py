@@ -332,8 +332,8 @@ def get_post(request, post_id: uuid.UUID):
     post = get_object_or_404(
         Post.objects.select_related("house", "seller").prefetch_related(
             "house__location",
-            "house__pictures",
-            "house__features__features",
+            "house__pictures","house__features__features",
+            "house__features__features","house__rules",
             Prefetch(
                 "comments",
                 queryset=Comment.objects.select_related("user").order_by("-created_at"),

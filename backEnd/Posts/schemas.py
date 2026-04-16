@@ -77,11 +77,16 @@ class SellerMiniOut(Schema):
     id:              int
     full_name:       str
     email:           str
-    profile_picture: str
+    profile_picture: Optional[str]=None
     rating:          Decimal
     verified:        bool=False
     
-
+    @staticmethod
+    def resolve_profile_picture(obj):
+        if obj.profile_picture :
+            print("profile picture url:", obj.profile_picture)  # Debug print
+            return obj.profile_picture.url
+        return Pictures.blank_profile_image
 
 class HouseMiniOut(Schema):
    
@@ -106,7 +111,7 @@ class HouseImageMiniOut(Schema):
     URL: str
     @staticmethod
     def resolve_URL(obj):
-        return obj.picture.url 
+        return obj.picture.url if obj.picture else None
 # Comment schemas
 class CommentOut(Schema):
     id:          uuid.UUID
@@ -163,8 +168,11 @@ class PostOut(Schema):
     seller:   SellerMiniOut
     house:    HouseMiniOut
     location: Optional[HouseLocationMiniOut] = None
-    house_pictures:   List[HouseImageMiniOut]        = []
+    house_pictures:   List[HouseImageMiniOut]       = []
     comments: List[CommentOut]               = []
+    features: Optional[List[str]] = []
+    allowed_people: Optional[List[str]] = []
+    rules: Optional[List[str]] = []
 
     @staticmethod
     def resolve_location(obj):
