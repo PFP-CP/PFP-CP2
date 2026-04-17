@@ -303,10 +303,9 @@ class NookDetailOut(Schema):
     # Pictures
     pictures: List[PictureOut]= []
     primary_image: Optional[str] 
-
-    # Toggles stored on House (you can add these fields to House model)
+ 
     house_rules: Optional[dict[str, bool]] = None
-    types_of_renters: str = "AL"  
+    
     @staticmethod
     def resolve_primary_image(obj):
         return obj.primary_image

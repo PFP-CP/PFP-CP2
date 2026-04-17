@@ -107,11 +107,15 @@ class HouseLocationMiniOut(Schema):
     Latitude:  float
     Longitude: float
 class HouseImageMiniOut(Schema):
-    id: int
-    URL: str
+    id: Optional[int] = None  # Make ID optional for the blank fallback
+    URL: str | None
     @staticmethod
     def resolve_URL(obj):
-        return obj.picture.url if obj.picture else None
+        if isinstance(obj, dict):# This is the case for the blank image fallback
+            return obj.get("URL")
+        if obj.picture: 
+            return obj.picture.url #when image exists return its url
+        return None 
 # Comment schemas
 class CommentOut(Schema):
     id:          uuid.UUID
@@ -171,9 +175,29 @@ class PostOut(Schema):
     house_pictures:   List[HouseImageMiniOut]       = []
     comments: List[CommentOut]               = []
     features: Optional[List[str]] = []
-    allowed_people: Optional[List[str]] = []
-    rules: Optional[List[str]] = []
-
+    allowed_people: Optional[str]
+    house_rules: Optional[dict[str, bool]] = None
+    @staticmethod
+    def resolve_features(obj):
+        features_qs = getattr(obj.house, 'features', None)
+        if features_qs:
+            feature_list = features_qs.first().features.all()
+            return [f.feature for f in feature_list]
+        return []
+    @staticmethod
+    def resolve_allowed_people(obj):
+        renter_type = obj.house.Types_of_Renters
+        return renter_type if renter_type else "AL"
+    @staticmethod 
+    def resolve_house_rules(obj):
+        rules = obj.house.rules  
+        if rules:
+            return {
+                "allows_animals": rules.allows_animals,
+                "allows_smoking": rules.allows_smoking,
+                "allows_noise": rules.allows_noise,
+            }
+        return None
     @staticmethod
     def resolve_location(obj):
         locs = getattr(obj.house, 'location', None)
