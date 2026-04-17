@@ -13,26 +13,33 @@ export default function MyNooksPage() {
     const [nooks, setNooks] = useState<Property[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-
+    const [isUnauthorized, setIsUnauthorized] = useState(false)
 
     const fetchNooks = async () => {
         try {
             setLoading(true)
-            const response = await api.getMyNooks()
- 
+            const response = await api.getMyNooksDash()
             const data = Array.isArray(response) ? response : []
-            
             setNooks(data)
             setError(null)
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to fetch Nooks")
+        } catch (err: any) {
+            const msg: string = err?.message || "Failed to fetch Nooks"
+            if (
+                err?.status === 401 ||
+                msg.toLowerCase().includes("unauthorized") ||
+                msg.includes("401")
+            ) {
+                setIsUnauthorized(true)
+            } else {
+                setError(msg)
+            }
             console.error("Error fetching Nooks:", err)
         } finally {
             setLoading(false)
         }
     }
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         const confirmed = confirm("Are you sure you want to delete this Nook?")
         if (!confirmed) return
 
@@ -52,7 +59,36 @@ export default function MyNooksPage() {
     if (loading) {
         return (
             <main className={styles.page}>
+                <div className={styles.header}>
+                    <div className={styles.title_section}>
+                        <h1 className={styles.page_title}>My Nooks</h1>
+                    </div>
+                </div>
                 <div className={styles.loading}>Loading your Nooks...</div>
+            </main>
+        )
+    }
+
+    if (isUnauthorized) {
+        return (
+            <main className={styles.page}>
+                <div className={styles.header}>
+                    <div className={styles.title_section}>
+                        <h1 className={styles.page_title}>My Nooks</h1>
+                    </div>
+                </div>
+                <div className={styles.error} style={{ textAlign: "center", padding: "60px 20px" }}>
+                    <p style={{ fontSize: "1.2rem", color: "#666", marginBottom: "1rem" }}>
+                        You must be logged in to view your nooks.
+                    </p>
+                    <button
+                        onClick={() => router.push("/login")}
+                        className={styles.retry_btn}
+                        style={{ background: "#7c5cdb" }}
+                    >
+                        Go to Login
+                    </button>
+                </div>
             </main>
         )
     }

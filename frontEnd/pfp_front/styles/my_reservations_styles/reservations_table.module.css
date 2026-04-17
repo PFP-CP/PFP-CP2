@@ -1,64 +1,57 @@
 .table_wrapper {
-    width: 100%;
-    overflow-x: auto;
-    background-color: #fff;
+    background: #f8f9fa;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-top: 24px;
+    overflow-x: auto;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .table {
     width: 100%;
-    border-collapse: collapse;
-    min-width: 1200px;
-}
-
-.table_header {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #e9ecef;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+    background: transparent;
 }
 
 .header_cell {
-    padding: 16px;
+    padding: 12px 16px;
     text-align: left;
     font-size: 0.85rem;
-    font-weight: 600;
-    color: #495057;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    color: #4a389d;
 }
 
 .table_row {
-    border-bottom: 1px solid #e9ecef;
-    transition: background-color 0.2s;
+    background: white;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .table_row:hover {
-    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(74, 56, 157, 0.12);
 }
 
 .table_cell {
     padding: 16px;
     vertical-align: middle;
-    font-size: 0.9rem;
-    color: #333;
 }
 
-/* الصورة */
 .image_container {
-    width: 80px;
-    height: 60px;
+    width: 100px;
+    height: 75px;
+    position: relative;
     border-radius: 8px;
     overflow: hidden;
-    position: relative;
 }
 
 .table_image {
     object-fit: cover;
-    width: 100%;
-    height: 100%;
 }
 
-/* الوصف */
 .description {
     display: flex;
     flex-direction: column;
@@ -66,69 +59,38 @@
 }
 
 .title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #333;
     margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
 }
 
 .price {
+    margin: 0;
     font-size: 0.85rem;
     color: #666;
-    margin: 0;
 }
 
 .rating {
     font-size: 0.85rem;
-    color: #ffc107;
+    color: #333;
+    font-weight: 600;
 }
 
-/* الولاية */
-.wilaya {
-    font-weight: 500;
-    color: #555;
-}
-
-/* معلومات المؤجر */
-.renter_name,
-.mobile,
-.email {
-    color: #555;
+.wilaya, .renter_name, .mobile, .email, .date {
     font-size: 0.9rem;
+    color: #333;
 }
 
-/* التواريخ */
-.date {
-    color: #555;
-    font-size: 0.9rem;
-    white-space: nowrap;
-}
-
-/* الحالة الفارغة */
 .empty_state {
     text-align: center;
-    padding: 60px 20px;
+    padding: 100px 20px;
     color: #666;
-    font-size: 1.1rem;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* للتجاوب */
-@media (max-width: 768px) {
-    .table_wrapper {
-        border-radius: 8px;
-    }
-
-    .header_cell,
-    .table_cell {
-        padding: 12px 8px;
-        font-size: 0.8rem;
-    }
-
-    .image_container {
-        width: 60px;
-        height: 45px;
+@media (max-width: 1024px) {
+    .header_cell:nth-child(n+5),
+    .table_cell:nth-child(n+5) {
+        display: none;
     }
 }

@@ -1,27 +1,49 @@
-import Image from "next/image"
+import { useState } from "react"
 import styles from "@/styles/my_nooks_styles/nooks_table.module.css"
 import StatusBadge from "./status_badge"
 import { Property } from "@/types/api_types"
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+
+function getFullImageUrl(url: string | null | undefined): string | null {
+    if (!url) return null
+    if (url.startsWith("http://") || url.startsWith("https://")) return url
+    if (url.startsWith("/")) return `${BACKEND_URL}${url}`
+    return null
+}
+
 type NookRowProps = {
     nook: Property;
-    onEdit: (id: number) => void;
-    onDelete: (id: number) => void;
+    onEdit: (id: string) => void;
+    onDelete: (id: string) => void;
 }
 
 export default function NookRow({ nook, onEdit, onDelete }: NookRowProps) {
+    const [imgError, setImgError] = useState(false)
+    const imageUrl = getFullImageUrl(nook.primary_image)
+
     return (
         <tr className={styles.table_row}>
             {/* الصورة */}
             <td className={styles.table_cell}>
                 <div className={styles.image_container}>
-                    <Image 
-                        src={nook.image} 
-                        alt={nook.title} 
-                        width={80} 
-                        height={60}
-                        className={styles.table_image}
-                    />
+                    {imageUrl && !imgError ? (
+                        <img
+                            src={imageUrl}
+                            alt={nook.title}
+                            onError={() => setImgError(true)}
+                            style={{ width: "80px", height: "60px", objectFit: "cover", borderRadius: "6px" }}
+                        />
+                    ) : (
+                        <div style={{
+                            width: "80px", height: "60px",
+                            background: "linear-gradient(135deg, #7c5cdb22, #7c5cdb44)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: "1.5rem", borderRadius: "6px"
+                        }}>
+                            🏠
+                        </div>
+                    )}
                 </div>
             </td>
 
@@ -30,18 +52,18 @@ export default function NookRow({ nook, onEdit, onDelete }: NookRowProps) {
                 <div className={styles.description}>
                     <h4 className={styles.title}>{nook.title}</h4>
                     <p className={styles.price}>{nook.price} DA per night</p>
-                    <span className={styles.rating}>★ {nook.rating}</span>
+                    <span className={styles.rating}>★ {nook.average_rating ?? "—"}</span>
                 </div>
             </td>
 
             {/* الولاية */}
             <td className={styles.table_cell}>
-                <span className={styles.wilaya}>{nook.wilaya}</span>
+                <span className={styles.wilaya}>{nook.state || "—"}</span>
             </td>
 
             {/* الحالة */}
             <td className={styles.table_cell}>
-                <StatusBadge status={nook.status as "reserved" | "available"} />
+                <StatusBadge status={(nook.status as "reserved" | "available") || "available"} />
             </td>
 
             {/* اسم المستأجر */}
@@ -68,15 +90,15 @@ export default function NookRow({ nook, onEdit, onDelete }: NookRowProps) {
             {/* العمليات */}
             <td className={styles.table_cell}>
                 <div className={styles.operations}>
-                    <button 
-                        onClick={() => onEdit(nook.id)}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onEdit(nook.id) }}
                         className={styles.operation_btn}
                         title="Edit"
                     >
                         ✏️
                     </button>
-                    <button 
-                        onClick={() => onDelete(nook.id)}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onDelete(nook.id) }}
                         className={styles.operation_btn}
                         title="Delete"
                     >

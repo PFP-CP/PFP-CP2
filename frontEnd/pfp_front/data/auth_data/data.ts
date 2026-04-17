@@ -152,3 +152,24 @@ export const FEATURES = new Map([
   ['stove', 15],
   ['oven', 16]
 ]);
+
+// Exact feature names stored in the backend DB — used for search filters
+// Must match exactly the strings in mynook/api.py features list
+export const SEARCH_FEATURES: string[] = [
+  "Pool",
+  "Wifi",
+  "Heating",
+  "Air Conditioning",
+  "Television",
+  "Kitchen",
+  "Microwave",
+  "Fridge",
+  "Washing machine",
+  "Cleaning products",
+  "Sea view",
+  "Parking",
+  "Dishes",
+  "Freezer",
+  "Stove",
+  "Oven",
+];

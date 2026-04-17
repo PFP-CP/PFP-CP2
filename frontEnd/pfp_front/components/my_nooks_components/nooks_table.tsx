@@ -9,18 +9,18 @@ import { api } from "@/lib/api"
 type NooksTableProps = {
     nooks: Property[];
     onRefresh: () => void;
-    onDelete: (id: number) => void;
+    onDelete: (id: string) => void;
 }
 
 export default function NooksTable({ nooks, onRefresh }: NooksTableProps) {
-    const [deletingId, setDeletingId] = useState<number | null>(null)
+    const [deletingId, setDeletingId] = useState<string | null>(null)
 
-    const handleEdit = (id: number) => {
+    const handleEdit = (id: string) => { // Refixed: expects UUID string
         console.log("Edit nook:", id)
         alert("Edit functionality will be added soon!")
     }
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => { // Refixed: expects UUID string
         const confirmed = confirm("Are you sure you want to delete this Nook?")
         if (!confirmed) return
 

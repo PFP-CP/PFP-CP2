@@ -68,7 +68,7 @@
 
 }
 
-#navbar .nav_search .find_retals_h3_container{
+#navbar .nav_search .find_rentals_h3_container{
   background-color: transparent;
   height: 100%;
   display: flex;
@@ -76,7 +76,7 @@
   font-size: 20px;
 }
 
-#navbar .nav_search .find_retals_h3{
+#navbar .nav_search .find_rentals_h3{
   position: absolute;
   align-self: center;
   justify-self: center;

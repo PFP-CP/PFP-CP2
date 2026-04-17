@@ -78,12 +78,12 @@ export default function Mobile_nav(){
             </div>
             
             
-            <div className={style.nav_search} >
+            <Link href="/find-rentals" className={style.nav_search} >
                 {SEARCH_ICON}
-              <div className={style.find_retals_h3_container}>
-                <h3 className={style.find_retals_h3}>Find Retals</h3>
+              <div className={style.find_rentals_h3_container}>
+                <h3 className={style.find_rentals_h3}>Find Rentals</h3>
               </div>
-            </div>
+            </Link>
 
             <div id={style.user_controls}>
               {USER_ICON}
