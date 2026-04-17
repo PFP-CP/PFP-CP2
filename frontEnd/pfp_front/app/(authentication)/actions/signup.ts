@@ -6,7 +6,7 @@ export async function signup(gender:string,state:string,type_of_user:string,phon
     if(item.name===state) state = item.code;
   })
 
-  const response = await fetch("http://127.0.0.1:8000/api/Account/Signup",{
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/Account/Signup`,{
     method:'POST',
     headers:{'Content-Type': 'application/json'},
     body: JSON.stringify({

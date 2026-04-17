@@ -1,6 +1,6 @@
 'use client'
 import style from "@/styles/auth_styles/auth_styles.module.css"
-import { FieldErrors, FieldValues, useForm, UseFormRegister } from "react-hook-form";
+import { FieldErrors, useForm, UseFormRegister } from "react-hook-form";
 import { useState } from "react";
 import { AnimatePresence } from "motion/react";
 import { login } from "@/app/(authentication)/actions/login";
@@ -9,9 +9,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { forget,newPass } from "@/app/(authentication)/actions/forget";
 import { wilayas } from "@/data/auth_data/data";
 import Image from "next/image";
-import RadioButton from "../ui/radio_input";
-import styles from "@/styles/auth_styles/ui_css/auth/radio.module.css"
-import { error } from "console";
+
+
 
 //animation function
 const email_settings = {required:"Email is required",
@@ -40,16 +39,28 @@ const logo = <svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www
   <text x="0" y="60" font-family="sansation-700" font-weight="bold" font-size="72" fill="#2E1B7B">Nook</text>
 </svg>
 
-function login_form(register:UseFormRegister<FieldValues>, setAuthState:React.Dispatch<React.SetStateAction<string>>, errors:FieldErrors<FieldValues>){
+interface AuthFormData {
+  email?: string;
+  password?: string;
+  full_name?: string;
+  date?: string;
+  location?: string;
+  gender?: string;
+  phone?: string;
+  new_password?: string;
+  key?: string;
+}
+
+function login_form(register:UseFormRegister<AuthFormData>, setAuthState:React.Dispatch<React.SetStateAction<string>>, errors:FieldErrors<AuthFormData>){
   
   return(
     <>
       <div className={style.form_fields_container}>
-          <input className={errors.Email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
-          <p className={style.error_message}>{errors.email?.message}</p>
+          <input className={errors.email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" aria-label="Email address" />
+          <p className={style.error_message} aria-live="polite">{errors.email?.message as string}</p>
           <div className={style.password_container}>
-            <input type="password" {...register("password",{required:'Enter a password man'})} placeholder="Password" />
-            <p className={style.error_message}>{errors.password?.message}</p>
+            <input type="password" {...register("password",{required:'Enter a password man'})} placeholder="Password" aria-label="Password" />
+            <p className={style.error_message} aria-live="polite">{errors.password?.message as string}</p>
             <button type="button" onClick={()=>setAuthState("forget_password")} className={style.forgot_password}>Forget password?</button>
           </div>
       </div>
@@ -58,7 +69,7 @@ function login_form(register:UseFormRegister<FieldValues>, setAuthState:React.Di
   )
 }
 
-function signup_form(register:UseFormRegister<FieldValues>,errors:FieldErrors<FieldValues>){
+function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<AuthFormData>){
   
   return(
     <>
@@ -90,25 +101,25 @@ function signup_form(register:UseFormRegister<FieldValues>,errors:FieldErrors<Fi
   )
 }
 
-function forgot_password(register:UseFormRegister<FieldValues>, errors:FieldErrors<FieldValues>){
+function forgot_password(register:UseFormRegister<AuthFormData>, errors:FieldErrors<AuthFormData>){
   return(
     <>
       <div className={style.form_fields_container}>
-          <input className={errors.Email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
-          <p className={style.error_message}>{errors.email?.message}</p>
+          <input className={errors.email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
+          <p className={style.error_message}>{errors.email?.message as string}</p>
           <p id={style.forget_pass_p}>Please enter the email address you’d like your password reset information sent to</p>
       </div>
     </>
   )
 }
 
-function forgot_password_code(register:UseFormRegister<FieldValues>, errors:FieldErrors<FieldValues>){
+function forgot_password_code(register:UseFormRegister<AuthFormData>, errors:FieldErrors<AuthFormData>){
 
   return(
     <>
       <div className={style.form_fields_container}>
-        <input type="text" {...register("new_password",password_settings)} placeholder="New Password" />
-        {errors.new_password?.message&&<p className={style.error_message}>{errors.new_password?.message}</p>}
+        <input type="password" {...register("new_password",password_settings)} placeholder="New Password" />
+        {errors.new_password?.message&&<p className={style.error_message}>{errors.new_password?.message as string}</p>}
         <input {...register("key",{required:true})} placeholder="Key" />
       </div>
     </>
@@ -116,7 +127,7 @@ function forgot_password_code(register:UseFormRegister<FieldValues>, errors:Fiel
 }
 
 export default function AuthForm() {
-  const {register, handleSubmit,setError,reset, watch,formState:{errors}} = useForm();
+  const {register, handleSubmit,setError,reset,formState:{errors}} = useForm<AuthFormData>();
   const [authState, setAuthState] = useState('login');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -132,13 +143,13 @@ export default function AuthForm() {
   }
 
 
-  const handle_auth_submit =async (type:string, form:object)=>{
+  const handle_auth_submit =async (type:string, form:AuthFormData)=>{
       let res;
 
         switch (type) {
           case "login":
 
-            res = await login(form.email,form.password);
+            res = await login(form.email!,form.password!);
             if(res.success){
               router.push(redirectTo);
             }else{
@@ -150,18 +161,21 @@ export default function AuthForm() {
             
             break;
           case "forget_password":
-            res = await forget(form.email);
+            res = await forget(form.email!);
             if(res.success){
               setAuthState('forget_password_code');
             }
           break;
 
           case "forget_password_code":
-            res= await newPass('a@g.com', form.new_password, form.key);
-            if(res) location.reload();
+            res= await newPass(form.email!, form.new_password!, form.key!);
+            if(res.success) location.reload();
           break
           case "signup":
-            res = await signup(form.gender,form.location,'GUEST',form.phone,form.full_name,form.email,form.password,form.date);    
+            res = await signup(form.gender!,form.location!,'GUEST',form.phone!,form.full_name!,form.email!,form.password!,form.date!);
+            if(res.success){
+              setAuthState("login");
+            }
           break;
          
           default:

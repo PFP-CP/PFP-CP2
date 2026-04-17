@@ -45,15 +45,20 @@ export async function createPost(){
   
 }
 
-// export async function getPost(id:string){
-//   const response = await fetch(`http://127.0.0.1:8000/api/Posts/${id}`,{
-//     method:'get',
-//     headers:{
-//       'Content-Type': 'application/json',
-//       "Authorization": `Bearer ${token}` 
-//     },
-    
-//   });
+export async function getPost(id: string) {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/${id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+  });
 
-//   const data = await response.json();
-// }
+  if (!response.ok) {
+    throw new Error('Failed to fetch post');
+  }
+
+  const data = await response.json();
+  return data;
+}

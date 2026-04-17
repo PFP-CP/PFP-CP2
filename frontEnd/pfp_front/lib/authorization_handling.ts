@@ -28,7 +28,7 @@ export async function refreshToken(token:string){
   return {success:false};
 }
 
-export async function saveToken(tokenObject:object){
+export async function saveToken(tokenObject: { access: string; refresh: string }){
   (await cookies()).set('token', tokenObject.access, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

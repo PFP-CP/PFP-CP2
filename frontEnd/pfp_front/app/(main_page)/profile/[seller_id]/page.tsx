@@ -37,12 +37,17 @@ export default function SellerProfilePage() {
                     setProfile({
                         user: {
                             id: 1,
-                            name: "Seddh benmati",
+                            full_name: "Seddh benmati",
                             email: "seddhbenmati99@gmail.com",
                             role: "owner",
-                            createdAt: "",
-                            phone: "0779587185",
-                            avatar: "./" 
+                            join_date: "2023-01-01",
+                            phone_number: "0779587185",
+                            profile_picture: "./",
+                            gender: "MALE",
+                            rating: 4.5,
+                            num_reviews: 32,
+                            num_nooks: 8,
+                            num_reservations: 150
                         },
                         stats: {
                             reviewsCount: 32,
@@ -69,8 +74,9 @@ export default function SellerProfilePage() {
 
     // تجميع العقارات حسب الولاية (نفس المنطق السابق)
     const groupedProperties = profile.properties.reduce((acc, prop) => {
-        if (!acc[prop.state]) acc[prop.state] = [];
-        acc[prop.state].push(prop);
+        const wilaya = prop.location || "Other";
+        if (!acc[wilaya]) acc[wilaya] = [];
+        acc[wilaya].push(prop);
         return acc;
     }, {} as Record<string, Property[]>);
 
@@ -80,8 +86,8 @@ export default function SellerProfilePage() {
             <section className={styles.profile_header}>
                 <div className={styles.avatar_container}>
                     <Image 
-                        src={profile.user.avatar || "/default-avatar.png"} 
-                        alt={profile.user.name}
+                        src={profile.user.profile_picture || "/default-avatar.png"} 
+                        alt={profile.user.full_name}
                         width={120}
                         height={120}
                         className={styles.avatar}
@@ -90,12 +96,12 @@ export default function SellerProfilePage() {
                 </div>
                 
                 <div className={styles.info}>
-                    <h1 className={styles.name}>{profile.user.name}</h1>
-                    <p className={styles.role}>Host since {new Date(profile.user.createdAt).getFullYear()}</p>
+                    <h1 className={styles.name}>{profile.user.full_name}</h1>
+                    <p className={styles.role}>Host since {new Date(profile.user.join_date).getFullYear()}</p>
                     
                     <div className={styles.contact_info}>
                         <span> {profile.user.email}</span>
-                        <span> {profile.user.phone}</span>
+                        <span> {profile.user.phone_number}</span>
                     </div>
                 </div>
 

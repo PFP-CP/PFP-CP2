@@ -5,8 +5,8 @@ import HeroSection from "@/components/home_components/hero_section"
 import CitySection from "@/components/home_components/city_section"
 import { api } from "@/lib/api"
 import { Property } from "@/types/api_types"
+import styles from "./page.module.css"
 
-const API_BASE_URL = "http://blablablabl.com/api";
 export default function Home() {
     const [properties, setProperties] = useState<Property[]>([])
     const [loading, setLoading] = useState(true)
@@ -65,7 +65,7 @@ export default function Home() {
                     showSubtitle={showSubtitle} 
                     fullText={fullText}
                 />
-                <div style={{ textAlign: "center", padding: "60px 20px", fontSize: "1.2rem", color: "#666"}}>
+                <div className={styles.loading}>
                     جاري التحميل...
                 </div>
             </main>
@@ -80,12 +80,12 @@ export default function Home() {
                     showSubtitle={showSubtitle} 
                     fullText={fullText}
                 />
-                <div style={{ textAlign: "center", padding: "60px 20px", color: "#dc3545" }}>
+                <div className={styles.error}>
                     <h3>عذراً، حدث خطأ غير متوقع</h3>
                     <p>{error}</p>
-                    <button 
+                    <button
                         onClick={() => window.location.reload()}
-                        style={{ marginTop: '15px', padding: '10px 20px', background: '#7c5cdb', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                        className={styles.retryButton}
                     >
                         إعادة المحاولة
                     </button>
@@ -118,19 +118,21 @@ export default function Home() {
                 fullText={fullText}
             />
             
-            {Object.entries(groupedProperties).length > 0 ? (
-                Object.entries(groupedProperties).map(([wilaya, props]) => (
-                    <CitySection 
-                        key={wilaya}
-                        cityName={wilaya}
-                        properties={props}
-                    />
-                ))
-            ) : (
-                <div style={{ textAlign: "center", padding: "60px 20px", color: "#666" }}>
-                    لا توجد عقارات متاحة حالياً.
-                </div>
-            )}
+            <div className={styles.container}>
+                {Object.entries(groupedProperties).length > 0 ? (
+                    Object.entries(groupedProperties).map(([wilaya, props]) => (
+                        <CitySection 
+                            key={wilaya}
+                            cityName={wilaya}
+                            properties={props}
+                        />
+                    ))
+                ) : (
+                    <div className={styles.noProperties}>
+                        لا توجد عقارات متاحة حالياً.
+                    </div>
+                )}
+            </div>
         </main>
     )
 }

@@ -26,9 +26,10 @@
 }
 
 .subtitle {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #dc3545;
-    margin: 0;
+    margin: 4px 0 0 0;
+    font-weight: 500;
 }
 
 .loading,

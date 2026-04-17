@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import styles from "@/styles/my_reservations_styles/reservations_table.module.css"
 import ReservationRow from "./reservation_row"
 import { Reservation } from "@/types/api_types"
@@ -12,23 +11,16 @@ type ReservationsTableProps = {
 }
 
 export default function ReservationsTable({ reservations, onRefresh }: ReservationsTableProps) {
-    const [cancellingId, setCancellingId] = useState<number | null>(null)
-
-    // معالجة الإلغاء
+    // معالجة الإلغاء (يمكن استخدامه مستقبلاً أو إضافة زر)
     const handleCancel = async (id: number) => {
         const confirmed = confirm("Are you sure you want to cancel this reservation?")
         if (!confirmed) return
 
-        setCancellingId(id)
-        
         try {
-            await api.cancelReservation(id)
-            onRefresh() // إعادة تحميل البيانات
+            await api.deleteReservation(id)
+            onRefresh()
         } catch (error) {
             console.error("Failed to cancel:", error)
-            alert("Failed to cancel reservation")
-        } finally {
-            setCancellingId(null)
         }
     }
 
