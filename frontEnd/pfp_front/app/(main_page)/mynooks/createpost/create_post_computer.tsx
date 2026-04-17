@@ -1,27 +1,18 @@
 'use client'
-import style from '@/styles/create_post_page_styles/create_post_computer.module.css'
+import style from '@/styles/create_post_page_styles/create_post.module.css'
 import Uploader from "@/components/create_post_page_components/image_uploader";
-import { useEffect, useRef,useState } from 'react';
+import { useEffect,useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { number } from 'zod';
 import { wilayas } from '@/data/auth_data/data';
+import { imageItem } from '@/types/types';
+import { createPost } from './actions/createpost';
+import { useTransition } from 'react';
+import { getCompressedNookImages } from '@/lib/functions';
+import { useMediaQuery } from '@mui/material';
 import Create_post_mobile_nav from '@/components/create_post_page_components/create_post_page_mobile_nav';
-function compressImages(file:File, maxWidth = 1200, quality = 0.8){
-  return new Promise((resolve) =>{
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload= ()=>{
-      const scale= Math.min(1, maxWidth/img.width);
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob((blob) => resolve(blob!), "image/webp", quality);
-      URL.revokeObjectURL(url);
-    }
-  })
-}
+import { redirect } from 'next/navigation';
+
 //Notes for later
 // all inputs must be required
 // checkbox array must not be empty
@@ -30,7 +21,7 @@ const CATEGORIES = ['family','single','couple'];
 const RULES = ['animals','smoking','noise'];
 const FEATURES = ['pool','wifi','heating','television','kitchen','microwave','dishes','freezer','stove','oven','fridge','washing_machine','cleaning_product','air_conditioning','parking','sea_view'];
 
-export default function CreatePostComputer() {
+export default function CreatePost() {
   const [NumberOf_Inputs,setNumberOf_Inputs] = useState({1:false,2:false,3:false});
   const [tenantsAndPriceActive, setTenantsAndPriceActive] = useState({1:false,2:false})
   const {register, handleSubmit,setValue, watch,setFocus,getValues} = useForm({
@@ -42,6 +33,8 @@ export default function CreatePostComputer() {
       features:[],
     }
   });
+  const [images, setImages] = useState<imageItem[]>([]);
+
   const selectedType = watch('house_type');
   const watchedCheckBoxes = {
     categories:watch('categories'),
@@ -65,6 +58,7 @@ export default function CreatePostComputer() {
       setValue(`${section_name}`,[...watchedCheckBoxes[section_name],`${item}`])
     }
   }
+  const [isPending, startTransition] = useTransition();
 
 
   useEffect(()=>{
@@ -76,17 +70,26 @@ export default function CreatePostComputer() {
     if(!numberOf_Values[1]) number() 
   },[NumberOf_Inputs,tenantsAndPriceActive])
   
-  
+  const handleSubmitForm = (data)=>{
+    startTransition(async ()=>{
+      const createPostRes =  await createPost(data,await getCompressedNookImages(images));
+      if(createPostRes) redirect('/mynooks');
+    })
+  }
+  const screenWidth = useMediaQuery('(max-width:850px)')
   
   return(
-    <form onSubmit={handleSubmit((data)=> console.log(data))}>
-      <div className={style.create_post_header}>Post a new nook</div>
+    <>
+    {screenWidth && <Create_post_mobile_nav />}
+    <form style={{position:'relative'}} onSubmit={handleSubmit((data)=>handleSubmitForm(data))}>
+    {isPending&&<div className={style.loading}>Uploading post</div>}
+      {!screenWidth && <div className={style.create_post_header}>Post a new nook</div>}
       <div className={style.create_post_container}>
-        <Uploader/>
+        <Uploader images={images} setImages={setImages}/>
         <div className={style.house_information_container}>
           <div className={style.house_information_firstSection}>
             <div className={style.type_categores_rules_container}>
-              <div className={style.section_container} id={style.type_section}>
+              <div className={style.section_container} id={ screenWidth? undefined:style.type_section}>
                 <div className={style.section_title}>
                   Type
                 </div>
@@ -99,7 +102,7 @@ export default function CreatePostComputer() {
                     <button type='button' id='chalet' onClick={(e)=> setValue("house_type","chalet")} className={selectedType==='chalet'? style.selected: undefined}>Chalet</button>
                 </div>
                 </div>
-              <div className={style.section_container } id={style.categories_section}>
+              <div className={style.section_container } id={screenWidth? undefined:style.categories_section}>
                 <div className={style.section_title}>
                   Categories
                 </div>
@@ -116,7 +119,7 @@ export default function CreatePostComputer() {
 
                 </div>
               </div>
-              <div className={style.section_container} id={style.rules_section}>
+              <div className={style.section_container} id={screenWidth? undefined:style.rules_section}>
                   <div className={style.section_title}>
                     Rules
                   </div>
@@ -134,7 +137,7 @@ export default function CreatePostComputer() {
                   </div>
                 </div>
             </div>
-            <div className={style.section_container} id={style.wilaya_section}>
+            <div className={style.section_container} id={screenWidth? undefined:style.wilaya_section}>
               <div className={style.section_title}>
                   Wilaya
               </div>
@@ -143,13 +146,13 @@ export default function CreatePostComputer() {
               </select>
             </div>
             <div className={style.location_numberOf_container}>
-              <div className={style.section_container} id={style.location_section}>
+              <div className={style.section_container} id={screenWidth? undefined:style.location_section}>
                 <div className={style.section_title}>
                   Location
                 </div>
                 <input className={location?style.filled_input:undefined} type="url" {...register('location')} placeholder='Copy the link to your house on Google Maps' />
             </div>
-            <div className={style.section_container} id={style.tentants_and_price_section}>
+            <div className={style.section_container} id={screenWidth? undefined:style.tentants_and_price_section}>
               <div className={style.tenants_and_price}>
                 <div id={style.price_per_night_div} onClick={()=>setTenantsAndPriceActive((prev)=>{return{...prev,2:true}})} className={ tenantsAndPrice_Values[2] ? style.filled_input:undefined}>
                   {tenantsAndPriceActive[2] ?<input type="number" {...register('price_per_night')} min={0} onBlur={()=>setTenantsAndPriceActive((prev)=>{return {...prev,2:false}})} />:`${tenantsAndPrice_Values[2]?.length>0?tenantsAndPrice_Values[2]+" DA":"Price per night"}`}
@@ -159,7 +162,7 @@ export default function CreatePostComputer() {
                 </div>
               </div>
             </div>
-                <div className={style.section_container} id={style.numberOf_buttons_section}>
+                <div className={style.section_container} id={screenWidth? undefined:style.numberOf_buttons_section}>
                   <div className={style.section_title}>
                     Number of
                   </div>
@@ -179,11 +182,11 @@ export default function CreatePostComputer() {
             </div>
           </div>
           <div className={style.house_information_features}>
-            <div className={style.section_container} id={style.features_section}>
+            <div className={style.section_container} id={screenWidth? undefined:style.features_section}>
               <div className={style.section_title}>
                 Features
               </div>
-              <div className={style.section_chechbox} id={style.featrues_checkbox}>
+              <div className={style.section_chechbox} id={screenWidth? undefined:style.featrues_checkbox}>
                 {FEATURES.map((feature)=>{
                   return(
                     <div key={feature}>
@@ -198,39 +201,14 @@ export default function CreatePostComputer() {
             </div>
           </div>
           <div className={style.house_information_description}>
-            <div className={style.section_container} id={style.description_section}>
+            <div className={style.section_container} id={screenWidth? undefined:style.description_section}>
               <textarea className={style.description} rows={10} {...register('description')} placeholder='write a description of your nook'/>
             </div>
           </div>
-           <button type='submit' id={style.submit_button}>Post your nook</button>
+           <button disabled={isPending} type='submit' id={style.submit_button}>{!isPending ? "Post your nook":"Submitting ..."}</button>
         </div>
       </div>
       </form>
-    
+    </>
   );
 }
-
-
-{/* <Create_post_mobile_nav />
-    
-    <div className={style.create_post_page_container}>
-    
-      
-      
-      
-
-      
-
-      
-
-      
-
-      
-      
-
-     
-      </div>
-
-    
-    </form>
-    </> */}

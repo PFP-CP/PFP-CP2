@@ -112,12 +112,22 @@ def wilaya_query(previous_search: QuerySet, wilaya: str | None = None) -> QueryS
 
 
 def allowed_people_query(
-    previous_search: QuerySet, allowed_people: list[str] = []
+    previous_search: QuerySet, allowed_people: TypeOfPeople
 ) -> QuerySet:
     """Filter by House.Types_of_Renters (adjust field name if needed)."""
+    
     if not allowed_people:
         return previous_search
-    return previous_search.filter(house__Types_of_Renters__in=allowed_people)
+    
+    people = "AL" 
+    
+    if not allowed_people.Couple and not allowed_people.Single:
+        people = "FA"
+    if not allowed_people.Couple :
+        people = "NC"
+    if not allowed_people.Single:
+        people = "NM"
+    return previous_search.filter(house__Types_of_Renters=people)
 
 
 def features_query(previous_search: QuerySet, features: list[str] = []) -> QuerySet:
@@ -128,6 +138,10 @@ def features_query(previous_search: QuerySet, features: list[str] = []) -> Query
         )
     return previous_search
 
+def type_query(previous_search: QuerySet , House_type : str) -> QuerySet:
+    if House_type:
+        return previous_search.filter(title__contains = House_type)
+    return previous_search
 
 # Sorting — operates on serialised dicts, keys are SearchResult names #
 
@@ -177,6 +191,7 @@ def search(request, Criteria: SearchCriteria):
             "seller__contact",
             "seller",
         ).prefetch_related(
+            "house__pictures",
             "house__location",
             "house__features__features",
             "comments",
@@ -192,7 +207,7 @@ def search(request, Criteria: SearchCriteria):
         results_query = wilaya_query(results_query, Criteria.wilaya)
         results_query = allowed_people_query(results_query, Criteria.allowed_people)
         results_query = features_query(results_query, Criteria.features)
-
+        results_query = type_query(results_query , Criteria.house_type)
         # Serialise to plain dicts for caching
         results = [SearchResult.from_orm(post).dict() for post in results_query]
 

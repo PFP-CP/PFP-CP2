@@ -9,40 +9,23 @@ import { SAVE_LOGO_ACTIVE,COPY_LINK_LOGO, TITLE_LOGO,LEAVE_TAB } from "@/public/
 import CarouselImages from "./carousel_images"
 import { div } from "motion/react-client"
 import { useState,useEffect } from "react"
+import { useMediaQuery } from "@mui/material"
 
 
 function PostHeader(){
-  const [screenWidth, setScreenWidth] = useState(()=>window.innerWidth);
+  const screenWidth = useMediaQuery(('min-width:700px'));
   
-    useEffect(()=>{
-      setScreenWidth(window.innerWidth);
-      let timeId : NodeJS.Timeout | null = null;;
-      const handleResize = ()=> {
-        
-        if(timeId) return;
   
-        timeId =  setTimeout(()=>{
-          setScreenWidth(window.innerWidth);
-          timeId = null;
-  
-        },300)
-      }
-      window.addEventListener('resize', handleResize);
-      return ()=> {
-        removeEventListener('resize', handleResize);
-        if(timeId) clearTimeout(timeId);
-      }
-    },[])
   return(
         <div className={style.showcase_header}>
           <div className={style.title_container}>
             <div className={style.title_logo}><Link href={"#"}>{TITLE_LOGO}</Link></div>
             <div className={style.title}>Studio - View Cathedrale d'Oran</div>
           </div>
-          {screenWidth>=700 &&<div className={style.post_actions}>
+          {screenWidth &&<div className={style.post_actions}>
             <div className={style.copy_link_container}>
               <div className={style.copy_link_logo}>{COPY_LINK_LOGO}</div>
-              {screenWidth>=700 &&  <div className={style.copy_link}>Copy Link</div>}
+              {screenWidth &&  <div className={style.copy_link}>Copy Link</div>}
             </div>
             <div className={style.save_container}>
               <div className={style.save_logo}>{SAVE_LOGO_ACTIVE}</div>
