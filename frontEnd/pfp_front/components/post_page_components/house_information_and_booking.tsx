@@ -1,11 +1,13 @@
 'use client'
 import { ChangeEvent, useState,useRef, useEffect } from 'react'
 import style from '@/styles/post_page_styles/house_information_and_booking.module.css'
-import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM } from '@/public/svg/svg'
+import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM, LEAVE_TAB_WHITE } from '@/public/svg/svg'
 import Comment from './house_information_components/Comment'
 import { Slider, useMediaQuery } from '@mui/material'
 import MyDatePicker from './ui/date_picker'
 import CarouselImages from "./carousel_images"
+import Image from 'next/image'
+import { addComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
 
 
 
@@ -52,15 +54,18 @@ function RateRenterButton(){
   }
   const handleSubmitRating = ()=>{
     setIsRenterRated(true);
-    setIsRating(false);
     user.renterRate=value;
     user.renterRated=true;
   };
+  const handleCloseRating = ()=>{
+    setIsRating(false);
+  }
   return(
     !isRating?
       (!IsRenterRated?<div onClick={()=> setIsRating(true)} className={style.rating_button}>Rate the renter</div>:
         <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>):
     <div className={style.rating_slider_container}>
+    <button className={style.confirm_rating_button} onClick={handleCloseRating}>{LEAVE_TAB_WHITE}</button>
       <Slider
         className={style.rating_slider}
         onChange={handleValueChange}
@@ -68,7 +73,7 @@ function RateRenterButton(){
         valueLabelDisplay="on"
         aria-label="rating"
         defaultValue={0}
-        step={0.5}
+        step={1}
         marks
         min={0}
         max={5}
@@ -102,7 +107,7 @@ function RateNookButton({setRatingValue}:{setRatingValue:React.Dispatch<React.Se
         valueLabelDisplay="on"
         aria-label="rating"
         defaultValue={0}
-        step={0.5}
+        step={1}
         marks
         min={0}
         max={5}
@@ -112,9 +117,18 @@ function RateNookButton({setRatingValue}:{setRatingValue:React.Dispatch<React.Se
   )
 }
 
-function Comment_review({setIsCommenting, setRatingValue}:{setIsCommenting:React.Dispatch<React.SetStateAction<boolean>>, setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>}){
+function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onCommentAdded}:{ratingValue:number,id:string,setIsCommenting:React.Dispatch<React.SetStateAction<boolean>>, setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>, onCommentAdded:()=>Promise<void>}){
+  const comment = useRef(null);
   const handleCloseSubmit = ()=>{
+    console.log(comment.current.value,ratingValue);
     setIsCommenting(false);
+  }
+
+  const handleSubmit= async ()=>{
+    if((await addComment(id,comment.current.value,ratingValue)).success){
+      await onCommentAdded();
+      setIsCommenting(false);
+    }
   }
   
   return(
@@ -124,19 +138,19 @@ function Comment_review({setIsCommenting, setRatingValue}:{setIsCommenting:React
           <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
         </div>
         <div className={style.comment_input}>
-          <textarea name="comment" id={style.comment} placeholder='Write your comment'></textarea>
-          <button onClick={handleCloseSubmit}>Submit</button>
+          <textarea ref={comment} name="comment" id={style.comment} placeholder='Write your comment'></textarea>
+          <button onClick={handleSubmit}>Submit</button>
         </div>
       </div>
   )
 }
 
-function Description(){
+function Description({description}:{description:string}){
   return(
       <div className={style.description_container}>
         <div className={style.description_title}>Description</div>
         <p className={style.description}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat corporis amet ducimus minus neque excepturi laborum ab esse fuga similique hic, blanditiis repudiandae perspiciatis ut obcaecati ipsa commodi cumque accusamus.
+          {description}
         </p>
       </div>
   )
@@ -190,22 +204,21 @@ function Rules_categories_features(){
 }
 
 
-function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>}){
+function Comments_invisible({setShowComments,sectionData,onCommentAdded}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,onCommentAdded:()=>Promise<void>}){
   const [isCommenting, setIsCommenting] = useState(false);
-  const [ratingValue,setRatingValue] = useState<number>();
+  const [ratingValue,setRatingValue] = useState<number>(0);
   const screenWidth = useMediaQuery(('min-width:700px'));
-
   return(
           <div className={style.nook_and_renter_rating}>
             <div className={style.rating_display}>
               <div className={`${style.rating_and_ratingButton_container} ${style.rating_and_ratingButton_container_desktop_view}`}>
                 <div onClick={ ()=>setShowComments((prev)=>!prev)} className={style.nook_rating_and_comments}>
                     <div className={style.nook_rating_value}>
-                      4,93
+                      {sectionData.nook_rating}
                       {STAR_LOGO}
                     </div>
                     <div className={style.comments_number}>
-                      3<br/><span>Comments</span>
+                      {sectionData.comments_num}<br/><span>Comments</span>
                     </div>
 
                 </div>
@@ -220,13 +233,13 @@ function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<Re
               {/* this will be a component */}
               <div className={style.rating_and_ratingButton_container}>
                 <div className={style.renter_rating}>
-                  <div className={style.profile_picture}></div>
+                  <div className={style.profile_picture}><Image src={sectionData.profile_picture} width={55} height={55} alt='profile picture'/></div>
                   <div className={style.name_rating_container}>
                     <div className={style.name_container}>
-                      Renter : Benmoati Seddik Bilal
+                      Renter : {sectionData.full_name}
                     </div>
                     <div className={style.rating_container}>
-                      4,10
+                      {sectionData.rating}
                       {STAR_LOGO_SMALL}
                     </div>
                   </div>
@@ -236,9 +249,9 @@ function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<Re
             </div>
             {isCommenting?
               <div className={style.upper_comment_review_mobile_view}>
-                <Comment_review setIsCommenting={setIsCommenting} setRatingValue={setRatingValue}/>
+                <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded}/>
               </div>:
-              <Description />
+              <Description description={sectionData.description}/>
               }
             <Rules_categories_features />
             <div className={style.rating_and_ratingButton_container_mobile_view}>
@@ -246,11 +259,11 @@ function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<Re
                 <div className={style.rating_and_ratingButton_container}>
                   <div onClick={screenWidth?(()=>{setShowComments((prev)=>!prev)}) : undefined} className={style.nook_rating_and_comments}>
                       <div className={style.nook_rating_value}>
-                        4,93
+                        {sectionData.nook_rating}
                         {STAR_LOGO}
                       </div>
                       <div className={style.comments_number}>
-                        3<br/><span>Comments</span>
+                        {sectionData.comments_num}<br/><span>Comments</span>
                       </div>
 
                   </div>
@@ -266,34 +279,30 @@ function Comments_invisible({setShowComments}:{setShowComments:React.Dispatch<Re
             </div>
             {isCommenting&&
             <div className={style.lower_comment_review_mobile_view}>
-                <Comment_review setIsCommenting={setIsCommenting} setRatingValue={setRatingValue}/>
+                <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded}/>
               </div>}
           </div>
   )
 }
 
 
-function Comments_visible({setShowComments}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>}){
+function Comments_visible({setShowComments,sectionData,currentUserId,onCommentAdded}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,currentUserId:number|null,onCommentAdded:()=>Promise<void>}){
   return(
     
           <div className={style.nook_and_renter_rating}>
             <div className={`${style.rating_display} ${style.rating_display_onCommentsShow}`}>
                 <div onClick={()=>setShowComments((prev)=>!prev)} className={`${style.nook_rating_and_comments} ${style.nook_rating_and_comments_onCommentsShow}`}>
                     <div className={style.nook_rating_value}>
-                      4,93
+                      {sectionData.nook_rating}
                       {STAR_LOGO}
                     </div>
                     <div className={style.comments_number}>
-                      3<br/><span>Comments</span>
+                      {sectionData.comments_num}<br/><span>Comments</span>
                     </div>
                 </div>
                 <div className={style.wrapper}>
                   <div className={style.comments_container}>
-                    <Comment />
-                    <Comment />
-                    <Comment />
-                    <Comment />
-                    <Comment />
+                    {sectionData.comment_list.map((com)=><Comment key={com.id} comment_data={com} currentUserId={currentUserId} postId={sectionData.post_id} onDeleted={onCommentAdded}/>)}
                   </div>
                 <button className={style.leave_show_comments} onClick={()=>setShowComments(false)}>{LEAVE_TAB}</button>
                 </div>
@@ -305,7 +314,7 @@ function Comments_visible({setShowComments}:{setShowComments:React.Dispatch<Reac
   )
 }
 
-export default function HouseInformationAndBooking(){
+export default function HouseInformationAndBooking({post_data,onCommentAdded,currentUserId}:{post_data:any,onCommentAdded:()=>Promise<void>,currentUserId:number|null}){
   const [showComments, setShowComments] = useState(false);
   const [visitorsActive, setVisitorsActive] = useState(false);
   const [visitorsNumber, setVisitorsNumber] = useState<string>('0');
@@ -328,12 +337,14 @@ export default function HouseInformationAndBooking(){
   //some conditions for readability
   const visitors_value = Number(visitorsNumber)>0?visitorsNumber:<>Visitors</>
   const visitors_style = Number(visitorsNumber)>0? style.visitors_after:style.visitors_before;
-  
   return(
     <section className={style.nook_data_and_scheduler}>
         <div className={style.nook_data}>
 
-          {!showComments?<Comments_invisible setShowComments={setShowComments} />:<Comments_visible setShowComments={setShowComments} />}
+          {!showComments?
+            <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count}} setShowComments={setShowComments} onCommentAdded={onCommentAdded}/>:
+            <Comments_visible sectionData={{...post_data.seller,post_id:post_data.id,comment_list:post_data.comment_list,nook_rating:post_data.rating,comments_num:post_data.comments_count}} setShowComments={setShowComments} currentUserId={currentUserId} onCommentAdded={onCommentAdded}/>
+          }
         </div>
         
         <div className={style.nook_scheduler}>
@@ -342,7 +353,7 @@ export default function HouseInformationAndBooking(){
             {!calendarOpen &&
             <>
               <div className={style.visitors_and_price}>
-                <div className={style.price_container}><span>19000 DA</span> per night</div>
+                <div className={style.price_container}><span>{post_data.house.Price} DA</span> per night</div>
                 {visitorsActive?<input autoFocus onBlur={()=>setVisitorsActive(false)} value={visitorsNumber} onChange={handleVisitorsNumber} type="number" />:<div onClick={()=>setVisitorsActive(true)} className={`${style.visitors} ${visitors_style}`}>{visitors_value}</div>}
               </div>
               <button>Book</button>

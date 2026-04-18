@@ -1,3 +1,64 @@
+// ========== Post page types ==========
+export interface HouseImage {
+  id: number;
+  URL: string;
+}
+
+export interface SellerInfo {
+  id: number;
+  full_name: string;
+  email: string;
+  profile_picture: string;
+  rating: number;
+  verified: boolean;
+}
+
+export interface HouseInfo {
+  Price: number;
+  Surface: number;
+  RoomNum: number;
+  num_bedroom: number | null;
+  num_bathroom: number | null;
+  Types_of_Renters: string | null;
+  Description: string;
+}
+
+export interface HouseLocation {
+  County: string;
+  State: string;
+  Country: string;
+  Latitude: number;
+  Longitude: number;
+}
+
+export interface CommentData {
+  id: string;
+  user_id: number;
+  rating: number;
+  comment: string;
+  created_at: string;
+  modified_at: string;
+}
+
+export interface PostData {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  rating: number;
+  created_at: string;
+  updated_at: string;
+  views_count: number;
+  saves_count: number;
+  comments_count: number;
+  seller: SellerInfo;
+  house: HouseInfo;
+  location: HouseLocation | null;
+  house_pictures: HouseImage[];
+  comments: CommentData[];
+  comment_list?: CommentData[];
+}
+
 // ========== أنواع العقار (Property) ==========
 export interface Property {
     id: string;

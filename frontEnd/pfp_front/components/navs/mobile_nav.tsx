@@ -48,6 +48,8 @@ const tabs = ["Home", "My Nooks", "My Reservations", "My Favorites"];
 
 export default function Mobile_nav(){
   const [current_page,set_current_page]=  useState(getPathName()); 
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   let activeTab:string;
   switch (current_page) {
     case "home":
@@ -85,8 +87,10 @@ export default function Mobile_nav(){
               </div>
             </Link>
 
+            
+
             <div id={style.user_controls}>
-              {USER_ICON}
+              <div onClick={()=> setSettingsOpen(!settingsOpen)}>{USER_ICON}</div>
               {SETTINGS}
             </div>
           </div>

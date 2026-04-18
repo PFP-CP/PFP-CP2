@@ -7,7 +7,13 @@ import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import Image from "next/image";
+import { HouseImage } from "@/types/api_types";
 
+const BACKEND_URL = 'http://127.0.0.1:8000';
+function getImageUrl(url: string): string {
+  if (url.startsWith('http')) return url;
+  return `${BACKEND_URL}${url}`;
+}
 
 const RIGHT_ARROW = <svg xmlns="http://www.w3.org/2000/svg"
      width="70" height="70"
@@ -31,22 +37,22 @@ const LEFT_ARROW = <svg xmlns="http://www.w3.org/2000/svg"
   <polyline points="15 18 9 12 15 6"></polyline>
 </svg>
 
-export default function CarouselImages() {
+export default function CarouselImages({ pictures }: { pictures: HouseImage[] }) {
   const glideRef = useRef(null);
-  
+
   const [screenWidth, setScreenWidth] = useState(()=>window.innerWidth);
-  
+
     useEffect(()=>{
       setScreenWidth(window.innerWidth);
       let timeId : NodeJS.Timeout | null = null;;
       const handleResize = ()=> {
-        
+
         if(timeId) return;
-  
+
         timeId =  setTimeout(()=>{
           setScreenWidth(window.innerWidth);
           timeId = null;
-  
+
         },300)
       }
       window.addEventListener('resize', handleResize);
@@ -55,7 +61,6 @@ export default function CarouselImages() {
         if(timeId) clearTimeout(timeId);
       }
     },[])
-  const mock_pictures = ['1','5','4','3','6']
 
   useEffect(()=>{
     if (!glideRef.current) return;
@@ -73,33 +78,24 @@ export default function CarouselImages() {
     glide.mount();
 
     return () => {glide.destroy()};
-  }, [screenWidth]);
+  }, [screenWidth, pictures]);
 
   return (
     <div className={`glide ${style.glide_container}`} ref={glideRef}>
       <div className="glide__track" data-glide-el="track">
-        <ul className="glide__slides"
-        style={{
-          
-        }}
-        >
-          {mock_pictures.map((pic)=>{
-            return(
-              <PhotoProvider key={pic}>
-                
-
-                <li 
+        <ul className="glide__slides">
+          {pictures.map((pic) => (
+            <PhotoProvider key={pic.id}>
+              <li
                 style={{ position: "relative", height: "300px" }}
-                className="glide__slide" key={pic}
-                >
-                <PhotoView src={`/mock_data/picture${pic}.png`}>
-                  <Image src={`/mock_data/picture${pic}.png`} alt="side_picture" fill style={{ objectFit: "cover", borderRadius: "8px" }}/>
+                className="glide__slide"
+              >
+                <PhotoView src={getImageUrl(pic.URL)}>
+                  <Image src={getImageUrl(pic.URL)} alt="house picture" fill style={{ objectFit: "cover", borderRadius: "8px" }} />
                 </PhotoView>
-                </li>
-              </PhotoProvider>
-
-                  )
-                })}
+              </li>
+            </PhotoProvider>
+          ))}
         </ul>
       </div>
 

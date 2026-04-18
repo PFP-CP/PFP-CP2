@@ -44,6 +44,19 @@ export const LEAVE_TAB =<svg viewBox="0 0 24 24" width={24} height={24}>
   />
 </svg>
 
+export const LEAVE_TAB_WHITE = <svg viewBox="0 0 24 24" width={24} height={24}>
+  <line x1="7" y1="7" x2="17" y2="17"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+  />
+  <line x1="17" y1="7" x2="7" y2="17"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+  />
+</svg>
+
 export const SAVE_LOGO_ACTIVE = <svg className={style.save_active} width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7.38571 1.5C4.20759 1.5 1.5 4.368 1.5 8.09282C1.5 10.6624 2.49697 12.8258 3.81827 14.6178C5.13504 16.4037 6.83388 17.9028 8.36968 19.1574L11.0195 21.3222C11.3097 21.5593 11.6903 21.5593 11.9805 21.3222L14.6303 19.1574C16.1661 17.9028 17.865 16.4037 19.1817 14.6178C20.503 12.8258 21.5 10.6624 21.5 8.09282C21.5 4.368 18.7924 1.5 15.6143 1.5C13.976 1.5 12.5345 2.42709 11.5 3.62667C10.4655 2.42709 9.02397 1.5 7.38571 1.5Z" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

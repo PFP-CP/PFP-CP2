@@ -9,6 +9,7 @@
 
 .nook_data{
   flex: 1 0;
+  flex-basis: 300px;
 }
 
 .nook_scheduler{
@@ -102,9 +103,10 @@
 
 .rating_and_ratingButton_container .renter_rating .profile_picture{
   height: 55px;
-  min-width: 55px; 
+  width: 55px; 
   border: 3px solid #000000;
   border-radius:50px;
+  overflow: hidden;
 }
 
 .rating_and_ratingButton_container .renter_rating .name_rating_container{
@@ -185,6 +187,7 @@
   overflow: scroll;
   border-left: 3px solid black;
   padding-right: 1rem;
+  width: 100%;
 }
 
 .leave_show_comments{
@@ -243,7 +246,7 @@
 
 .rating_slider_container{
   display: flex;
-  gap: .5rem;
+  gap: 1rem;
   margin-left: 2rem;
   height: 49px;
   padding: .5rem;
@@ -611,4 +614,59 @@
     padding: .5rem;
   }
 
+}
+
+/* Comment 3-dot menu */
+.comment_menu {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.comment_menu_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: #888;
+  transition: background 0.15s, color 0.15s;
+}
+
+.comment_menu_btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.comment_dropdown {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  min-width: 110px;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.comment_dropdown_delete {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #d00000;
+  transition: background 0.15s;
+}
+
+.comment_dropdown_delete:hover {
+  background: #fff0f0;
 }
