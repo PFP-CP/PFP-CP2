@@ -167,7 +167,34 @@ class CommentUpdate(Schema):
     comment: Optional[str]  = None
     rating:  Optional[Decimal] = None
 
-
+#schemas for reservations in the post detail page
+class ReservationOut(Schema):
+    id: int
+    post_id: uuid.UUID
+    arrival_date: str  # ISO date string
+    departure_date: str
+    created_at: str
+    duration_days: int  # Computed field
+    @staticmethod
+    def resolve_post_id(obj):
+        return obj.post.id
+    
+    @staticmethod
+    def resolve_arrival_date(obj):
+        return obj.arrival_date.isoformat()
+    
+    @staticmethod
+    def resolve_departure_date(obj):
+        return obj.departure_date.isoformat()
+    
+    @staticmethod
+    def resolve_created_at(obj):
+        return obj.created_at.isoformat()
+    
+    @staticmethod
+    def resolve_duration_days(obj):
+        delta = obj.departure_date - obj.arrival_date
+        return delta.days
 # Post schemas
 
 class PostOut(Schema):
@@ -191,6 +218,14 @@ class PostOut(Schema):
     features: Optional[List[str]] = []
     allowed_people: Optional[str]
     house_rules: Optional[dict[str, bool]] = None
+    reservations: List[ReservationOut] = []  #for the reservations related to this post
+    
+    @staticmethod  
+    def resolve_reservations(obj):
+        """Return list of reservations for this post"""
+        if hasattr(obj, 'reservations') and obj.reservations.exists():
+            return obj.reservations.all()
+        return []  
     @staticmethod
     def resolve_features(obj):
         features_qs = getattr(obj.house, 'features', None)
