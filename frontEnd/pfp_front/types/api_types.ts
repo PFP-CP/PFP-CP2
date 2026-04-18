@@ -40,6 +40,21 @@ export interface CommentData {
   modified_at: string;
 }
 
+export interface HouseRules {
+  allows_animals: boolean;
+  allows_smoking: boolean;
+  allows_noise: boolean;
+}
+
+export interface PostReservation {
+  id: number;
+  post_id: string;
+  arrival_date: string;
+  departure_date: string;
+  created_at: string;
+  duration_days: number;
+}
+
 export interface PostData {
   id: string;
   title: string;
@@ -57,6 +72,10 @@ export interface PostData {
   house_pictures: HouseImage[];
   comments: CommentData[];
   comment_list?: CommentData[];
+  features: string[];
+  house_rules: HouseRules | null;
+  allowed_people: string;
+  reservations: PostReservation[];
 }
 
 // ========== أنواع العقار (Property) ==========

@@ -7,7 +7,7 @@ import { Slider, useMediaQuery } from '@mui/material'
 import MyDatePicker from './ui/date_picker'
 import CarouselImages from "./carousel_images"
 import Image from 'next/image'
-import { addComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
+import { addComment, createReservation } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
 
 
 
@@ -119,24 +119,31 @@ function RateNookButton({setRatingValue}:{setRatingValue:React.Dispatch<React.Se
 
 function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onCommentAdded}:{ratingValue:number,id:string,setIsCommenting:React.Dispatch<React.SetStateAction<boolean>>, setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>, onCommentAdded:()=>Promise<void>}){
   const comment = useRef(null);
+  const [ratingError, setRatingError] = useState(false);
+
   const handleCloseSubmit = ()=>{
-    console.log(comment.current.value,ratingValue);
     setIsCommenting(false);
   }
 
   const handleSubmit= async ()=>{
+    if (!ratingValue) {
+      setRatingError(true);
+      return;
+    }
+    setRatingError(false);
     if((await addComment(id,comment.current.value,ratingValue)).success){
       await onCommentAdded();
       setIsCommenting(false);
     }
   }
-  
+
   return(
       <div className={style.nook_review}>
         <div className={style.nook_rating_and_close_button}>
-          {<RateNookButton setRatingValue={setRatingValue} />}
+          {<RateNookButton setRatingValue={(v) => { setRatingValue(v); setRatingError(false); }} />}
           <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
         </div>
+        {ratingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>Please select a rating before submitting.</p>}
         <div className={style.comment_input}>
           <textarea ref={comment} name="comment" id={style.comment} placeholder='Write your comment'></textarea>
           <button onClick={handleSubmit}>Submit</button>
@@ -156,49 +163,48 @@ function Description({description}:{description:string}){
   )
 }
 
-function Rules_categories_features(){
+const ALLOWED_PEOPLE_CATEGORIES: Record<string, { family: boolean; single: boolean; couple: boolean }> = {
+  AL: { family: true,  single: true,  couple: true  },
+  FA: { family: true,  single: false, couple: false },
+  NM: { family: true,  single: false, couple: true  },
+  NC: { family: true,  single: true,  couple: false },
+  NP: { family: true,  single: true,  couple: true  },
+}
+
+function Rules_categories_features({ house_rules, allowed_people, features }: {
+  house_rules: { allows_animals: boolean; allows_smoking: boolean; allows_noise: boolean } | null;
+  allowed_people: string;
+  features: string[];
+}) {
+  const categories = ALLOWED_PEOPLE_CATEGORIES[allowed_people] ?? ALLOWED_PEOPLE_CATEGORIES.AL;
+
   return(
     <>
       <div className={style.rules_categories_container}>
           <div className={style.rules_container}>
             <div className={style.rules_container_item}>Rules :</div>
-            <div className={style.rules_container_item}>Smoking {ALLOW}</div>
-            <div className={style.rules_container_item}>Animals {NOT_ALLOW}</div>
-            <div className={style.rules_container_item}>Noise {ALLOW}</div>
+            <div className={style.rules_container_item}>Smoking {house_rules?.allows_smoking ? ALLOW : NOT_ALLOW}</div>
+            <div className={style.rules_container_item}>Animals {house_rules?.allows_animals ? ALLOW : NOT_ALLOW}</div>
+            <div className={style.rules_container_item}>Noise {house_rules?.allows_noise ? ALLOW : NOT_ALLOW}</div>
           </div>
           <div className={style.categories_container}>
             <div className={style.rules_container_item}>Categories :</div>
-            <div className={style.rules_container_item}>Family {ALLOW}</div>
-            <div className={style.rules_container_item}>Single {NOT_ALLOW}</div>
-            <div className={style.rules_container_item}>Couple {ALLOW}</div>
+            <div className={style.rules_container_item}>Family {categories.family ? ALLOW : NOT_ALLOW}</div>
+            <div className={style.rules_container_item}>Single {categories.single ? ALLOW : NOT_ALLOW}</div>
+            <div className={style.rules_container_item}>Couple {categories.couple ? ALLOW : NOT_ALLOW}</div>
           </div>
       </div>
 
-      <div className={style.features_container}>
-        <div className={style.features_title}>Features</div>
-        <div className={style.features}>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Sea View {POOL}</p></div>
-          <div className={style.feature}><p>Wifi {POOL}</p></div>
-          <div className={style.feature}><p>Heating {POOL}</p></div>
-          <div className={style.feature}><p>Cleaning Products {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          <div className={style.feature}><p>Pool {POOL}</p></div>
-          
-          
+      {features.length > 0 && (
+        <div className={style.features_container}>
+          <div className={style.features_title}>Features</div>
+          <div className={style.features}>
+            {features.map((f) => (
+              <div key={f} className={style.feature}><p>{f} {POOL}</p></div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </>
   )
 }
@@ -253,7 +259,7 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded}:{setSho
               </div>:
               <Description description={sectionData.description}/>
               }
-            <Rules_categories_features />
+            <Rules_categories_features house_rules={sectionData.house_rules} allowed_people={sectionData.allowed_people} features={sectionData.features} />
             <div className={style.rating_and_ratingButton_container_mobile_view}>
               <div className={style.rating_display}>
                 <div className={style.rating_and_ratingButton_container}>
@@ -314,25 +320,54 @@ function Comments_visible({setShowComments,sectionData,currentUserId,onCommentAd
   )
 }
 
-export default function HouseInformationAndBooking({post_data,onCommentAdded,currentUserId}:{post_data:any,onCommentAdded:()=>Promise<void>,currentUserId:number|null}){
+export default function HouseInformationAndBooking({post_data,onCommentAdded,onReservationCreated,currentUserId}:{post_data:any,onCommentAdded:()=>Promise<void>,onReservationCreated:()=>Promise<void>,currentUserId:number|null}){
   const [showComments, setShowComments] = useState(false);
   const [visitorsActive, setVisitorsActive] = useState(false);
   const [visitorsNumber, setVisitorsNumber] = useState<string>('0');
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [bookedDates, setBookedDates] = useState<{ start: Date; end: Date } | null>(null);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [visitorsHint, setVisitorsHint] = useState(false);
 
   const handleVisitorsNumber = (e:React.ChangeEvent<HTMLInputElement>)=>{
     if(Number(e.currentTarget.value)<1){
       setVisitorsNumber('0');
       return;
-    } 
+    }
     if(e.currentTarget.value.charAt(0)==='0'){
-      const new_visitors =e.currentTarget.value.slice(1); 
+      const new_visitors =e.currentTarget.value.slice(1);
       setVisitorsNumber(new_visitors);
       return;
     }
     setVisitorsNumber(e.currentTarget.value);
   }
 
+
+  const handleBook = async () => {
+    if (!bookedDates) {
+      setBookingError('Please select arrival and departure dates before booking.');
+      return;
+    }
+    if (Number(visitorsNumber) < 1) {
+      setVisitorsHint(true);
+      return;
+    }
+    setVisitorsHint(false);
+    setBookingError(null);
+    setBookingSuccess(false);
+    setBookingLoading(true);
+    const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const res = await createReservation(post_data.id, fmt(bookedDates.start), fmt(bookedDates.end));
+    setBookingLoading(false);
+    if (res.success) {
+      setBookingSuccess(true);
+      await onReservationCreated();
+    } else {
+      setBookingError(res.error ?? 'Reservation failed. Please try again.');
+    }
+  };
 
   //some conditions for readability
   const visitors_value = Number(visitorsNumber)>0?visitorsNumber:<>Visitors</>
@@ -342,21 +377,30 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,cur
         <div className={style.nook_data}>
 
           {!showComments?
-            <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count}} setShowComments={setShowComments} onCommentAdded={onCommentAdded}/>:
+            <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count,features:post_data.features??[],house_rules:post_data.house_rules??null,allowed_people:post_data.allowed_people??'AL'}} setShowComments={setShowComments} onCommentAdded={onCommentAdded}/>:
             <Comments_visible sectionData={{...post_data.seller,post_id:post_data.id,comment_list:post_data.comment_list,nook_rating:post_data.rating,comments_num:post_data.comments_count}} setShowComments={setShowComments} currentUserId={currentUserId} onCommentAdded={onCommentAdded}/>
           }
         </div>
         
         <div className={style.nook_scheduler}>
           <div className={style.nook_scheduler_container}>
-            <MyDatePicker setCalendarOpen={setCalendarOpen} calendarOpen={calendarOpen}/>
+            <MyDatePicker setCalendarOpen={setCalendarOpen} calendarOpen={calendarOpen} reservations={post_data.reservations ?? []} onConfirm={(start, end) => { setBookedDates({ start, end }); setBookingError(null); }}/>
             {!calendarOpen &&
             <>
               <div className={style.visitors_and_price}>
                 <div className={style.price_container}><span>{post_data.house.Price} DA</span> per night</div>
-                {visitorsActive?<input autoFocus onBlur={()=>setVisitorsActive(false)} value={visitorsNumber} onChange={handleVisitorsNumber} type="number" />:<div onClick={()=>setVisitorsActive(true)} className={`${style.visitors} ${visitors_style}`}>{visitors_value}</div>}
+                {visitorsActive?<input autoFocus onBlur={()=>setVisitorsActive(false)} value={visitorsNumber} onChange={handleVisitorsNumber} type="number" />:<div onClick={()=>{ setVisitorsActive(true); setVisitorsHint(false); }} className={`${style.visitors} ${visitors_style}`}>{visitors_value}</div>}
               </div>
-              <button>Book</button>
+              {visitorsHint && <p style={{color:'orange', fontSize:'0.8rem', margin:'0'}}>Please enter the number of visitors.</p>}
+              {bookingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0'}}>{bookingError}</p>}
+              {bookingSuccess && <p style={{color:'green', fontSize:'0.8rem', margin:'0'}}>Reservation confirmed!</p>}
+              <button
+                onClick={handleBook}
+                disabled={bookingLoading}
+                style={bookingLoading ? {opacity:0.5, cursor:'not-allowed'} : {}}
+              >
+                {bookingLoading ? 'Booking...' : 'Book'}
+              </button>
             </>}
           </div>
         </div>

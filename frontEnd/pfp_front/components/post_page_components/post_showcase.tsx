@@ -6,7 +6,8 @@ import { showPostPicturesState } from "@/types/types"
 import { HouseImage, PostData } from "@/types/api_types"
 import 'react-photo-view/dist/react-photo-view.css';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
-import { SAVE_LOGO_ACTIVE, COPY_LINK_LOGO, TITLE_LOGO, LEAVE_TAB } from "@/public/svg/svg"
+import { SAVE_LOGO_ACTIVE, SAVE_LOGO_INACTIVE, COPY_LINK_LOGO, TITLE_LOGO, LEAVE_TAB } from "@/public/svg/svg"
+import { getWilayaName } from "@/data/auth_data/data"
 import CarouselImages from "./carousel_images"
 import { useMediaQuery } from "@mui/material"
 
@@ -17,7 +18,7 @@ function getImageUrl(url: string): string {
   return `${BACKEND_URL}${url}`;
 }
 
-function PostHeader({ title }: { title: string }) {
+function PostHeader({ title, isSaved, onSaveToggle }: { title: string; isSaved: boolean; onSaveToggle: () => void }) {
   const screenWidth = useMediaQuery('(min-width:700px)');
 
   return (
@@ -31,9 +32,9 @@ function PostHeader({ title }: { title: string }) {
           <div className={style.copy_link_logo}>{COPY_LINK_LOGO}</div>
           <div className={style.copy_link}>Copy Link</div>
         </div>
-        <div className={style.save_container}>
-          <div className={style.save_logo}>{SAVE_LOGO_ACTIVE}</div>
-          <div className={style.save}>Save</div>
+        <div className={style.save_container} onClick={onSaveToggle} style={{ cursor: 'pointer' }}>
+          <div className={style.save_logo}>{isSaved ? SAVE_LOGO_ACTIVE : SAVE_LOGO_INACTIVE}</div>
+          <div className={style.save}>{isSaved ? 'Saved' : 'Save'}</div>
         </div>
       </div>}
     </div>
@@ -113,7 +114,7 @@ function image_navigation(
   return (
     <div className={style.images_navigation}>
       <div className={style.location_details}>
-        <div className={style.entire_home}>{`Entire home: ${post_data.title} - ${post_data.location?.County}`}</div>
+        <div className={style.entire_home}>{`Entire home: ${formatPostTitle(post_data)}`}</div>
         <div className={style.house_details}>{details}</div>
       </div>
       <div className={style.show_pictures_container}>
@@ -148,12 +149,19 @@ function display_images(
 }
 
 
-export default function PostShowcase({ setShowPictures, show_pictures, post_data }: showPostPicturesState) {
+function formatPostTitle(post_data: PostData): string {
+  const type = post_data.title.split(' in ')[0] || post_data.title;
+  const wilaya = getWilayaName(post_data.location?.State);
+  return wilaya ? `${type} in ${wilaya}` : type;
+}
+
+export default function PostShowcase({ setShowPictures, show_pictures, post_data, isSaved, onSaveToggle }: showPostPicturesState) {
   const pictures = post_data.house_pictures;
+  const formattedTitle = formatPostTitle(post_data);
   return (
     <section className={style.post_showcase}>
       <>
-        <PostHeader title={post_data.title} />
+        <PostHeader title={formattedTitle} isSaved={isSaved} onSaveToggle={onSaveToggle} />
         <div className={style.desktop_view}>
           {show_pictures
             ? display_images(setShowPictures, pictures)

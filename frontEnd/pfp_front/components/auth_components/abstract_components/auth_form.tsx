@@ -79,14 +79,14 @@ function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<A
           <select {...register("location",{required:true})} >
             {wilayas.map((wilaya)=> <option key={wilaya.code} value={wilaya.name}>{wilaya.name}</option>)}
           </select>
-          <div className={styles.radio_container}>
-            <div className={styles.left_container}> 
-              <input  {...register("gender")} className={styles.custom_radio} defaultChecked={true} type="radio" value={'male'} id="Male"/>
-              <label className={styles.label_left} htmlFor="Male">Male</label>
+          <div className={style.radio_container}>
+            <div className={style.left_container}>
+              <input  {...register("gender")} className={style.custom_radio} defaultChecked={true} type="radio" value={'male'} id="Male"/>
+              <label className={style.label_left} htmlFor="Male">Male</label>
             </div>
-            <div className={styles.right_container}> 
-              <input  {...register("gender")} className={styles.custom_radio} type="radio" value={'female'} id="Female"/>
-              <label className={styles.label_right} htmlFor="Female">Female</label>
+            <div className={style.right_container}>
+              <input  {...register("gender")} className={style.custom_radio} type="radio" value={'female'} id="Female"/>
+              <label className={style.label_right} htmlFor="Female">Female</label>
             </div>
           </div>         
           <input className={errors.phone&&style.input_invalid} {...register("phone",phone_settings)} placeholder="Phone number" />

@@ -154,10 +154,21 @@ export default function CreatePost() {
                 </div>
                 <div className={style.section_container} id={screenWidth ? undefined : style.tentants_and_price_section}>
                   <div className={style.tenants_and_price}>
-                    <div id={style.price_per_night_div} onClick={() => setTenantsAndPriceActive((prev) => { return { ...prev, 2: true } })} className={tenantsAndPrice_Values[2] ? style.filled_input : undefined}>
+                    <div
+                      id={style.price_per_night_div}
+                      tabIndex={tenantsAndPriceActive[2] ? -1 : 0}
+                      onClick={() => setTenantsAndPriceActive((prev) => { return { ...prev, 2: true } })}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTenantsAndPriceActive((prev) => { return { ...prev, 2: true } }) } }}
+                      className={tenantsAndPrice_Values[2] ? style.filled_input : undefined}
+                    >
                       {tenantsAndPriceActive[2] ? <input type="number" {...register('price_per_night')} min={0} onBlur={() => setTenantsAndPriceActive((prev) => { return { ...prev, 2: false } })} /> : `${tenantsAndPrice_Values[2]?.length > 0 ? tenantsAndPrice_Values[2] + " DA" : "Price per night"}`}
                     </div>
-                    <div onClick={() => setTenantsAndPriceActive((prev) => { return { ...prev, 1: true } })} className={tenantsAndPrice_Values[1] ? style.filled_input : undefined}>
+                    <div
+                      tabIndex={tenantsAndPriceActive[1] ? -1 : 0}
+                      onClick={() => setTenantsAndPriceActive((prev) => { return { ...prev, 1: true } })}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTenantsAndPriceActive((prev) => { return { ...prev, 1: true } }) } }}
+                      className={tenantsAndPrice_Values[1] ? style.filled_input : undefined}
+                    >
                       {tenantsAndPriceActive[1] ? <input type="number" {...register('max_tenants')} min={0} onBlur={() => setTenantsAndPriceActive((prev) => { return { ...prev, 1: false } })} /> : `${tenantsAndPrice_Values[1] || "Max number of tenants"}`}
                     </div>
                   </div>
@@ -167,13 +178,29 @@ export default function CreatePost() {
                     Number of
                   </div>
                   <div className={style.numberof_buttons_container}>
-                    <div onClick={() => setNumberOf_Inputs((prev) => { return { ...prev, 1: true } })} className={!numberOf_Values[1] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}>
+                    <div
+                      tabIndex={NumberOf_Inputs[1] ? -1 : 0}
+                      onClick={() => setNumberOf_Inputs((prev) => { return { ...prev, 1: true } })}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNumberOf_Inputs((prev) => { return { ...prev, 1: true } }) } }}
+                      className={!numberOf_Values[1] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}
+                    >
                       {NumberOf_Inputs[1] ? <input type="number" {...register('bedrooms')} min={0} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 1: false } })} /> : `${numberOf_Values[1] || "Bedrooms"}`}
                     </div>
-                    <div id={style.number_of_beds} onClick={() => setNumberOf_Inputs((prev) => { return { ...prev, 2: true } })} className={!numberOf_Values[2] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}>
+                    <div
+                      id={style.number_of_beds}
+                      tabIndex={NumberOf_Inputs[2] ? -1 : 0}
+                      onClick={() => setNumberOf_Inputs((prev) => { return { ...prev, 2: true } })}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNumberOf_Inputs((prev) => { return { ...prev, 2: true } }) } }}
+                      className={!numberOf_Values[2] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}
+                    >
                       {NumberOf_Inputs[2] ? <input type="number" {...register('beds')} min={0} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 2: false } })} /> : `${numberOf_Values[2] || "Beds"}`}
                     </div>
-                    <div onClick={() => setNumberOf_Inputs((prev) => { return { ...prev, 3: true } })} className={!numberOf_Values[3] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}>
+                    <div
+                      tabIndex={NumberOf_Inputs[3] ? -1 : 0}
+                      onClick={() => setNumberOf_Inputs((prev) => { return { ...prev, 3: true } })}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNumberOf_Inputs((prev) => { return { ...prev, 3: true } }) } }}
+                      className={!numberOf_Values[3] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}
+                    >
                       {NumberOf_Inputs[3] ? <input type="number" {...register('bathrooms')} min={0} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 3: false } })} /> : `${numberOf_Values[3] || "Bathrooms"}`}
                     </div>
                   </div>

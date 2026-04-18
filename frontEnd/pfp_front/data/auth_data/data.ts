@@ -59,6 +59,15 @@ export const wilayas = [
   { code: "58", name: "El Meniaa" }
 ];
 
+const _wilayaByCode: Record<string, string> = Object.fromEntries(
+  wilayas.map(w => [w.code, w.name])
+);
+
+export function getWilayaName(code: string | null | undefined): string {
+  if (!code) return '';
+  return _wilayaByCode[code] ?? code;
+}
+
 export const wilayas_string_only = [
    "Adrar" ,
    "Chlef" ,

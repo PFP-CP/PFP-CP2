@@ -6,7 +6,7 @@ import { useState, useRef, useEffect, useLayoutEffect, RefObject } from "react";
 import { usePathname } from "next/navigation";
 import { logout } from '@/app/(authentication)/actions/login';
 import "@/styles/global.css"
-import UserSettings from './user_settings';
+import UserSettings, { LogoutPanel } from './user_settings';
 
 
 const SEARCH_ICON = (
@@ -64,6 +64,7 @@ export default function ComputerNav() {
   const indicator = useRef<HTMLDivElement>(null);
   const nav_links_container = useRef<HTMLDivElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   useLayoutEffect(() => {
 
@@ -142,7 +143,10 @@ export default function ComputerNav() {
             <div onClick={() => setSettingsOpen(!settingsOpen)}>{USER_ICON}</div>
             {settingsOpen && <UserSettings setSettingsOpen={setSettingsOpen} />}
           </div>
-          {SETTINGS}
+          <div className={style.user_settings_container}>
+            <div onClick={() => setLogoutOpen(!logoutOpen)}>{SETTINGS}</div>
+            {logoutOpen && <LogoutPanel setOpen={setLogoutOpen} />}
+          </div>
         </div>
       </nav>
     </>

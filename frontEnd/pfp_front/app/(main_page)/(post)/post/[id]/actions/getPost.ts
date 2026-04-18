@@ -45,6 +45,120 @@ export async function createPost(){
   
 }
 
+export async function addComment(postId: string, comment: string, rating: number) {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}/comments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ comment, rating }),
+  });
+
+  if (!response.ok) {
+    return { success: false };
+  }
+
+  return { success: true };
+}
+
+export async function createReservation(postId: string, arrivalDate: string, departureDate: string) {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Reservations/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ post_id: postId, arrival_date: arrivalDate, departure_date: departureDate }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    return { success: false, error: err?.detail ?? 'Reservation failed' };
+  }
+
+  return { success: true };
+}
+
+export async function getComments(id: string) {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/${id}/comments`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  return await response.json();
+}
+
+export async function getCurrentUserId(): Promise<number | null> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return null;
+
+  const response = await fetch(`http://127.0.0.1:8000/api/Accounts/my-profile/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+  });
+
+  if (!response.ok) return null;
+
+  const data = await response.json();
+  return data.id ?? null;
+}
+
+export async function checkIsSaved(postId: string): Promise<boolean> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return false;
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/saved`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+  });
+  if (!response.ok) return false;
+  const data: { post_id: string }[] = await response.json();
+  return data.some((s) => s.post_id === postId);
+}
+
+export async function savePost(postId: string): Promise<{ success: boolean; alreadySaved?: boolean }> {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}/save`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+  });
+  if (response.status === 409) return { success: true, alreadySaved: true };
+  if (!response.ok) return { success: false };
+  return { success: true };
+}
+
+export async function unsavePost(postId: string): Promise<{ success: boolean }> {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}/save`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+  });
+  if (!response.ok) return { success: false };
+  return { success: true };
+}
+
 export async function getPost(id: string) {
   const token = (await cookies()).get('token')?.value;
   const response = await fetch(`http://127.0.0.1:8000/api/Posts/${id}`, {

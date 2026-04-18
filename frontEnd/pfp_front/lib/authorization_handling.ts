@@ -23,8 +23,10 @@ export async function refreshToken(token:string){
     body:JSON.stringify({refresh:token})
   })
   const data = await res.json();
-  saveToken(data);
-  if (res.status === 200) return {success:true,...data};
+  if (res.status === 200) {
+    await saveToken(data);
+    return {success:true,...data};
+  }
   return {success:false};
 }
 

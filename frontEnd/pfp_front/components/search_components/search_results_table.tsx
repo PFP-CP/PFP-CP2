@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import styles from "@/styles/search_styles/search.module.css";
 import { SearchResult } from "@/types/api_types";
+import { getWilayaName } from "@/data/auth_data/data";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -56,7 +57,7 @@ function SearchResultRow({ result, idx }: { result: SearchResult; idx: number })
                     </div>
                 </div>
             </td>
-            <td className={styles.td}>{result.wilaya || "—"}</td>
+            <td className={styles.td}>{getWilayaName(result.wilaya) || "—"}</td>
             <td className={styles.td}>{result.renter_name}</td>
             <td className={styles.td}>{result.phone_number || "N/A"}</td>
             <td className={styles.td}>{result.contact}</td>

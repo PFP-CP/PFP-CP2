@@ -15,8 +15,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
   
-  if(token && !verifyToken(token)){
-    if(!(await refreshToken(refresh!)).success) return NextResponse.redirect(new URL('/authentication',request.url));
+  if(token && !(await verifyToken(token))){
+    const refresh_res = await refreshToken(refresh!);
+    if(!refresh_res.success) return NextResponse.redirect(new URL('/authentication',request.url));
+    // saveToken uses next/headers which doesn't work in middleware — set cookie on the response directly
+    const response = NextResponse.next();
+    response.cookies.set('token', refresh_res.access, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    return response;
   }
 
   if (isAuthRoute && token){
