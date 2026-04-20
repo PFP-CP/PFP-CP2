@@ -10,6 +10,9 @@
   flex-direction: column;
   gap: 1rem;
   padding-bottom: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: 1.5rem 1.5rem 2rem;
 }
 .showcase_header{
   display: flex;
@@ -112,6 +115,7 @@
   max-height: 500px;
   overflow: hidden;
   border-radius: 23px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
 }
 
 .pictures_container .side_pictures{
@@ -135,6 +139,7 @@
   overflow: hidden;
   display: flex;
   align-items: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
 }
 
 .images_navigation{
@@ -146,6 +151,8 @@
   display: flex;
   flex-direction: column;
   gap: .5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 
@@ -169,13 +176,20 @@
   border: none;
   background-color: var(--secondary-color);
   color: white;
-  transition: background-color ease-out 100ms;
+  transition: background-color ease-out 100ms, transform 0.15s ease, box-shadow 0.15s ease;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(34, 14, 103, 0.35);
 }
-
 
 .show_pictures_container button:hover{
   background-color: var(--color-btn-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 14, 103, 0.45);
+}
+
+.show_pictures_container button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(34, 14, 103, 0.3);
 }
 
 .all_pictures_container{
@@ -223,7 +237,9 @@
 }
 
 .desktop_view{
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 

@@ -1,11 +1,14 @@
 'use client'
-import { useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { DateRange } from 'react-date-range';
 import { eachDayOfInterval, format } from 'date-fns';
 import style from "@/styles/post_page_styles/date_picker.module.css";
 import { PostReservation } from '@/types/api_types';
+
+// Module-level constants — stable references, never recreated
+const RANGE_COLORS = ['rgba(34, 14, 103, 1)'];
 
 function buildDisabledDates(reservations: PostReservation[]): Date[] {
   const dates: Date[] = []
@@ -28,7 +31,7 @@ export default function MyDatePicker({
   reservations: PostReservation[]
   onConfirm: (start: Date, end: Date) => void
 }) {
-  const disabledDates = buildDisabledDates(reservations)
+  const disabledDates = useMemo(() => buildDisabledDates(reservations), [reservations])
 
   const [range, setRange] = useState([{ startDate: new Date(), endDate: new Date(), key: 'range' }])
   const [bookDate, setBookDate] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null })
@@ -37,21 +40,31 @@ export default function MyDatePicker({
   const [focusedRange, setFocusedRange] = useState<[number, number]>([0, 0])
   const [isSelecting, setIsSelecting] = useState(false)
 
-  // focusedRange[1] === 0 → picking start (or both already chosen)
-  // focusedRange[1] === 1 → start locked, picking end
+  // Track the displayed month via ref — updating it does NOT trigger a re-render,
+  // so navigating months never causes a re-render. The ref value is read on the
+  // NEXT re-render (e.g. from hover), feeding the correct month back to DateRange.
+  const shownDateRef = useRef(new Date())
+
   const isPickingStart = focusedRange[1] === 0
 
-  // Three phases while calendar is open:
-  // (!isSelecting, isPickingStart)  → idle: hover previews arrival
-  // ( isSelecting, !isPickingStart) → picking end: hover previews depart
-  // ( isSelecting, isPickingStart)  → both chosen: hover stops, show the range
-
-  const handleSelect = (Ranges: any) => {
+  const handleSelect = useCallback((Ranges: any) => {
     const Range = Ranges.range
     if (!Range) return
     setIsSelecting(true)
     setRange([{ startDate: Range.startDate, endDate: Range.endDate, key: 'range' }])
-  }
+  }, [])
+
+  const handlePreviewChange = useCallback((date: Date | undefined) => {
+    setHoverDate(date || null)
+  }, [])
+
+  const handleRangeFocusChange = useCallback((focused: [number, number]) => {
+    setFocusedRange(focused)
+  }, [])
+
+  const handleShownDateChange = useCallback((date: Date) => {
+    shownDateRef.current = date
+  }, [])
 
   const handleClose = () => {
     setCalendarOpen(false)
@@ -73,7 +86,6 @@ export default function MyDatePicker({
     setIsSelecting(false)
   }
 
-  // Confirmed dates are always the fallback when nothing active is happening
   const confirmedArrival = confirmed && bookDate.start ? format(bookDate.start, 'dd/MM/yyyy') : null
   const confirmedDepart  = confirmed && bookDate.end   ? format(bookDate.end,   'dd/MM/yyyy') : null
 
@@ -82,14 +94,11 @@ export default function MyDatePicker({
 
   if (calendarOpen) {
     if (!isSelecting && isPickingStart) {
-      // Phase 1 — idle, hover previews arrival
       if (hoverDate) arrivalLabel = format(hoverDate, 'dd/MM/yyyy')
     } else if (isSelecting && !isPickingStart) {
-      // Phase 2 — start locked, hover previews depart
       arrivalLabel = format(range[0].startDate, 'dd/MM/yyyy')
       if (hoverDate) departLabel = format(hoverDate, 'dd/MM/yyyy')
     } else if (isSelecting && isPickingStart) {
-      // Phase 3 — both chosen, no hover
       arrivalLabel = format(range[0].startDate, 'dd/MM/yyyy')
       departLabel  = format(range[0].endDate,   'dd/MM/yyyy')
     }
@@ -118,14 +127,16 @@ export default function MyDatePicker({
       {calendarOpen && (
         <>
           <DateRange
-            ranges={[...range]}
+            ranges={range}
             onChange={handleSelect}
-            onPreviewChange={(date: Date | undefined) => setHoverDate(date || null)}
+            onPreviewChange={handlePreviewChange}
             focusedRange={focusedRange}
-            onRangeFocusChange={(focused: [number, number]) => setFocusedRange(focused)}
+            onRangeFocusChange={handleRangeFocusChange}
+            shownDate={shownDateRef.current}
+            onShownDateChange={handleShownDateChange}
             disabledDates={disabledDates}
-            minDate={new Date()}
-            rangeColors={['rgba(34, 14, 103, 1)']}
+            minDate={shownDateRef.current}
+            rangeColors={RANGE_COLORS}
           />
           <div className={style.buttons_container}>
             <button onClick={handleClose}>Close</button>

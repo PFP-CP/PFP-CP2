@@ -1,17 +1,22 @@
 .city_section {
   margin-bottom: 56px;
-  padding: 0;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
 
 .city_header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 24px;
+  padding-left: 1rem;
+  border-left: 4px solid #220E67;
 }
 
 .city_icon {
-  color: #7c5cdb;
+  color: #220E67;
   width: 28px;
   height: 28px;
 }

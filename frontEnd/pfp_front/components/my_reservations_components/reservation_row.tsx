@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import styles from "@/styles/my_reservations_styles/reservations_table.module.css"
 import { Reservation } from "@/types/api_types"
+import { getWilayaName } from "@/data/auth_data/data"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 const FALLBACK_IMAGE = "/placeholder-house.jpg"
@@ -95,9 +96,7 @@ export default function ReservationRow({ reservation, onCancel }: ReservationRow
             <td className={styles.table_cell}>
                 <div className={styles.description}>
                     <h4 className={styles.title}>
-                        <span className={styles.type_label}>{houseType}</span>
-                        <span className={styles.separator}> · </span>
-                        {location}
+                        {houseType}{getWilayaName(house?.wilaya) ? ` in ${getWilayaName(house?.wilaya)}` : location ? ` in ${location}` : ''}
                     </h4>
                     <p className={styles.price}>{house?.Price ?? "—"} DA per night</p>
                     <span className={styles.rating}>
@@ -108,7 +107,7 @@ export default function ReservationRow({ reservation, onCancel }: ReservationRow
 
             {/* الولاية */}
             <td className={styles.table_cell}>
-                <span className={styles.wilaya}>{house?.wilaya || "—"}</span>
+                <span className={styles.wilaya}>{getWilayaName(house?.wilaya) || house?.wilaya || "—"}</span>
             </td>
 
             {/* اسم المؤجر */}

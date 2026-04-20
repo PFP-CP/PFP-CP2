@@ -3,6 +3,10 @@
 	background-color: white;
 	width: 100%;
   gap: 10rem;
+  margin-top: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: 2rem;
 }
 
 
@@ -50,12 +54,15 @@
   background-color: white;
   flex: 1 0;
   border: 3px solid black;
-  /* align-items: center; */
   display: flex;
   padding-top: 1rem;
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
 
-
+.nook_rating_and_comments:hover {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.13);
 }
 
 .comments_title_container{
@@ -115,6 +122,9 @@
   font-size: 20px;
   font-family: "sansation-700", sans-serif;
 }
+.name_rating_container div{
+  display: flex;
+}
 
 .rating_and_ratingButton_container .renter_rating .name_rating_container .rating_container{
   display: flex;
@@ -141,6 +151,18 @@
   max-width: 257px;
   align-self: center;
   width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rating_button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.18);
+}
+
+.rating_button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .rated_button{
@@ -158,6 +180,18 @@
   color: white;
   max-width: 257px;
   margin-left: 2rem;
+  box-shadow: 0 4px 14px rgba(34, 14, 103, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rated_button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 14, 103, 0.45);
+}
+
+.rated_button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(34, 14, 103, 0.3);
 }
 
 .rated_button svg path{
@@ -203,6 +237,10 @@
   flex-direction: column;
   gap: .5rem;
   font-family: "sansation-400",sans-serif;
+  background: white;
+  border-radius: 14px;
+  padding: .75rem 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
 }
 
 .user_container{
@@ -263,7 +301,19 @@
   justify-content: center;
   align-items: center;
   height: 30px;
-  width: 30px;
+  min-width: 30px;
+  box-shadow: 0 3px 8px rgba(34, 14, 103, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.confirm_rating_button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(34, 14, 103, 0.45);
+}
+
+.confirm_rating_button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(34, 14, 103, 0.3);
 }
 
 .rating_slider{
@@ -281,6 +331,7 @@
   background-color: #D9D9D9;
   padding-top: .7rem;
   padding-right: 1.5rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
 }
 
 .nook_rating_and_close_button{
@@ -301,6 +352,18 @@
   border-radius: 23px;
   border: none;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(34, 14, 103, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nook_rating_and_close_button .close_button:hover, .comment_input button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 14, 103, 0.45);
+}
+
+.nook_rating_and_close_button .close_button:active, .comment_input button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(34, 14, 103, 0.3);
 }
 
 .nook_rating_and_close_button .rating_button,.nook_rating_and_close_button .rated_button{
@@ -357,7 +420,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding-left: .5rem;
+  padding-left: 1rem;
+  border-left: 4px solid #220E67;
+  border-radius: 2px;
 }
 
 .description_title{
@@ -436,6 +501,7 @@
   gap: 2rem;
   position: sticky;
   top: 0;
+  box-shadow: 0 8px 32px rgba(34, 14, 103, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .nook_scheduler_container>button{
@@ -450,6 +516,18 @@
   cursor: pointer;
   font-family: "sansation-700",sans-serif;
   font-size: 25px;
+  box-shadow: 0 4px 14px rgba(34, 14, 103, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nook_scheduler_container>button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(34, 14, 103, 0.5);
+}
+
+.nook_scheduler_container>button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(34, 14, 103, 0.3);
 }
 
 .visitors_and_price{
@@ -462,6 +540,12 @@
 .visitors_and_price .price_container{
   font-size: 25px;
   font-family: "sansation-700", sans-serif;
+  display:flex;
+  gap: .4rem;
+}
+
+.price_container span{
+  text-wrap: nowrap;
 }
 
 .visitors_and_price .price_container span{
@@ -490,11 +574,36 @@
 .visitors_and_price .visitors_before{
   background-color: #D9D9D9;
   color: black;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: .5rem;
+}
+
+.visitors_and_price .visitors_before:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.18);
+}
+
+.visitors_and_price .visitors_before:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .visitors_and_price .visitors_after{
   background-color: #220E67;
   color: white;
+  box-shadow: 0 4px 14px rgba(34, 14, 103, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.visitors_and_price .visitors_after:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 14, 103, 0.45);
+}
+
+.visitors_and_price .visitors_after:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(34, 14, 103, 0.3);
 }
 
 .visitors_and_price input{

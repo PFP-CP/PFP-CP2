@@ -1,7 +1,14 @@
 'use client'
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import dynamic from "next/dynamic"
 import style from "@/styles/post_page_styles/showcase.module.css"
+
+const LocationMap = dynamic(
+  () => import('./LocationMap'),
+  { ssr: false }
+)
 import { showPostPicturesState } from "@/types/types"
 import { HouseImage, PostData } from "@/types/api_types"
 import 'react-photo-view/dist/react-photo-view.css';
@@ -18,26 +25,52 @@ function getImageUrl(url: string): string {
   return `${BACKEND_URL}${url}`;
 }
 
-function PostHeader({ title, isSaved, onSaveToggle }: { title: string; isSaved: boolean; onSaveToggle: () => void }) {
+function PostHeader({ title, isSaved, onSaveToggle, lat, lng }: { title: string; isSaved: boolean; onSaveToggle: () => void; lat?: number; lng?: number }) {
   const screenWidth = useMediaQuery('(min-width:700px)');
+  const [copied, setCopied] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
+
+  const hasLocation = lat != null && lng != null && lat !== 0 && lng !== 0;
+
+  const handleCopyLink = () => {
+    const url = hasLocation
+      ? `https://www.google.com/maps?q=${lat},${lng}`
+      : window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
-    <div className={style.showcase_header}>
-      <div className={style.title_container}>
-        <div className={style.title_logo}><Link href={"#"}>{TITLE_LOGO}</Link></div>
-        <div className={style.title}>{title}</div>
+    <>
+      <div className={style.showcase_header}>
+        <div className={style.title_container}>
+          <div
+            className={style.title_logo}
+            onClick={() => hasLocation && setMapOpen(true)}
+            style={{ cursor: hasLocation ? 'pointer' : 'default' }}
+            title={hasLocation ? 'View on map' : undefined}
+          >
+            {TITLE_LOGO}
+          </div>
+          <div className={style.title}>{title}</div>
+        </div>
+        {screenWidth && <div className={style.post_actions}>
+          <div className={style.copy_link_container} onClick={handleCopyLink}>
+            <div className={style.copy_link_logo}>{COPY_LINK_LOGO}</div>
+            <div className={style.copy_link}>{copied ? 'Copied!' : 'Copy Link'}</div>
+          </div>
+          <div className={style.save_container} onClick={onSaveToggle} style={{ cursor: 'pointer' }}>
+            <div className={style.save_logo}>{isSaved ? SAVE_LOGO_ACTIVE : SAVE_LOGO_INACTIVE}</div>
+            <div className={style.save}>{isSaved ? 'Saved' : 'Save'}</div>
+          </div>
+        </div>}
       </div>
-      {screenWidth && <div className={style.post_actions}>
-        <div className={style.copy_link_container}>
-          <div className={style.copy_link_logo}>{COPY_LINK_LOGO}</div>
-          <div className={style.copy_link}>Copy Link</div>
-        </div>
-        <div className={style.save_container} onClick={onSaveToggle} style={{ cursor: 'pointer' }}>
-          <div className={style.save_logo}>{isSaved ? SAVE_LOGO_ACTIVE : SAVE_LOGO_INACTIVE}</div>
-          <div className={style.save}>{isSaved ? 'Saved' : 'Save'}</div>
-        </div>
-      </div>}
-    </div>
+      {mapOpen && hasLocation && (
+        <LocationMap lat={lat!} lng={lng!} onClose={() => setMapOpen(false)} />
+      )}
+    </>
   );
 }
 
@@ -161,17 +194,18 @@ export default function PostShowcase({ setShowPictures, show_pictures, post_data
   return (
     <section className={style.post_showcase}>
       <>
-        <PostHeader title={formattedTitle} isSaved={isSaved} onSaveToggle={onSaveToggle} />
+        <PostHeader title={formattedTitle} isSaved={isSaved} onSaveToggle={onSaveToggle} lat={post_data.location?.Latitude} lng={post_data.location?.Longitude} />
         <div className={style.desktop_view}>
           {show_pictures
             ? display_images(setShowPictures, pictures)
-            : postImages(pictures)
+            : <>{postImages(pictures)}
+        {image_navigation(setShowPictures, post_data)}
+            </>
           }
         </div>
         <div className={style.mobile_view}>
           <CarouselImages pictures={pictures} />
         </div>
-        {image_navigation(setShowPictures, post_data)}
       </>
     </section>
   );

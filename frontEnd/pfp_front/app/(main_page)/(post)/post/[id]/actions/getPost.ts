@@ -45,6 +45,18 @@ export async function createPost(){
   
 }
 
+export async function deleteComment(postId: string, commentId: string) {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}/comments/${commentId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+  });
+  return { success: response.ok };
+}
+
 export async function addComment(postId: string, comment: string, rating: number) {
   const token = (await cookies()).get('token')?.value;
   const response = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}/comments`, {
@@ -103,7 +115,7 @@ export async function getCurrentUserId(): Promise<number | null> {
   const token = (await cookies()).get('token')?.value;
   if (!token) return null;
 
-  const response = await fetch(`http://127.0.0.1:8000/api/Accounts/my-profile/`, {
+  const response = await fetch(`http://127.0.0.1:8000/api/Account/my-profile/`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

@@ -35,7 +35,19 @@
   border-radius: 23px;
   width: 150px;
   height: 60px;
-  
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(34, 14, 103, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.buttons_container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 14, 103, 0.45);
+}
+
+.buttons_container button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(34, 14, 103, 0.3);
 }
 
 .date_container{
@@ -55,12 +67,35 @@
 .date_container_before_choice{
   color: black;
   background-color: #D9D9D9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.date_container_before_choice:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.18);
+}
+
+.date_container_before_choice:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .date_container_after_choice{
   background-color: #220E67;
   color: white;
+  box-shadow: 0 4px 14px rgba(34, 14, 103, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
 
+.date_container_after_choice:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 14, 103, 0.45);
+}
+
+.date_container_after_choice:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(34, 14, 103, 0.3);
 }
 
 

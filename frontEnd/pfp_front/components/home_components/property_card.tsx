@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import styles from "@/styles/home_styles/property_card.module.css"
 import { Property } from "@/types/api_types"
+import { getWilayaName } from "@/data/auth_data/data"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -46,8 +47,8 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                 )}
             </div>
             <div className={styles.card_info}>
-                <h3>{property.title}</h3>
-                <p>{property.state}</p>
+                <h3>{(() => { const type = property.title?.split(' in ')[0] || property.title; const w = getWilayaName(property.state); return w ? `${type} in ${w}` : type; })()}</h3>
+                <p>{getWilayaName(property.state) || property.state}</p>
                 <div className={styles.card_footer}>
                     <span>{property.price} DA / night</span>
                     <span><span className={styles.star}>★</span> {property.average_rating ?? "—"}</span>

@@ -12,11 +12,12 @@ import { getCompressedNookImages } from '@/lib/functions';
 import { useMediaQuery } from '@mui/material';
 import Create_post_mobile_nav from '@/components/create_post_page_components/create_post_page_mobile_nav';
 import { redirect } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
-//Notes for later
-// all inputs must be required
-// checkbox array must not be empty
-//add map api
+const MapPicker = dynamic(
+  () => import('@/components/create_post_page_components/MapPicker'),
+  { ssr: false }
+)
 const CATEGORIES = ['family', 'single', 'couple'];
 const RULES = ['animals', 'smoking', 'noise'];
 const FEATURES = ['pool', 'wifi', 'heating', 'television', 'kitchen', 'microwave', 'dishes', 'freezer', 'stove', 'oven', 'fridge', 'washing_machine', 'cleaning_product', 'air_conditioning', 'parking', 'sea_view'];
@@ -24,7 +25,7 @@ const FEATURES = ['pool', 'wifi', 'heating', 'television', 'kitchen', 'microwave
 export default function CreatePost() {
   const [NumberOf_Inputs, setNumberOf_Inputs] = useState({ 1: false, 2: false, 3: false });
   const [tenantsAndPriceActive, setTenantsAndPriceActive] = useState({ 1: false, 2: false })
-  const { register, handleSubmit, setValue, watch, setFocus, getValues } = useForm({
+  const { register, handleSubmit, setValue, watch, setFocus, getValues, formState: { errors } } = useForm({
     defaultValues: {
       house_type: 'apartment',
       wilaya: "01",
@@ -34,6 +35,8 @@ export default function CreatePost() {
     }
   });
   const [images, setImages] = useState<imageItem[]>([]);
+  const [mapOpen, setMapOpen] = useState(false);
+  const [mapLabel, setMapLabel] = useState<string | null>(null);
 
   const selectedType = watch('house_type');
   const watchedCheckBoxes = {
@@ -107,16 +110,15 @@ export default function CreatePost() {
                     Categories
                   </div>
                   <div className={style.section_chechbox}>
-                    {CATEGORIES.map((category) => {
+                    {CATEGORIES.map((category, i) => {
                       return (
                         <div key={category}>
-                          <input style={{ display: "none" }} {...register('categories')} type="checkbox" value={category} />
+                          <input style={{ display: "none" }} {...register('categories', i === 0 ? { validate: v => v.length > 0 } : {})} type="checkbox" value={category} />
                           <button type='button' id={category} onClick={() => toggleCheckbox("categories", category)} className={watchedCheckBoxes.categories.includes(category) ? style.selected : undefined}>{category.charAt(0).toLocaleUpperCase() + category.slice(1)}</button>
                         </div>
                       )
                     })}
-
-
+                    {errors.categories && <span className={style.field_error}>Select at least one category</span>}
                   </div>
                 </div>
                 <div className={style.section_container} id={screenWidth ? undefined : style.rules_section}>
@@ -137,20 +139,26 @@ export default function CreatePost() {
                   </div>
                 </div>
               </div>
-              <div className={style.section_container} id={screenWidth ? undefined : style.wilaya_section}>
-                <div className={style.section_title}>
-                  Wilaya
-                </div>
-                <select {...register('wilaya')}>
-                  {wilayas.map((wilaya) => <option key={wilaya.code} value={wilaya.code}>{wilaya.name}</option>)}
-                </select>
-              </div>
+              <input type="hidden" {...register('wilaya')} />
               <div className={style.location_numberOf_container}>
                 <div className={style.section_container} id={screenWidth ? undefined : style.location_section}>
                   <div className={style.section_title}>
                     Location
                   </div>
-                  <input className={location ? style.filled_input : undefined} type="url" {...register('location')} placeholder='Copy the link to your house on Google Maps' />
+                  <div className={style.location_input_row}>
+                    <input className={location ? style.filled_input : undefined} type="url" {...register('location')} placeholder='Paste a Google Maps link (optional)' />
+                    <button type="button" className={`${style.map_icon_btn} ${mapLabel ? style.map_icon_btn_active : ''}`} onClick={() => setMapOpen(true)} title="Pick location on map">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
+                      </svg>
+                    </button>
+                  </div>
+                  {mapLabel && <span className={style.map_confirmed_label}>{mapLabel}</span>}
+                  <input type="hidden" {...register('latitude', { required: true })} />
+                  <input type="hidden" {...register('longitude', { required: true })} />
+                  <input type="hidden" {...register('county')} />
+                  <input type="hidden" {...register('map_country')} />
+                  {errors.latitude && <span className={style.field_error}>Please pick a location on the map</span>}
                 </div>
                 <div className={style.section_container} id={screenWidth ? undefined : style.tentants_and_price_section}>
                   <div className={style.tenants_and_price}>
@@ -161,16 +169,18 @@ export default function CreatePost() {
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTenantsAndPriceActive((prev) => { return { ...prev, 2: true } }) } }}
                       className={tenantsAndPrice_Values[2] ? style.filled_input : undefined}
                     >
-                      {tenantsAndPriceActive[2] ? <input type="number" {...register('price_per_night')} min={0} onBlur={() => setTenantsAndPriceActive((prev) => { return { ...prev, 2: false } })} /> : `${tenantsAndPrice_Values[2]?.length > 0 ? tenantsAndPrice_Values[2] + " DA" : "Price per night"}`}
+                      {tenantsAndPriceActive[2] ? <input type="number" {...register('price_per_night', { required: true, min: 1 })} min={1} onBlur={() => setTenantsAndPriceActive((prev) => { return { ...prev, 2: false } })} /> : `${tenantsAndPrice_Values[2]?.length > 0 ? tenantsAndPrice_Values[2] + " DA" : "Price per night"}`}
                     </div>
+                    {errors.price_per_night && <span className={style.field_error}>Price is required</span>}
                     <div
                       tabIndex={tenantsAndPriceActive[1] ? -1 : 0}
                       onClick={() => setTenantsAndPriceActive((prev) => { return { ...prev, 1: true } })}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTenantsAndPriceActive((prev) => { return { ...prev, 1: true } }) } }}
                       className={tenantsAndPrice_Values[1] ? style.filled_input : undefined}
                     >
-                      {tenantsAndPriceActive[1] ? <input type="number" {...register('max_tenants')} min={0} onBlur={() => setTenantsAndPriceActive((prev) => { return { ...prev, 1: false } })} /> : `${tenantsAndPrice_Values[1] || "Max number of tenants"}`}
+                      {tenantsAndPriceActive[1] ? <input type="number" {...register('max_tenants', { required: true, min: 1 })} min={1} onBlur={() => setTenantsAndPriceActive((prev) => { return { ...prev, 1: false } })} /> : `${tenantsAndPrice_Values[1] || "Max number of tenants"}`}
                     </div>
+                    {errors.max_tenants && <span className={style.field_error}>Max tenants is required</span>}
                   </div>
                 </div>
                 <div className={style.section_container} id={screenWidth ? undefined : style.numberOf_buttons_section}>
@@ -184,7 +194,7 @@ export default function CreatePost() {
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNumberOf_Inputs((prev) => { return { ...prev, 1: true } }) } }}
                       className={!numberOf_Values[1] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}
                     >
-                      {NumberOf_Inputs[1] ? <input type="number" {...register('bedrooms')} min={0} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 1: false } })} /> : `${numberOf_Values[1] || "Bedrooms"}`}
+                      {NumberOf_Inputs[1] ? <input type="number" {...register('bedrooms', { required: true, min: 1 })} min={1} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 1: false } })} /> : `${numberOf_Values[1] || "Bedrooms"}`}
                     </div>
                     <div
                       id={style.number_of_beds}
@@ -193,7 +203,7 @@ export default function CreatePost() {
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNumberOf_Inputs((prev) => { return { ...prev, 2: true } }) } }}
                       className={!numberOf_Values[2] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}
                     >
-                      {NumberOf_Inputs[2] ? <input type="number" {...register('beds')} min={0} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 2: false } })} /> : `${numberOf_Values[2] || "Beds"}`}
+                      {NumberOf_Inputs[2] ? <input type="number" {...register('beds', { required: true, min: 1 })} min={1} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 2: false } })} /> : `${numberOf_Values[2] || "Beds"}`}
                     </div>
                     <div
                       tabIndex={NumberOf_Inputs[3] ? -1 : 0}
@@ -201,9 +211,10 @@ export default function CreatePost() {
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNumberOf_Inputs((prev) => { return { ...prev, 3: true } }) } }}
                       className={!numberOf_Values[3] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}
                     >
-                      {NumberOf_Inputs[3] ? <input type="number" {...register('bathrooms')} min={0} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 3: false } })} /> : `${numberOf_Values[3] || "Bathrooms"}`}
+                      {NumberOf_Inputs[3] ? <input type="number" {...register('bathrooms', { required: true, min: 1 })} min={1} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 3: false } })} /> : `${numberOf_Values[3] || "Bathrooms"}`}
                     </div>
                   </div>
+                  {(errors.bedrooms || errors.beds || errors.bathrooms) && <span className={style.field_error}>Please fill in all number of fields</span>}
 
                 </div>
               </div>
@@ -229,13 +240,32 @@ export default function CreatePost() {
             </div>
             <div className={style.house_information_description}>
               <div className={style.section_container} id={screenWidth ? undefined : style.description_section}>
-                <textarea className={style.description} rows={10} {...register('description')} placeholder='write a description of your nook' />
+                <textarea className={style.description} rows={10} {...register('description', { required: true })} placeholder='write a description of your nook' />
+              {errors.description && <span className={style.field_error}>Description is required</span>}
               </div>
             </div>
             <button disabled={isPending} type='submit' id={style.submit_button}>{!isPending ? "Post your nook" : "Submitting ..."}</button>
           </div>
         </div>
       </form>
+      {mapOpen && (
+        <MapPicker
+          onClose={() => setMapOpen(false)}
+          onConfirm={(loc) => {
+            setValue('latitude', String(loc.lat))
+            setValue('longitude', String(loc.lng))
+            setValue('county', loc.baladia)
+            setValue('map_country', loc.country)
+            const wilayas_match = wilayas.find(w =>
+              loc.wilaya.toLowerCase().includes(w.name.toLowerCase()) ||
+              w.name.toLowerCase().includes(loc.wilaya.toLowerCase())
+            )
+            if (wilayas_match) setValue('wilaya', wilayas_match.code)
+            setMapLabel([loc.baladia, loc.wilaya, loc.country].filter(Boolean).join(', '))
+            setMapOpen(false)
+          }}
+        />
+      )}
     </>
   );
 }

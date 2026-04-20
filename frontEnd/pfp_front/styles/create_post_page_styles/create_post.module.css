@@ -4,6 +4,69 @@
   padding: 0 2rem 2rem;
 }
 
+.field_error {
+  color: #d00000;
+  font-size: 13px;
+  font-family: "sansation-400", sans-serif;
+  margin-top: 4px;
+  display: block;
+}
+
+.location_input_row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 447px;
+}
+
+.location_input_row input[type="url"] {
+  flex: 1;
+}
+
+.map_icon_btn {
+  flex-shrink: 0;
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  border: none;
+  background-color: #D9D9D9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #444;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s;
+}
+
+.map_icon_btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+}
+
+.map_icon_btn:active {
+  transform: translateY(0);
+}
+
+.map_icon_btn_active {
+  background-color: #220E67;
+  color: white;
+  box-shadow: 0 3px 10px rgba(34, 14, 103, 0.35);
+}
+
+.map_icon_btn_active:hover {
+  box-shadow: 0 6px 16px rgba(34, 14, 103, 0.45);
+}
+
+.map_confirmed_label {
+  font-family: "sansation-400", sans-serif;
+  font-size: 13px;
+  color: #220E67;
+  display: block;
+  text-align: center;
+}
+
 .create_post_header{
   font-size: 40px;
   font-family: "sansation-700",sans-serif;
@@ -172,7 +235,8 @@ input:focus{
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  padding: .5remz;
+  padding: .5rem;
+  text-wrap: nowrap;
 }
 
 #price_per_night_div{

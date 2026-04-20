@@ -75,12 +75,12 @@ export default function Mobile_nav(){
         {logoutOpen && <LogoutPanel setOpen={setLogoutOpen} mobile />}
         <nav id={style.navbar}>
           <div className={style.upper_container}>
-            <div id={style.logo_container}>
+            <Link href="/home" id={style.logo_container}>
               {LOGO}
               <div className={style.nook} style={{position:'relative', height:'14px', width:'50px'}}>
                {NOOK}
               </div>
-            </div>
+            </Link>
 
 
             <Link href="/find-rentals" className={style.nav_search} >

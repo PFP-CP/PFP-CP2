@@ -2,6 +2,7 @@ import { useState } from "react"
 import styles from "@/styles/my_nooks_styles/nooks_table.module.css"
 import StatusBadge from "./status_badge"
 import { Property } from "@/types/api_types"
+import { getWilayaName } from "@/data/auth_data/data"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -50,7 +51,7 @@ export default function NookRow({ nook, onEdit, onDelete }: NookRowProps) {
             {/* الوصف */}
             <td className={styles.table_cell}>
                 <div className={styles.description}>
-                    <h4 className={styles.title}>{nook.title}</h4>
+                    <h4 className={styles.title}>{(() => { const type = nook.title?.split(' in ')[0] || nook.title; const w = getWilayaName(nook.state); return w ? `${type} in ${w}` : type; })()}</h4>
                     <p className={styles.price}>{nook.price} DA per night</p>
                     <span className={styles.rating}>★ {nook.average_rating ?? "—"}</span>
                 </div>
@@ -58,7 +59,7 @@ export default function NookRow({ nook, onEdit, onDelete }: NookRowProps) {
 
             {/* الولاية */}
             <td className={styles.table_cell}>
-                <span className={styles.wilaya}>{nook.state || "—"}</span>
+                <span className={styles.wilaya}>{getWilayaName(nook.state) || nook.state || "—"}</span>
             </td>
 
             {/* الحالة */}

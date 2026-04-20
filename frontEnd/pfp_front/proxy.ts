@@ -7,7 +7,8 @@ export async function proxy(request: NextRequest) {
   const refresh = request.cookies.get('refresh')?.value
   const isProtectedRoute = true;
   
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/authentication') 
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/authentication');
+  
   //this if has to change after changing protected route
   if (isProtectedRoute && !token && !isAuthRoute) {
     const loginUrl = new URL('/authentication', request.url)

@@ -118,15 +118,15 @@ export default function ComputerNav() {
   return (
     <>
       <nav id={style.navbar}>
-        <div id={style.logo_container}>
+        <Link href="/home" id={style.logo_container}>
           {LOGO}
-        </div>
+        </Link>
         <div id={style.navigation}>
           <div ref={nav_links_container} id={style.navigation_links}>
-            <div ref={nav_links_refs.home} onClick={() => set_current_page('home')} className={style.nav_text} ><Link href={'/home'}> Home </Link></div>
-            <div ref={nav_links_refs.mynooks} onClick={() => set_current_page('mynooks')} className={style.nav_text} ><Link href={'/mynooks'}> My Nooks </Link></div>
-            <div ref={nav_links_refs.myreservations} onClick={() => set_current_page('myreservations')} className={style.nav_text} ><Link href={'/myreservations'}> My Reservations </Link></div>
-            <div ref={nav_links_refs.myfavorites} onClick={() => set_current_page('myfavorites')} className={style.nav_text} ><Link href={'/myfavorites'}> My Favorites </Link></div>
+            <Link href={'/home'}> <div ref={nav_links_refs.home} onClick={() => set_current_page('home')} className={style.nav_text} >Home </div></Link>
+            <Link href={'/mynooks'}><div ref={nav_links_refs.mynooks} onClick={() => set_current_page('mynooks')} className={style.nav_text} > My Nooks </div></Link>
+            <Link href={'/myreservations'}><div ref={nav_links_refs.myreservations} onClick={() => set_current_page('myreservations')} className={style.nav_text} > My Reservations </div></Link>
+            <Link href={'/myfavorites'}><div ref={nav_links_refs.myfavorites} onClick={() => set_current_page('myfavorites')} className={style.nav_text} > My Favorites </div></Link>
             <motion.div transition={{ duration: .3, ease: "linear" }} layout ref={indicator} className={style.nav_indicator}></motion.div>
           </div>
         </div>

@@ -59,6 +59,10 @@ interface CreatePostData {
   rules: string[];
   features: string[];
   location?: string;
+  latitude?: string;
+  longitude?: string;
+  county?: string;
+  map_country?: string;
 }
 
 export async function submitHouseInformation(data: CreatePostData) {
@@ -80,11 +84,11 @@ export async function submitHouseInformation(data: CreatePostData) {
       Couple: data.categories.includes('couple'),
       Single: data.categories.includes('single'),
     },
-    county: 'hh',
+    county: data.county || '',
     state: data.wilaya,
-    country: "Algeria",
-    longitude: 1,
-    latitude: 1,
+    country: data.map_country || "Algeria",
+    longitude: data.longitude ? Number(data.longitude) : 0,
+    latitude: data.latitude ? Number(data.latitude) : 0,
     feature_ids: features_arr,
     allows_animals: data.rules.includes('animals'),
     allows_smoking: data.rules.includes('smoking'),
@@ -118,13 +122,14 @@ export async function submitHouseInformation(data: CreatePostData) {
     body: JSON.stringify(toSend),
 
   })
-  const response = await res.json();
-  const res_status = await res.ok;
-  if (res_status) {
-    return { success: true, post_id: response.id }
-  } else {
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    console.error('createPost error:', res.status, text)
     return { success: false }
   }
+  const response = await res.json().catch(() => null)
+  if (!response?.id) return { success: false }
+  return { success: true, post_id: response.id }
 
 }
 

@@ -6,6 +6,8 @@ import CitySection from "@/components/home_components/city_section"
 import { api } from "@/lib/api"
 import { Property } from "@/types/api_types"
 import styles from "./page.module.css"
+import Loading from "@/components/loading"
+import { getWilayaName } from "@/data/auth_data/data"
 
 export default function Home() {
     const [properties, setProperties] = useState<Property[]>([])
@@ -57,20 +59,7 @@ export default function Home() {
             })
     }, [])
 
-    if (loading) {
-        return (
-            <main>
-                <HeroSection 
-                    displayedText={displayedText} 
-                    showSubtitle={showSubtitle} 
-                    fullText={fullText}
-                />
-                <div className={styles.loading}>
-                    جاري التحميل...
-                </div>
-            </main>
-        )
-    }
+    if (loading) return <Loading text="Loading..." />
 
     if (error) {
         return (
@@ -98,7 +87,7 @@ export default function Home() {
         const grouped: Record<string, Property[]> = {}
         
         properties.forEach((property) => {
-            const wilaya = property.state
+            const wilaya = getWilayaName(property.state) || property.state
             if (!grouped[wilaya]) {
                 grouped[wilaya] = []
             }

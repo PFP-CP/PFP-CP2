@@ -25,12 +25,6 @@ export async function login(Identifier:string, password:string){
       maxAge: 60 * 60 * 24 * 7
     });
 
-    // Also set in localStorage for client-side API calls
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('token', data.tokens.access);
-      localStorage.setItem('refresh', data.tokens.refresh);
-    }
-
     return {success: true};
   }
 
@@ -40,12 +34,6 @@ export async function login(Identifier:string, password:string){
 export async function logout() {
   (await cookies()).delete('token');
   (await cookies()).delete('refresh');
-
-  // Also clear localStorage
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refresh');
-  }
 }
 
 

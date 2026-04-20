@@ -293,6 +293,7 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded}:{setSho
 
 
 function Comments_visible({setShowComments,sectionData,currentUserId,onCommentAdded}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,currentUserId:number|null,onCommentAdded:()=>Promise<void>}){
+  console.log(sectionData)
   return(
     
           <div className={style.nook_and_renter_rating}>
@@ -388,7 +389,7 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
             {!calendarOpen &&
             <>
               <div className={style.visitors_and_price}>
-                <div className={style.price_container}><span>{post_data.house.Price} DA</span> per night</div>
+                <div className={style.price_container}><span>{post_data.house.Price} DA</span> <span id={style.perNight}>per night</span></div>
                 {visitorsActive?<input autoFocus onBlur={()=>setVisitorsActive(false)} value={visitorsNumber} onChange={handleVisitorsNumber} type="number" />:<div onClick={()=>{ setVisitorsActive(true); setVisitorsHint(false); }} className={`${style.visitors} ${visitors_style}`}>{visitors_value}</div>}
               </div>
               {visitorsHint && <p style={{color:'orange', fontSize:'0.8rem', margin:'0'}}>Please enter the number of visitors.</p>}

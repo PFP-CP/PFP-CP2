@@ -6,6 +6,21 @@
   align-items: center;
   padding-right: 4rem;
   gap: .2rem;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 4px 24px rgba(34, 14, 103, 0.35), 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* glass-edge highlight along the top */
+#navbar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+  pointer-events: none;
 }
 
 #navbar #logo_container{
@@ -46,6 +61,13 @@
   font-size: 20px;
   cursor: pointer;
   font-family: "sansation-400";
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease, text-shadow 0.2s ease;
+}
+
+#navbar #navigation .nav_text:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 #navbar #navigation .nav_indicator{
@@ -54,6 +76,7 @@
   background-color: transparent;
   bottom: -.2rem;
   width: 100%;
+  border-radius: 2px;
 }
 
 #navbar .nav_search{
@@ -64,8 +87,19 @@
   border-radius: 23px;
   padding-left: 1rem;
   gap: 1rem;
-  cursor:pointer;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
 
+#navbar .nav_search:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+#navbar .nav_search:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 #navbar .nav_search .find_rentals_h3_container{
@@ -103,6 +137,18 @@
 
 #navbar #user_controls .settings,#navbar #user_controls .user_profile{
   cursor: pointer;
+}
+
+.user_settings_container > div {
+  padding: 7px;
+  border-radius: 50%;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+}
+
+.user_settings_container > div:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .user_settings_container{

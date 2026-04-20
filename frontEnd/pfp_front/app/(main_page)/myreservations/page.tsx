@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { api } from "@/lib/api"
 import { Reservation } from "@/types/api_types"
+import { getReservations } from "./actions/getReservations"
 import ReservationsTable from "@/components/my_reservations_components/reservations_table"
 import styles from "@/styles/my_reservations_styles/reservations_page.module.css"
+import Loading from "@/components/loading"
 
 export default function MyReservationsPage() {
     const router = useRouter()
@@ -18,7 +19,7 @@ export default function MyReservationsPage() {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.getReservations()
+            const response = await getReservations()
             const data = Array.isArray(response) ? response : []
             setReservations(data)
         } catch (err: any) {
@@ -42,20 +43,7 @@ export default function MyReservationsPage() {
         fetchReservations()
     }, [])
 
-    if (loading) {
-        return (
-            <main className={styles.page}>
-                <div className={styles.header}>
-                    <div className={styles.title_section}>
-                        <h1 className={styles.page_title}>Reservations</h1>
-                    </div>
-                </div>
-                <div className={styles.loading}>
-                    <p>Loading your reservations...</p>
-                </div>
-            </main>
-        )
-    }
+    if (loading) return <Loading text="Loading your reservations..." />
 
     if (isUnauthorized) {
         return (

@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { api } from "@/lib/api"
 import { Property } from "@/types/api_types"
+import { getMyNooks, deleteNook } from "./actions/getNooks"
 import NooksTable from "@/components/my_nooks_components/nooks_table"
 import styles from "@/styles/my_nooks_styles/nooks_page.module.css"
+import Loading from "@/components/loading"
 
 export default function MyNooksPage() {
     const router = useRouter()
@@ -18,7 +19,7 @@ export default function MyNooksPage() {
     const fetchNooks = async () => {
         try {
             setLoading(true)
-            const response = await api.getMyNooksDash()
+            const response = await getMyNooks()
             const data = Array.isArray(response) ? response : []
             setNooks(data)
             setError(null)
@@ -44,7 +45,7 @@ export default function MyNooksPage() {
         if (!confirmed) return
 
         try {
-            await api.deleteNook(id)
+            await deleteNook(id)
             await fetchNooks()
         } catch (error) {
             console.error("Failed to delete:", error)
@@ -56,18 +57,7 @@ export default function MyNooksPage() {
         fetchNooks()
     }, [])
 
-    if (loading) {
-        return (
-            <main className={styles.page}>
-                <div className={styles.header}>
-                    <div className={styles.title_section}>
-                        <h1 className={styles.page_title}>My Nooks</h1>
-                    </div>
-                </div>
-                <div className={styles.loading}>Loading your Nooks...</div>
-            </main>
-        )
-    }
+    if (loading) return <Loading text="Loading your Nooks..." />
 
     if (isUnauthorized) {
         return (
@@ -112,9 +102,9 @@ export default function MyNooksPage() {
                     <h1 className={styles.page_title}>My Nooks</h1>
                     <p className={styles.subtitle}>Manage your properties and reservations</p>
                 </div>
-                <button 
+                <button
                     className={styles.add_new_btn}
-                    onClick={() => router.push("/mynooks/add")}
+                    onClick={() => router.push("/mynooks/createpost")}
                 >
                     Add new
                 </button>

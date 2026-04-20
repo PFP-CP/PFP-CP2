@@ -4,16 +4,17 @@ import { cookies } from "next/headers";
 
 export async function apiFetch(url:string, options = {}) {
   const res = await fetch(url, options);
-  let token = (await cookies()).get('token')?.value;
   if (res.status === 401) {
-    if(token){
-      let refresh_req = await refreshToken(token);
-      if(refresh_req.success) return 
-    }else{
-      redirect("/authentication");
+    const refresh = (await cookies()).get('refresh')?.value;
+    if (refresh) {
+      const refresh_req = await refreshToken(refresh);
+      if (refresh_req.success) return;
     }
+    // Both tokens failed — clear cookies and send to login
+    (await cookies()).delete('token');
+    (await cookies()).delete('refresh');
+    redirect("/authentication");
   }
-
 }
 
 export async function refreshToken(token:string){
@@ -27,6 +28,8 @@ export async function refreshToken(token:string){
     await saveToken(data);
     return {success:true,...data};
   }
+  (await cookies()).delete('token');
+  (await cookies()).delete('refresh');
   return {success:false};
 }
 
@@ -35,13 +38,13 @@ export async function saveToken(tokenObject: { access: string; refresh: string }
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7
+      maxAge: 60 * 60 * 24 * 1
     });
     (await cookies()).set('refresh', tokenObject.refresh, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7
+      maxAge: 60 * 60 * 24 * 1
     });
 }
 

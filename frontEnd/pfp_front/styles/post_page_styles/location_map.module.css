@@ -1,0 +1,56 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 90vw;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  font-family: "sansation-700", sans-serif;
+  font-size: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.close_btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #555;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.close_btn:hover {
+  background: #f0f0f0;
+}
+
+.map {
+  height: 460px;
+  width: 100%;
+}
+
+@media (max-width: 500px) {
+  .map {
+    height: 320px;
+  }
+}

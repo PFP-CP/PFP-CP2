@@ -6,7 +6,8 @@ import Image from "next/image";
 import { api } from "@/lib/api";
 import { Property, User } from "@/types/api_types";
 import styles from "@/styles/my_nooks_styles/seller_profile.module.css"; // سننشئ هذا الملف لاحقاً
-import PropertyCard from "@/components/home_components/property_card"; // إعادة استخدام بطاقة العقار
+import PropertyCard from "@/components/home_components/property_card";
+import Loading from "@/components/loading";
 
 // واجهة لبيانات البروفايل (يمكن إضافتها لـ api_types.ts)
 interface SellerProfile {
@@ -69,7 +70,7 @@ export default function SellerProfilePage() {
         if (sellerId) fetchProfile();
     }, [sellerId]);
 
-    if (loading) return <div className={styles.loading}>جاري التحميل...</div>;
+    if (loading) return <Loading text="Loading profile..." />;
     if (error || !profile) return <div className={styles.error}>{error}</div>;
 
     // تجميع العقارات حسب الولاية (نفس المنطق السابق)

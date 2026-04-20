@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { api } from "@/lib/api"
 import { Property } from "@/types/api_types"
 import PropertyCard from "@/components/home_components/property_card"
+import Loading from "@/components/loading"
 
 export default function MyFavoritesPage() {
     const router = useRouter()
@@ -41,15 +42,7 @@ export default function MyFavoritesPage() {
         fetchFavorites()
     }, [])
 
-    if (loading) {
-        return (
-            <main>
-                <div style={{ textAlign: "center", padding: "60px 20px", fontSize: "1.2rem", color: "#666" }}>
-                    Loading your Favorites...
-                </div>
-            </main>
-        )
-    }
+    if (loading) return <Loading text="Loading your Favorites..." />
 
     if (isUnauthorized) {
         return (

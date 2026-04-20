@@ -41,16 +41,13 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit, isRetry = fa
                 // Retry once
                 return fetchAPI<T>(endpoint, options, true);
             } else {
-                // Clear tokens if refresh fails
                 if (typeof window !== "undefined") {
                     localStorage.removeItem("token");
                     localStorage.removeItem("refresh");
-                    // Optional: redirect to login
-                    // window.location.href = "/login";
                 }
             }
         }
-        
+
         const error = await response.json().catch(() => ({ detail: "Unknown error" }));
         const errorMessage = error.detail || error.error || error.message || `API Error: ${response.status}`;
         console.error(`[API ERROR] ${response.status} at ${API_BASE_URL}${endpoint}:`, errorMessage);
