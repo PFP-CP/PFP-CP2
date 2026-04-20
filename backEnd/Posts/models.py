@@ -147,7 +147,7 @@ class SavedPost(models.Model):
     def title(self):
         return self.post.title
     @property
-    def Price(self):
+    def price(self):
             return self.post.house.Price
     @property
     def State(self):    
@@ -156,7 +156,9 @@ class SavedPost(models.Model):
     @property
     def primary_image(self):
         img = self.post.house.pictures.first()
-        return img.URL if img else None
+        if  not img   :
+            return Pictures.blank_house_image
+        return img.picture.url
     class Meta:
         db_table        = 'saved_post'
         unique_together = ['user', 'post']
