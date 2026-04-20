@@ -225,8 +225,8 @@ class PostNookIn(Schema):
         # Validate max_tenants
         if self.max_tenants is not None:
             beds = self.num_beds if self.num_beds is not None else self.num_bedroom
-            if self.max_tenants < beds:
-                raise ValueError("Max tenants cannot be less than number of beds")
+            if self.max_tenants > beds:
+                raise ValueError("Max tenants cannot be greater than number of beds")
 
 # Modify your nook  
 # All fields optional — only sent fields are updated
@@ -267,8 +267,8 @@ class UpdateNookIn(Schema):
         # Validate max_tenants
         if self.max_tenants is not None:
             beds = self.num_beds if self.num_beds is not None else self.num_bedroom
-            if self.max_tenants < beds:
-                raise ValueError("max tenants cannot be less than number of beds")
+            if self.max_tenants > beds:
+                raise ValueError("max tenants cannot be greater than number of beds")
         
 
        

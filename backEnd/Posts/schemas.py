@@ -367,27 +367,13 @@ class SavedPostOut(Schema):
     post_id: uuid.UUID
     title: str
     saved_at: datetime
-    Price: Decimal
-    State: Optional[str]
-    primary_image: Optional[str]
-
+    price: Decimal
+    State: Optional[str]= None
+    primary_image: Optional[str]= None
+ 
     @staticmethod
-    def resolve_title(obj):
-        return obj.post.title
-
-    @staticmethod
-    def resolve_price(obj):
-        return obj.price
-
-    @staticmethod
-    def resolve_State(obj):
-
-        return obj.State
-
-    @staticmethod
-    def resolve_primary_image(obj):
-        return obj.primary_image
-
+    def resolve_post_id(obj):
+        return obj.post.id
 
 # Utility
 

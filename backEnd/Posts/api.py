@@ -307,7 +307,7 @@ def list_saved_posts(request):
 @router.post(
     "/{post_id}/save",
     response={201: MessageSchema, 409: ErrorSchema, 404: ErrorSchema},
-    auth=JWTAuth(),
+ auth=JWTAuth(),
     tags=["Saved Posts (my favorite)"],
 )
 def save_post(request, post_id: uuid.UUID):
@@ -315,10 +315,10 @@ def save_post(request, post_id: uuid.UUID):
     from django.http import Http404
 
     try:
-        post = Post.objects.get(pk=post_id, status=PostStatus.ACTIVE)
+        post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
         raise Http404(
-            "This post cannot be saved because it does not exist or is inactive"
+            "This post cannot be saved because it does not exist "
         )
     created = SavedPost.objects.get_or_create(user=request.user, post=post)
     if not created:
@@ -330,7 +330,7 @@ def save_post(request, post_id: uuid.UUID):
 @router.delete(
     "/{post_id}/save",
     response={200: MessageSchema, 404: ErrorSchema},
-    auth=JWTAuth(),
+   auth=JWTAuth(),
     tags=["Saved Posts (my favorite)"],
 )
 def unsave_post(request, post_id: uuid.UUID):
