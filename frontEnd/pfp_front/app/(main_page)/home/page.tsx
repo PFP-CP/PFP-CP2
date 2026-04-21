@@ -64,9 +64,9 @@ export default function Home() {
     if (error) {
         return (
             <main>
-                <HeroSection 
-                    displayedText={displayedText} 
-                    showSubtitle={showSubtitle} 
+                <HeroSection
+                    displayedText={displayedText}
+                    showSubtitle={showSubtitle}
                     fullText={fullText}
                 />
                 <div className={styles.error}>
@@ -85,7 +85,7 @@ export default function Home() {
 
     const groupPropertiesByWilaya = () => {
         const grouped: Record<string, Property[]> = {}
-        
+
         properties.forEach((property) => {
             const wilaya = getWilayaName(property.state) || property.state
             if (!grouped[wilaya]) {
@@ -93,7 +93,7 @@ export default function Home() {
             }
             grouped[wilaya].push(property)
         })
-        
+
         return grouped;
     }
 
@@ -101,16 +101,16 @@ export default function Home() {
 
     return (
         <main>
-            <HeroSection 
-                displayedText={displayedText} 
-                showSubtitle={showSubtitle} 
+            <HeroSection
+                displayedText={displayedText}
+                showSubtitle={showSubtitle}
                 fullText={fullText}
             />
-            
+
             <div className={styles.container}>
                 {Object.entries(groupedProperties).length > 0 ? (
                     Object.entries(groupedProperties).map(([wilaya, props]) => (
-                        <CitySection 
+                        <CitySection
                             key={wilaya}
                             cityName={wilaya}
                             properties={props}
