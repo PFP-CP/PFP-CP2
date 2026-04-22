@@ -2,7 +2,7 @@ from django.utils import timezone
 
 from django.db import models
 from Accounts.models import Account
-from django.db.models import F, Avg
+from django.db.models import F, Avg, Q
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
@@ -104,12 +104,6 @@ class Post(models.Model):
         """Marks post RENTED and syncs the house status."""
         self.status = PostStatus.RENTED
         self.save(update_fields=['status', 'updated_at'])
-        
-
-    def reject(self):
-        self.status = PostStatus.REJECTED
-        self.save(update_fields=['status', 'updated_at'])
-
      
     def increment_views(self):
         Post.objects.filter(pk=self.pk).update(views_count=F('views_count') + 1)
@@ -125,6 +119,10 @@ class Post(models.Model):
 
     def increment_comments(self):
         Post.objects.filter(pk=self.pk).update(comments_count=F('comments_count') + 1)
+        self.refresh_from_db(fields=['comments_count'])
+
+    def decrement_comments(self):
+        Post.objects.filter(pk=self.pk).update(comments_count=F('comments_count') - 1)
         self.refresh_from_db(fields=['comments_count'])
 
 
@@ -203,30 +201,36 @@ class Comment(models.Model):
             models.Index(fields=['user']),
         ]
         constraints = [
-            models.UniqueConstraint(
-                fields=['post', 'user'],
-                name='one_comment_per_user_per_post',
-            )
-        ]
+        models.UniqueConstraint(
+        fields=['post', 'user'],
+        condition=~Q(comment="__seller_rating__"),
+        name='one_nook_review_per_user_per_post',
+    ),
+       models.UniqueConstraint(
+        fields=['post', 'user'],
+        condition=Q(comment="__seller_rating__"),
+        name='one_seller_rating_per_user_per_post',
+    ),
+]
 
     def __str__(self):
         return f"{self.user} -> '{self.post.title}' ({self.rating})"
-
+ 
     def save(self, *args, **kwargs):
         is_new = self._state.adding
         super().save(*args, **kwargs)
+
         self._update_seller_rating()
         self._update_post_rating()
-        if is_new:
-            self.post.increment_comments()
-            Account.objects.filter(pk=self.user.pk).update(
-                num_review=F('num_review') + 1
-            )
 
+        if is_new and self.comment != "__seller_rating__":
+            self.post.increment_comments()
+            Account.objects.filter(pk=self.user.pk).update(num_review=F('num_review') + 1)
     def _update_seller_rating(self):
         seller = self.post.seller
         avg = Comment.objects.filter( 
-            post__seller=seller
+            post__seller=seller,        comment="__seller_rating__" #this for updateing the rating of the seller without affecting the average rating of the post
+
         ).aggregate(avg=Avg('rating'))['avg']
         if avg is not None:
             Account.objects.filter(pk=seller.pk).update(rating=round(avg, 2))
@@ -235,6 +239,8 @@ class Comment(models.Model):
 
         avg = Comment.objects.filter(
             post=self.post
+        ).exclude(
+            comment="__seller_rating__"#this for updateing the rating of the post without affecting the average rating of the seller
         ).aggregate(avg=Avg('rating'))['avg']
 
         self.post.rating = float(round(avg, 2)) if avg else 0.0

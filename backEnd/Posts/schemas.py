@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from ninja import Schema
 from pydantic import field_validator
-
+from Accounts.models import Account
 from Houses.models import Pictures
 
 
@@ -86,6 +86,27 @@ class SearchResult(Schema):
             return first_pic.picture.url
         return Pictures.blank_house_image
 
+class SellerRatingIn(Schema):
+    rating: Decimal
+
+    @field_validator("rating")
+    @classmethod
+    def valid_rating(cls, v):
+        if not (0 <= v <= 5):
+            raise ValueError("Rating must be between 0 and 5.")
+        return v
+
+
+class SellerRatingUpdate(Schema):
+    rating: Decimal
+
+    @field_validator("rating")
+    @classmethod
+    def valid_rating(cls, v):
+        if not (0 <= v <= 5):
+            raise ValueError("Rating must be between 0 and 5.")
+        return v
+
 
 #  helper schemas for nested data in PostOut
 
@@ -103,7 +124,7 @@ class SellerMiniOut(Schema):
         if obj.profile_picture:
             print("profile picture url:", obj.profile_picture)  # Debug print
             return obj.profile_picture.url
-        return Pictures.blank_profile_image
+        return Account.default_profile_picture
 
 
 class HouseMiniOut(Schema):
@@ -137,23 +158,35 @@ class HouseImageMiniOut(Schema):
             return obj.picture.url  # when image exists return its url
         return None
 
+class CommenterOut(Schema):
+    id: int
+    full_name: str
+    profile_picture: Optional[str] = None
 
+    @staticmethod
+    def resolve_profile_picture(obj):
+        if obj.profile_picture:
+            return obj.profile_picture.url
+        return Account.default_profile_picture
 # Comment schemas
 class CommentOut(Schema):
     id: uuid.UUID
     user_id: int
     rating: Decimal
     comment: str
+    commenter:CommenterOut
     created_at: datetime
     modified_at: datetime
-
+    @staticmethod
+    def resolve_commenter(obj):
+        return obj.user
     @staticmethod
     def resolve_user_id(obj):
         return obj.user.id
 
 
 class CommentIn(Schema):
-    comment: str
+    comment: str=""
     rating: Decimal
 
     @field_validator("rating")
@@ -174,8 +207,12 @@ class CommentIn(Schema):
 class CommentUpdate(Schema):
     comment: Optional[str] = None
     rating: Optional[Decimal] = None
-
-
+    @field_validator("rating")
+    @classmethod        
+    def valid_rating(cls, v):
+        if v is not None and not (0 <= v <= 5):
+            raise ValueError("Rating must be between 0 and 5.")
+        return v
 # schemas for reservations in the post detail page
 class PostReservationOut(Schema):
     id: int

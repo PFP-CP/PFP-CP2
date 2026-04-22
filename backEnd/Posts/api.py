@@ -400,7 +400,7 @@ def mark_rented(request, post_id: uuid.UUID):
 
 
 @router.get(
-    "/{post_id}/comments", response=List[CommentOut], auth=JWTAuth(), tags=["Comments"]
+    "/{post_id}/comments", response=List[CommentOut], auth=JWTAuth(), tags=["Reviews - Post"]
 )
 def list_comments(request, post_id: uuid.UUID):
     post = get_object_or_404(Post, pk=post_id)
@@ -409,9 +409,8 @@ def list_comments(request, post_id: uuid.UUID):
 
 @router.post(
     "/{post_id}/comments",
-    response={201: CommentOut, 409: ErrorSchema, 404: ErrorSchema},
-    auth=JWTAuth(),
-    tags=["Comments"],
+    response={201: CommentOut, 409: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
+    tags=["Reviews - Post"],
 )
 def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
     """
@@ -428,6 +427,7 @@ def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
         comment=payload.comment,
         rating=payload.rating,
     )
+    Account.objects.filter(pk=comment.user.pk).update(num_review=F('num_review') + 1)
 
     return 201, comment
 
@@ -436,7 +436,7 @@ def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
     "/{post_id}/comments/{comment_id}",
     response={200: CommentOut, 403: ErrorSchema, 404: ErrorSchema},
     auth=JWTAuth(),
-    tags=["Comments"],
+    tags=["Reviews - Post"],
 )
 def update_comment(
     request, post_id: uuid.UUID, comment_id: uuid.UUID, payload: CommentUpdate
@@ -454,18 +454,106 @@ def update_comment(
     "/{post_id}/comments/{comment_id}",
     response={200: MessageSchema, 403: ErrorSchema, 404: ErrorSchema},
     auth=JWTAuth(),
-    tags=["Comments"],
+    tags=["Reviews - Post"],
 )
 def delete_comment(request, post_id: uuid.UUID, comment_id: uuid.UUID):
     comment = get_object_or_404(Comment, pk=comment_id, post=post_id)
     if comment.user != request.user and not request.user.is_staff:
         return 403, {"detail": "Not allowed."}
     post = comment.post
-    seller = comment.post.seller
+    seller = post.seller
     comment.delete()
-    post._update_post_rating()
-    seller._update_seller_rating()
+    # Recalculate post rating
+    avg = Comment.objects.filter(post=post).aggregate(avg=Avg('rating'))['avg']
+    post.rating = float(round(avg, 2)) if avg else 0.0
+    post.save(update_fields=['rating'])
+    post.decrement_comments()
+
+    # Recalculate seller rating
+    avg = Comment.objects.filter(post__seller=seller).aggregate(avg=Avg('rating'))['avg']
+    if avg is not None:
+        Account.objects.filter(pk=seller.pk).update(rating=round(avg, 2))
+    Account.objects.filter(pk=comment.user.pk).update(num_review=F('num_review') - 1)
     return 200, {'message': 'Comment deleted.'}
 
+# ── RATE THE SELLER ─────────────────────────────────────────────────────────
+
+@router.post(
+    "/{post_id}/rate-seller",
+    response={201: MessageSchema, 409: ErrorSchema, 403: ErrorSchema, 404: ErrorSchema},
+    auth=JWTAuth(),
+    tags=["Reviews - Seller"],
+)
+def rate_seller(request, post_id: uuid.UUID, payload: SellerRatingIn):
+    """Guest rates the seller — rating only, no comment."""
+    post = get_object_or_404(Post, pk=post_id)
+    seller = post.seller
+
+    if seller == request.user:
+        return 403, {"detail": "You cannot rate yourself."}
+
+    if Comment.objects.filter(post=post, user=request.user, comment="__seller_rating__").exists():
+        return 409, {"detail": "You have already rated this seller."}
+
+    Comment.objects.create(
+        post=post,
+        user=request.user,
+        comment="__seller_rating__",
+        rating=payload.rating,
+    )
+
+    return 201, {"message": "Seller rated successfully."}
 
 
+@router.patch(
+    "/{post_id}/rate-seller",
+    response={200: MessageSchema, 403: ErrorSchema, 404: ErrorSchema},
+    auth=JWTAuth(),
+    tags=["Reviews - Seller"],
+)
+def update_seller_rating(request, post_id: uuid.UUID, payload: SellerRatingUpdate):
+    post = get_object_or_404(Post, pk=post_id)
+
+    comment = get_object_or_404(
+        Comment, post=post, user=request.user, comment="__seller_rating__"
+    )
+
+    if comment.user != request.user and not request.user.is_staff:
+        return 403, {"detail": "You can only edit your own rating."}
+
+    comment.rating = payload.rating
+    comment.save()  # triggers _update_seller_rating automatically
+    return 200, {"message": "Seller rating updated."}
+
+
+@router.delete(
+    "/{post_id}/rate-seller",
+    response={200: MessageSchema, 403: ErrorSchema, 404: ErrorSchema},
+    auth=JWTAuth(),
+    tags=["Reviews - Seller"],
+)
+def delete_seller_rating(request, post_id: uuid.UUID):
+    post = get_object_or_404(Post, pk=post_id)
+    seller = post.seller
+
+    comment = get_object_or_404(
+        Comment, post=post, user=request.user, comment="__seller_rating__"
+    )
+
+    if comment.user != request.user and not request.user.is_staff:
+        return 403, {"detail": "Not allowed."}
+
+    comment.delete()
+
+    # Recalculate seller rating after removal
+    avg = Comment.objects.filter(
+        post__seller=seller
+    ).exclude(
+        comment="__seller_rating__"  # exclude seller ratings from nook avg
+    ).aggregate(avg=Avg('rating'))['avg']
+
+    Account.objects.filter(pk=seller.pk).update(
+        rating=round(avg, 2) if avg is not None else 5.0
+    )
+
+    return 200, {"message": "Seller rating deleted."}
