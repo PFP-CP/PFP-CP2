@@ -779,3 +779,45 @@
 .comment_dropdown_delete:hover {
   background: #fff0f0;
 }
+
+/* Mobile comments slider */
+.mobile_comments_slider {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .mobile_comments_slider {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 0.75rem 2rem;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile_comments_slider::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile_comments_slider_item {
+    flex: 0 0 calc(100vw - 4rem);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile_comments_slider_item .comment {
+    flex: 1;
+  }
+
+  .mobile_comments_slider_item .comment {
+    background: rgba(217, 217, 217, 1) !important;
+    box-shadow: none;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+  }
+}

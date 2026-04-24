@@ -69,10 +69,11 @@ export async function addComment(postId: string, comment: string, rating: number
   });
 
   if (!response.ok) {
-    return { success: false };
+    const body = await response.json().catch(() => ({}));
+    return { success: false, status: response.status, detail: body?.detail ?? 'Failed to submit.' };
   }
 
-  return { success: true };
+  return { success: true, status: response.status, detail: null };
 }
 
 export async function createReservation(postId: string, arrivalDate: string, departureDate: string) {
@@ -169,6 +170,24 @@ export async function unsavePost(postId: string): Promise<{ success: boolean }> 
   });
   if (!response.ok) return { success: false };
   return { success: true };
+}
+
+export async function getSavedPosts(): Promise<{ id: string; title: string; price: number; state: string; primary_image: string | null }[]> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return [];
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/saved`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+  });
+  if (!response.ok) return [];
+  const data: any[] = await response.json();
+  return data.map((item) => ({
+    id: item.post_id,
+    title: item.title,
+    price: item.Price || 0,
+    state: item.State || '',
+    primary_image: item.primary_image || null,
+  }));
 }
 
 export async function getPost(id: string) {

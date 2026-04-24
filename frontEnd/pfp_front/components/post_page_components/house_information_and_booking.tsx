@@ -118,8 +118,10 @@ function RateNookButton({setRatingValue}:{setRatingValue:React.Dispatch<React.Se
 }
 
 function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onCommentAdded}:{ratingValue:number,id:string,setIsCommenting:React.Dispatch<React.SetStateAction<boolean>>, setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>, onCommentAdded:()=>Promise<void>}){
-  const comment = useRef(null);
+  const comment = useRef<HTMLTextAreaElement>(null);
   const [ratingError, setRatingError] = useState(false);
+  const [submitError, setSubmitError] = useState<string | false>(false);
+  const [loading, setLoading] = useState(false);
 
   const handleCloseSubmit = ()=>{
     setIsCommenting(false);
@@ -131,9 +133,15 @@ function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onComm
       return;
     }
     setRatingError(false);
-    if((await addComment(id,comment.current.value,ratingValue)).success){
+    setSubmitError(false);
+    setLoading(true);
+    const res = await addComment(id, comment.current!.value, ratingValue);
+    setLoading(false);
+    if(res.success){
       await onCommentAdded();
       setIsCommenting(false);
+    } else {
+      setSubmitError(res.detail ?? 'Failed to submit. Please try again.');
     }
   }
 
@@ -144,9 +152,12 @@ function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onComm
           <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
         </div>
         {ratingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>Please select a rating before submitting.</p>}
+        {submitError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>{submitError}</p>}
         <div className={style.comment_input}>
           <textarea ref={comment} name="comment" id={style.comment} placeholder='Write your comment'></textarea>
-          <button onClick={handleSubmit}>Submit</button>
+          <button onClick={handleSubmit} disabled={loading} style={loading ? {opacity:0.5, cursor:'not-allowed'} : {}}>
+            {loading ? 'Submitting…' : 'Submit'}
+          </button>
         </div>
       </div>
   )
@@ -210,10 +221,17 @@ function Rules_categories_features({ house_rules, allowed_people, features }: {
 }
 
 
-function Comments_invisible({setShowComments,sectionData,onCommentAdded}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,onCommentAdded:()=>Promise<void>}){
+function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_list,currentUserId}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,onCommentAdded:()=>Promise<void>,comment_list:import('@/types/api_types').CommentData[],currentUserId:number|null}){
   const [isCommenting, setIsCommenting] = useState(false);
   const [ratingValue,setRatingValue] = useState<number>(0);
-  const screenWidth = useMediaQuery(('min-width:700px'));
+  const screenWidth = useMediaQuery('(min-width:700px)');
+  const mobileFormRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isCommenting && mobileFormRef.current) {
+      mobileFormRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [isCommenting]);
   return(
           <div className={style.nook_and_renter_rating}>
             <div className={style.rating_display}>
@@ -281,10 +299,18 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded}:{setSho
 
                 </div>
               </div>
-              {/* this will be a component */}
+              {comment_list.length > 0 && (
+              <div className={style.mobile_comments_slider}>
+                {comment_list.map((com) => (
+                  <div key={com.id} className={style.mobile_comments_slider_item}>
+                    <Comment comment_data={com} currentUserId={currentUserId} postId={sectionData.post_id} onDeleted={onCommentAdded} />
+                  </div>
+                ))}
+              </div>
+            )}
             </div>
             {isCommenting&&
-            <div className={style.lower_comment_review_mobile_view}>
+            <div ref={mobileFormRef} className={style.lower_comment_review_mobile_view}>
                 <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded}/>
               </div>}
           </div>
@@ -378,11 +404,11 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
         <div className={style.nook_data}>
 
           {!showComments?
-            <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count,features:post_data.features??[],house_rules:post_data.house_rules??null,allowed_people:post_data.allowed_people??'AL'}} setShowComments={setShowComments} onCommentAdded={onCommentAdded}/>:
+            <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count,features:post_data.features??[],house_rules:post_data.house_rules??null,allowed_people:post_data.allowed_people??'AL'}} setShowComments={setShowComments} onCommentAdded={onCommentAdded} comment_list={post_data.comment_list??[]} currentUserId={currentUserId}/>:
             <Comments_visible sectionData={{...post_data.seller,post_id:post_data.id,comment_list:post_data.comment_list,nook_rating:post_data.rating,comments_num:post_data.comments_count}} setShowComments={setShowComments} currentUserId={currentUserId} onCommentAdded={onCommentAdded}/>
           }
         </div>
-        
+
         <div className={style.nook_scheduler}>
           <div className={style.nook_scheduler_container}>
             <MyDatePicker setCalendarOpen={setCalendarOpen} calendarOpen={calendarOpen} reservations={post_data.reservations ?? []} onConfirm={(start, end) => { setBookedDates({ start, end }); setBookingError(null); }}/>

@@ -39,10 +39,7 @@ export default function MyDatePicker({
   const [hoverDate, setHoverDate] = useState<Date | null>(null)
   const [focusedRange, setFocusedRange] = useState<[number, number]>([0, 0])
   const [isSelecting, setIsSelecting] = useState(false)
-
-  // Track the displayed month via ref — updating it does NOT trigger a re-render,
-  // so navigating months never causes a re-render. The ref value is read on the
-  // NEXT re-render (e.g. from hover), feeding the correct month back to DateRange.
+  
   const shownDateRef = useRef(new Date())
 
   const isPickingStart = focusedRange[1] === 0

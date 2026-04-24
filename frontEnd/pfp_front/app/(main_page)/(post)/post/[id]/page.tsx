@@ -9,11 +9,13 @@ import { getPost, getCurrentUserId, checkIsSaved, savePost, unsavePost } from ".
 import Loading from "@/components/loading";
 import { PostData } from "@/types/api_types";
 
+const postCache = new Map<string, PostData>();
+
 export default function PostPage() {
   const { id } = useParams<{ id: string }>();
   const [show_pictures,setShowPictures] = useState(false);
-  const [postData,setPostData] = useState<PostData | null>(null);
-  const [loading,setLoading] = useState(true);
+  const [postData,setPostData] = useState<PostData | null>(() => postCache.get(id) ?? null);
+  const [loading,setLoading] = useState(() => !postCache.has(id));
   const [currentUserId,setCurrentUserId] = useState<number|null>(null);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -21,13 +23,22 @@ export default function PostPage() {
 
   const refetchPost = async () => {
     const post_res = await getPost(id);
-    setPostData({...post_res, comment_list: post_res.comments ?? []});
+    const data = {...post_res, comment_list: post_res.comments ?? []};
+    postCache.set(id, data);
+    setPostData(data);
   }
 
   useEffect(()=>{
+    setShowPictures(false);
+    const cached = postCache.get(id);
+    if (cached) {
+      setPostData(cached);
+      setLoading(false);
+      checkIsSaved(id).then(setIsSaved);
+      return;
+    }
     setLoading(true);
     setPostData(null);
-    setShowPictures(false);
     Promise.all([refetchPost(), checkIsSaved(id).then(setIsSaved)]).then(() => setLoading(false));
   },[id])
 
@@ -41,7 +52,7 @@ export default function PostPage() {
   if(loading || !postData || postData.id !== id) return <Loading text="Loading post"/>
   return (
   <>
-    <Post_mobile_nav isSaved={isSaved} onSaveToggle={handleSaveToggle}/>
+    <Post_mobile_nav isSaved={isSaved} onSaveToggle={handleSaveToggle} lat={postData.location?.Latitude} lng={postData.location?.Longitude}/>
     <main className={style.post_page_main}>
       <PostShowcase show_pictures={show_pictures} setShowPictures={setShowPictures} post_data={postData} isSaved={isSaved} onSaveToggle={handleSaveToggle}/>
 
