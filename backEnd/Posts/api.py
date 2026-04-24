@@ -351,7 +351,7 @@ def get_post(request, post_id: uuid.UUID):
             "house__features__features","house__rules",
             Prefetch(
                 "comments",
-                queryset=Comment.objects.select_related("user").order_by("-created_at"),
+                queryset=Comment.objects.select_related("user").filter(type="post").order_by("-created_at"),
             ),
         ),
         pk=post_id,
@@ -404,7 +404,7 @@ def mark_rented(request, post_id: uuid.UUID):
 )
 def list_comments(request, post_id: uuid.UUID):
     post = get_object_or_404(Post, pk=post_id)
-    return post.comments.select_related("user").order_by("-created_at")
+    return post.comments.select_related("user").filter(type="post").order_by("-created_at")
 
 
 @router.post(
@@ -418,12 +418,13 @@ def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
     """
     post = get_object_or_404(Post, pk=post_id)
 
-    if Comment.objects.filter(post=post, user=request.user).exists():
+    if Comment.objects.filter(post=post, user=request.user,type="post").exists():
         return 409, {"detail": "You have already reviewed this post."}
 
     comment = Comment.objects.create(
         post=post,
         user=request.user,
+        type="post",
         comment=payload.comment,
         rating=payload.rating,
     )
@@ -492,13 +493,13 @@ def rate_seller(request, post_id: uuid.UUID, payload: SellerRatingIn):
     if seller == request.user:
         return 403, {"detail": "You cannot rate yourself."}
 
-    if Comment.objects.filter(post=post, user=request.user, comment="__seller_rating__").exists():
+    if Comment.objects.filter(post=post, user=request.user, type="seller").exists():
         return 409, {"detail": "You have already rated this seller."}
 
     Comment.objects.create(
         post=post,
         user=request.user,
-        comment="__seller_rating__",
+        type="seller",
         rating=payload.rating,
     )
 
@@ -515,7 +516,7 @@ def update_seller_rating(request, post_id: uuid.UUID, payload: SellerRatingUpdat
     post = get_object_or_404(Post, pk=post_id)
 
     comment = get_object_or_404(
-        Comment, post=post, user=request.user, comment="__seller_rating__"
+        Comment, post=post, user=request.user, type="seller"
     )
 
     if comment.user != request.user and not request.user.is_staff:
@@ -537,7 +538,7 @@ def delete_seller_rating(request, post_id: uuid.UUID):
     seller = post.seller
 
     comment = get_object_or_404(
-        Comment, post=post, user=request.user, comment="__seller_rating__"
+        Comment, post=post, user=request.user, type="seller"
     )
 
     if comment.user != request.user and not request.user.is_staff:
@@ -547,10 +548,8 @@ def delete_seller_rating(request, post_id: uuid.UUID):
 
     # Recalculate seller rating after removal
     avg = Comment.objects.filter(
-        post__seller=seller
-    ).exclude(
-        comment="__seller_rating__"  # exclude seller ratings from nook avg
-    ).aggregate(avg=Avg('rating'))['avg']
+        post__seller=seller,type="seller"   
+    )  .aggregate(avg=Avg('rating'))['avg']
 
     Account.objects.filter(pk=seller.pk).update(
         rating=round(avg, 2) if avg is not None else 5.0

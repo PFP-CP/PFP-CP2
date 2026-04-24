@@ -170,6 +170,11 @@ class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     comment = models.TextField(blank=True)
+    TYPE_CHOICES = [
+        ("post", "Post"),
+        ("seller", "Seller"),
+    ]
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     rating  = models.DecimalField(
         max_digits=3,
         decimal_places=2,
@@ -202,13 +207,13 @@ class Comment(models.Model):
         ]
         constraints = [
         models.UniqueConstraint(
-        fields=['post', 'user'],
-        condition=~Q(comment="__seller_rating__"),
+        fields=['post', 'user', 'type'],
+        condition=~Q(type="post"),
         name='one_nook_review_per_user_per_post',
     ),
        models.UniqueConstraint(
-        fields=['post', 'user'],
-        condition=Q(comment="__seller_rating__"),
+        fields=['post', 'user', 'type'],
+        condition=Q(type="seller"),
         name='one_seller_rating_per_user_per_post',
     ),
 ]
@@ -223,14 +228,13 @@ class Comment(models.Model):
         self._update_seller_rating()
         self._update_post_rating()
 
-        if is_new and self.comment != "__seller_rating__":
+        if is_new and self.type == "post":
             self.post.increment_comments()
             Account.objects.filter(pk=self.user.pk).update(num_review=F('num_review') + 1)
     def _update_seller_rating(self):
         seller = self.post.seller
         avg = Comment.objects.filter( 
-            post__seller=seller,        comment="__seller_rating__" #this for updateing the rating of the seller without affecting the average rating of the post
-
+            post__seller=seller,   type="seller" 
         ).aggregate(avg=Avg('rating'))['avg']
         if avg is not None:
             Account.objects.filter(pk=seller.pk).update(rating=round(avg, 2))
@@ -238,9 +242,7 @@ class Comment(models.Model):
     def _update_post_rating(self):
 
         avg = Comment.objects.filter(
-            post=self.post
-        ).exclude(
-            comment="__seller_rating__"#this for updateing the rating of the post without affecting the average rating of the seller
+            post=self.post,type="post"
         ).aggregate(avg=Avg('rating'))['avg']
 
         self.post.rating = float(round(avg, 2)) if avg else 0.0

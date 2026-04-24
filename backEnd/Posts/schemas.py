@@ -1,3 +1,5 @@
+from multiprocessing import context
+from multiprocessing.util import info
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -7,6 +9,7 @@ from ninja import Schema
 from pydantic import field_validator
 from Accounts.models import Account
 from Houses.models import Pictures
+from Posts.models import Comment
 
 
 class TypeOfPeople(Schema):
@@ -261,6 +264,9 @@ class PostOut(Schema):
     saves_count: int
     comments_count: int
 
+    user_rating_post: Optional[Decimal] = None
+    user_rating_seller: Optional[Decimal] = None
+
     seller: SellerMiniOut
     house: HouseMiniOut
     location: Optional[HouseLocationMiniOut] = None
@@ -310,7 +316,20 @@ class PostOut(Schema):
         if locs and hasattr(locs, "first"):
             return locs.first()
         return locs
+    @staticmethod
+    def resolve_user_rating_post(obj, context):
+     request = context["request"]
+     user = request.user
+     if not user.is_authenticated:
+            return None
+     return Comment.objects.filter(post=obj, user=user,type="post").values_list("rating", flat=True).first()
 
+    @staticmethod
+    def resolve_user_rating_seller(obj, context):
+       request = context["request"]
+       if not request.user.is_authenticated:
+        return None
+       return Comment.objects.filter(user=request.user, post__seller=obj.seller, type="seller").values_list("rating", flat=True).first()
     @staticmethod
     def resolve_house_pictures(obj):
         pics = obj.house.pictures.all()
