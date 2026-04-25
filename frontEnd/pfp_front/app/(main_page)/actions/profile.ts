@@ -3,6 +3,23 @@ import { cookies } from 'next/headers';
 
 const API = 'http://127.0.0.1:8000';
 
+export async function getMyProfile(): Promise<{ full_name: string; email: string; profile_picture: string | null } | null> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return null;
+  const response = await fetch(`${API}/api/Account/my-profile/`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
+  if (!response.ok) return null;
+  const data = await response.json();
+  return {
+    full_name: data.full_name ?? '',
+    email: data.email ?? '',
+    profile_picture: data.profile_picture ?? null,
+  };
+}
+
 export async function changePassword(old_password: string, new_password: string): Promise<{ success: boolean; error?: string }> {
   const token = (await cookies()).get('token')?.value;
   const response = await fetch(`${API}/api/Account/changePassword/`, {

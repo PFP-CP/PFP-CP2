@@ -9,6 +9,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { forget,newPass } from "@/app/(authentication)/actions/forget";
 import { wilayas } from "@/data/auth_data/data";
 import Image from "next/image";
+import RadioButton from "@/components/auth_components/ui/radio_input";
 
 
 
@@ -79,16 +80,7 @@ function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<A
           <select {...register("location",{required:true})} >
             {wilayas.map((wilaya)=> <option key={wilaya.code} value={wilaya.name}>{wilaya.name}</option>)}
           </select>
-          <div className={style.radio_container}>
-            <div className={style.left_container}>
-              <input  {...register("gender")} className={style.custom_radio} defaultChecked={true} type="radio" value={'male'} id="Male"/>
-              <label className={style.label_left} htmlFor="Male">Male</label>
-            </div>
-            <div className={style.right_container}>
-              <input  {...register("gender")} className={style.custom_radio} type="radio" value={'female'} id="Female"/>
-              <label className={style.label_right} htmlFor="Female">Female</label>
-            </div>
-          </div>         
+          <RadioButton register={register} />
           <input className={errors.phone&&style.input_invalid} {...register("phone",phone_settings)} placeholder="Phone number" />
           {errors.phone?.message&&<p className={style.error_message}>{errors.phone?.message}</p>}
           
@@ -205,7 +197,7 @@ export default function AuthForm() {
             <input type="submit" value={(authState==="login"&&"Sign in") || (authState==="signup"&&"Sign Up")|| (authState==="forget_password"&&"Request reset link") || (authState==="forget_password_code"&&"Submit Code") as string}/>
             <div className={style.signBTN_container}>
               {authState==="login"&&<div>Have you an account?</div>}
-              <button type="button" onClick={handleAuthSwitch}>{authState==="login"?<>sign up</>:<>back to sign in</>}</button>
+              <button type="button" onClick={handleAuthSwitch}>{authState==="login"?<>Sign up</>:<>Back to sign in</>}</button>
             </div>
           </div>
           </AnimatePresence>

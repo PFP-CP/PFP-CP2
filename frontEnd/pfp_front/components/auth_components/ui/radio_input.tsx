@@ -8,7 +8,7 @@ export default function RadioButton({ register }: { register: UseFormRegister<an
   return (
     <div className={styles.radio_container}>
       <div className={styles.left_container}>
-        <input  {...register("gender")} className={styles.custom_radio} type="radio" value={'male'} id="Male" />
+        <input  {...register("gender")} className={styles.custom_radio} defaultChecked type="radio" value={'male'} id="Male" />
         <label className={styles.label_left} htmlFor="Male">Male</label>
       </div>
       <div className={styles.right_container}>

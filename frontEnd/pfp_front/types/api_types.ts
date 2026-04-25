@@ -36,6 +36,11 @@ export interface CommentData {
   user_id: number;
   rating: number;
   comment: string;
+  commenter: {
+    id: number;
+    full_name: string;
+    profile_picture: string | null;
+  };
   created_at: string;
   modified_at: string;
 }
@@ -66,6 +71,8 @@ export interface PostData {
   views_count: number;
   saves_count: number;
   comments_count: number;
+  user_rating_seller: number | null;
+  user_rating_post: number | null;
   seller: SellerInfo;
   house: HouseInfo;
   location: HouseLocation | null;

@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { DateRange } from 'react-date-range';
@@ -32,6 +32,7 @@ export default function MyDatePicker({
   onConfirm: (start: Date, end: Date) => void
 }) {
   const disabledDates = useMemo(() => buildDisabledDates(reservations), [reservations])
+  const today = useMemo(() => new Date(), [])
 
   const [range, setRange] = useState([{ startDate: new Date(), endDate: new Date(), key: 'range' }])
   const [bookDate, setBookDate] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null })
@@ -39,8 +40,6 @@ export default function MyDatePicker({
   const [hoverDate, setHoverDate] = useState<Date | null>(null)
   const [focusedRange, setFocusedRange] = useState<[number, number]>([0, 0])
   const [isSelecting, setIsSelecting] = useState(false)
-  
-  const shownDateRef = useRef(new Date())
 
   const isPickingStart = focusedRange[1] === 0
 
@@ -57,10 +56,6 @@ export default function MyDatePicker({
 
   const handleRangeFocusChange = useCallback((focused: [number, number]) => {
     setFocusedRange(focused)
-  }, [])
-
-  const handleShownDateChange = useCallback((date: Date) => {
-    shownDateRef.current = date
   }, [])
 
   const handleClose = () => {
@@ -129,11 +124,14 @@ export default function MyDatePicker({
             onPreviewChange={handlePreviewChange}
             focusedRange={focusedRange}
             onRangeFocusChange={handleRangeFocusChange}
-            shownDate={shownDateRef.current}
-            onShownDateChange={handleShownDateChange}
             disabledDates={disabledDates}
-            minDate={shownDateRef.current}
+            minDate={today}
             rangeColors={RANGE_COLORS}
+            preview={
+              isSelecting && !isPickingStart && hoverDate
+                ? { startDate: range[0].startDate, endDate: hoverDate, color: 'rgba(34, 14, 103, 0.3)' }
+                : undefined
+            }
           />
           <div className={style.buttons_container}>
             <button onClick={handleClose}>Close</button>

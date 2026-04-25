@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import styles from "@/styles/search_styles/search.module.css";
 import SearchFilterPanel from "@/components/search_components/search_filter_panel";
 import SearchResultsTable from "@/components/search_components/search_results_table";
-import { api } from "@/lib/api";
+import { searchPosts } from "./actions/search";
 import { SearchCriteria, SearchResult } from "@/types/api_types";
 
 export default function FindRentalsPage() {
@@ -26,7 +26,7 @@ export default function FindRentalsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.searchProperties(criteria);
+      const data = await searchPosts(criteria);
       setResults(data);
     } catch (err: any) {
       console.error("Search failed:", err);

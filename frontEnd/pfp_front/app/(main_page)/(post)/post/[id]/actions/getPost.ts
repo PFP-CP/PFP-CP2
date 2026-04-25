@@ -190,6 +190,50 @@ export async function getSavedPosts(): Promise<{ id: string; title: string; pric
   }));
 }
 
+export async function updateComment(postId: string, commentId: string, comment: string, rating: number) {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}/comments/${commentId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ comment, rating }),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    return { success: false, detail: body?.detail ?? 'Failed to update.' };
+  }
+  return { success: true };
+}
+
+export async function rateSeller(postId: string, rating: number, isUpdate: boolean) {
+  const token = (await cookies()).get('token')?.value;
+  const method = isUpdate ? 'PATCH' : 'POST';
+  const url = `http://127.0.0.1:8000/api/Posts/${postId}/rate-seller`;
+  const headers = { 'Content-Type': 'application/json', "Authorization": `Bearer ${token}` };
+  const body = JSON.stringify({ rating });
+
+  const response = await fetch(url, { method, headers, body });
+
+  // POST returned 409 (already rated) — the GET endpoint has no auth so we can't
+  // know in advance; retry transparently with PATCH.
+  if (response.status === 409 && method === 'POST') {
+    const retry = await fetch(url, { method: 'PATCH', headers, body });
+    if (!retry.ok) {
+      const err = await retry.json().catch(() => ({}));
+      return { success: false, detail: err?.detail ?? 'Failed to update rating.' };
+    }
+    return { success: true, wasAlreadyRated: true };
+  }
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    return { success: false, detail: err?.detail ?? 'Failed to rate.' };
+  }
+  return { success: true, wasAlreadyRated: false };
+}
+
 export async function getPost(id: string) {
   const token = (await cookies()).get('token')?.value;
   const response = await fetch(`http://127.0.0.1:8000/api/Posts/${id}`, {

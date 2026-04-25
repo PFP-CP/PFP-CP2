@@ -7,7 +7,7 @@ import { Slider, useMediaQuery } from '@mui/material'
 import MyDatePicker from './ui/date_picker'
 import CarouselImages from "./carousel_images"
 import Image from 'next/image'
-import { addComment, createReservation } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
+import { addComment, createReservation, rateSeller, updateComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
 
 
 
@@ -39,32 +39,41 @@ const POOL = <svg width="57" height="57" viewBox="0 0 57 57" fill="none" xmlns="
 
 
 
-let user = {
-  renterRated:false,
-  renterRate:0,
-}
-
-function RateRenterButton(){
+function RateRenterButton({postId, initialRated, initialRating, onRated}: {postId: string, initialRated: boolean, initialRating: number, onRated: () => Promise<void>}){
   const [isRating, setIsRating] = useState(false);
-  const [value, setValue] = useState(user.renterRate);
-  const [IsRenterRated, setIsRenterRated] = useState(user.renterRated); // this has to be taken from api
+  const [value, setValue] = useState(initialRating);
+  const [isRenterRated, setIsRenterRated] = useState(initialRated);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleValueChange = (e:Event, ratingValue:number)=>{
     setValue(ratingValue);
   }
-  const handleSubmitRating = ()=>{
-    setIsRenterRated(true);
-    user.renterRate=value;
-    user.renterRated=true;
+  const handleSubmitRating = async ()=>{
+    setLoading(true);
+    setError(null);
+    const res = await rateSeller(postId, value, isRenterRated);
+    setLoading(false);
+    if (res.success) {
+      setIsRenterRated(true);
+      setIsRating(false);
+      await onRated();
+    } else {
+      setError(res.detail ?? 'Failed to rate.');
+      // If backend says already rated, switch local state so next submit uses PATCH
+      if (res.detail?.includes('already rated')) setIsRenterRated(true);
+    }
   };
   const handleCloseRating = ()=>{
     setIsRating(false);
+    setError(null);
   }
   return(
     !isRating?
-      (!IsRenterRated?<div onClick={()=> setIsRating(true)} className={style.rating_button}>Rate the renter</div>:
+      (!isRenterRated?<div onClick={()=> setIsRating(true)} className={style.rating_button}>Rate the renter</div>:
         <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>):
     <div className={style.rating_slider_container}>
+    {loading && <div className={style.loading_overlay}/>}
     <button className={style.confirm_rating_button} onClick={handleCloseRating}>{LEAVE_TAB_WHITE}</button>
       <Slider
         className={style.rating_slider}
@@ -72,33 +81,35 @@ function RateRenterButton(){
         value={value}
         valueLabelDisplay="on"
         aria-label="rating"
-        defaultValue={0}
+        defaultValue={initialRating}
         step={1}
         marks
         min={0}
         max={5}
       />
-      <button className={style.confirm_rating_button} onClick={handleSubmitRating}>{CONFIRM}</button>
+      {error && <p style={{color:'red', fontSize:'0.75rem', margin:'0 4px'}}>{error}</p>}
+      <button className={style.confirm_rating_button} onClick={handleSubmitRating} disabled={loading}>
+        {loading ? '…' : CONFIRM}
+      </button>
     </div>
   )
 }
 
-function RateNookButton({setRatingValue}:{setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>}){
-  const [isRating, setIsRating] = useState(true);
-  const [value, setValue] = useState(0);
-  const [isNookRated, setIsNookRated] = useState(false); // this has to be taken from api
+function RateNookButton({setRatingValue, initialValue = 0}:{setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>, initialValue?: number}){
+  const [isRating, setIsRating] = useState(initialValue === 0);
+  const [isNookRated, setIsNookRated] = useState(initialValue > 0);
+  const [value, setValue] = useState(initialValue);
   const handleValueChange = (e:Event, rating:number)=>{
     setValue(rating);
   }
-  const handleSubmitRating = ()=>{
+  const handleConfirm = ()=>{
     setIsNookRated(true);
     setIsRating(false);
     setRatingValue(value);
   };
   return(
-    
-      !isRating && isNookRated?
-        <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>:
+    !isRating && isNookRated?
+      <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>:
     <div className={style.rating_slider_container}>
       <Slider
         className={style.rating_slider}
@@ -106,28 +117,35 @@ function RateNookButton({setRatingValue}:{setRatingValue:React.Dispatch<React.Se
         value={value}
         valueLabelDisplay="on"
         aria-label="rating"
-        defaultValue={0}
+        defaultValue={initialValue}
         step={1}
         marks
         min={0}
         max={5}
       />
-      <button className={style.confirm_rating_button} onClick={handleSubmitRating}>{CONFIRM}</button>
+      <button className={style.confirm_rating_button} onClick={handleConfirm}>{CONFIRM}</button>
     </div>
   )
 }
 
-function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onCommentAdded}:{ratingValue:number,id:string,setIsCommenting:React.Dispatch<React.SetStateAction<boolean>>, setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>, onCommentAdded:()=>Promise<void>}){
+function Comment_review({ ratingValue, id, setIsCommenting, setRatingValue, onCommentAdded, existingComment }: {
+  ratingValue: number;
+  id: string;
+  setIsCommenting: React.Dispatch<React.SetStateAction<boolean>>;
+  setRatingValue: React.Dispatch<React.SetStateAction<number | undefined>>;
+  onCommentAdded: () => Promise<void>;
+  existingComment?: { id: string; comment: string; rating: number };
+}) {
   const comment = useRef<HTMLTextAreaElement>(null);
   const [ratingError, setRatingError] = useState(false);
   const [submitError, setSubmitError] = useState<string | false>(false);
   const [loading, setLoading] = useState(false);
 
-  const handleCloseSubmit = ()=>{
+  const handleCloseSubmit = () => {
     setIsCommenting(false);
   }
 
-  const handleSubmit= async ()=>{
+  const handleSubmit = async () => {
     if (!ratingValue) {
       setRatingError(true);
       return;
@@ -135,9 +153,13 @@ function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onComm
     setRatingError(false);
     setSubmitError(false);
     setLoading(true);
-    const res = await addComment(id, comment.current!.value, ratingValue);
+
+    const res = existingComment
+      ? await updateComment(id, existingComment.id, comment.current!.value, ratingValue)
+      : await addComment(id, comment.current!.value, ratingValue);
+
     setLoading(false);
-    if(res.success){
+    if (res.success) {
       await onCommentAdded();
       setIsCommenting(false);
     } else {
@@ -145,21 +167,25 @@ function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onComm
     }
   }
 
-  return(
-      <div className={style.nook_review}>
-        <div className={style.nook_rating_and_close_button}>
-          {<RateNookButton setRatingValue={(v) => { setRatingValue(v); setRatingError(false); }} />}
-          <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
-        </div>
-        {ratingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>Please select a rating before submitting.</p>}
-        {submitError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>{submitError}</p>}
-        <div className={style.comment_input}>
-          <textarea ref={comment} name="comment" id={style.comment} placeholder='Write your comment'></textarea>
-          <button onClick={handleSubmit} disabled={loading} style={loading ? {opacity:0.5, cursor:'not-allowed'} : {}}>
-            {loading ? 'Submitting…' : 'Submit'}
-          </button>
-        </div>
+  return (
+    <div className={style.nook_review}>
+      {loading && <div className={style.loading_overlay}/>}
+      <div className={style.nook_rating_and_close_button}>
+        <RateNookButton
+          initialValue={existingComment?.rating ?? 0}
+          setRatingValue={(v) => { setRatingValue(v); setRatingError(false); }}
+        />
+        <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
       </div>
+      {ratingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>Please select a rating before submitting.</p>}
+      {submitError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>{submitError}</p>}
+      <div className={style.comment_input}>
+        <textarea ref={comment} name="comment" id={style.comment} placeholder='Write your comment' defaultValue={existingComment?.comment ?? ''}></textarea>
+        <button onClick={handleSubmit} disabled={loading} style={loading ? {opacity:0.5, cursor:'not-allowed'} : {}}>
+          {loading ? 'Submitting…' : existingComment ? 'Update' : 'Submit'}
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -223,7 +249,8 @@ function Rules_categories_features({ house_rules, allowed_people, features }: {
 
 function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_list,currentUserId}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,onCommentAdded:()=>Promise<void>,comment_list:import('@/types/api_types').CommentData[],currentUserId:number|null}){
   const [isCommenting, setIsCommenting] = useState(false);
-  const [ratingValue,setRatingValue] = useState<number>(0);
+  const existingComment = currentUserId ? comment_list.find(c => c.user_id === currentUserId) : undefined;
+  const [ratingValue,setRatingValue] = useState<number>(Number(existingComment?.rating ?? 0));
   const screenWidth = useMediaQuery('(min-width:700px)');
   const mobileFormRef = useRef<HTMLDivElement>(null);
 
@@ -268,12 +295,12 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
                     </div>
                   </div>
                 </div>
-                {screenWidth? <>{!isCommenting && <RateRenterButton />}</>:<RateRenterButton />}
+                {screenWidth? <>{!isCommenting && <RateRenterButton postId={sectionData.post_id} initialRated={sectionData.user_rating_seller != null} initialRating={Number(sectionData.user_rating_seller ?? 0)} onRated={onCommentAdded} />}</>:<RateRenterButton postId={sectionData.post_id} initialRated={sectionData.user_rating_seller != null} initialRating={Number(sectionData.user_rating_seller ?? 0)} onRated={onCommentAdded} />}
               </div>
             </div>
             {isCommenting?
               <div className={style.upper_comment_review_mobile_view}>
-                <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded}/>
+                <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded} existingComment={existingComment ? {id: existingComment.id, comment: existingComment.comment, rating: Number(existingComment.rating)} : undefined}/>
               </div>:
               <Description description={sectionData.description}/>
               }
@@ -311,7 +338,7 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
             </div>
             {isCommenting&&
             <div ref={mobileFormRef} className={style.lower_comment_review_mobile_view}>
-                <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded}/>
+                <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded} existingComment={existingComment ? {id: existingComment.id, comment: existingComment.comment, rating: Number(existingComment.rating)} : undefined}/>
               </div>}
           </div>
   )
@@ -404,11 +431,12 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
         <div className={style.nook_data}>
 
           {!showComments?
-            <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count,features:post_data.features??[],house_rules:post_data.house_rules??null,allowed_people:post_data.allowed_people??'AL'}} setShowComments={setShowComments} onCommentAdded={onCommentAdded} comment_list={post_data.comment_list??[]} currentUserId={currentUserId}/>:
+            <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count,features:post_data.features??[],house_rules:post_data.house_rules??null,allowed_people:post_data.allowed_people??'AL',user_rating_seller:post_data.user_rating_seller??null}} setShowComments={setShowComments} onCommentAdded={onCommentAdded} comment_list={post_data.comment_list??[]} currentUserId={currentUserId}/>:
             <Comments_visible sectionData={{...post_data.seller,post_id:post_data.id,comment_list:post_data.comment_list,nook_rating:post_data.rating,comments_num:post_data.comments_count}} setShowComments={setShowComments} currentUserId={currentUserId} onCommentAdded={onCommentAdded}/>
           }
         </div>
 
+        {currentUserId !== post_data.seller.id && (
         <div className={style.nook_scheduler}>
           <div className={style.nook_scheduler_container}>
             <MyDatePicker setCalendarOpen={setCalendarOpen} calendarOpen={calendarOpen} reservations={post_data.reservations ?? []} onConfirm={(start, end) => { setBookedDates({ start, end }); setBookingError(null); }}/>
@@ -431,6 +459,7 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
             </>}
           </div>
         </div>
+        )}
       </section>
   )
 }

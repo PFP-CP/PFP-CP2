@@ -65,8 +65,10 @@ export default function Comment({
     <div className={style.comment} style={{ position: 'relative', opacity: deleting ? 0.4 : 1, transition: 'opacity 0.2s', pointerEvents: deleting ? 'none' : 'auto' }}>
       <div className={style.user_container}>
         <div className={style.user_picture_and_name}>
-          <div className={style.picture} />
-          <div>User #{comment_data.user_id}</div>
+          {comment_data.commenter?.profile_picture
+            ? <img src={comment_data.commenter.profile_picture} alt="profile" className={style.picture} style={{ objectFit: 'cover', borderRadius: '50%' }} />
+            : <div className={style.picture} />}
+          <div>{comment_data.commenter?.full_name ?? `User #${comment_data.user_id}`}</div>
         </div>
         <div className={style.user_rating_and_date}>
           <Stars rating={comment_data.rating} />
