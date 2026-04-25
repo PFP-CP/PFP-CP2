@@ -341,7 +341,7 @@ def unsave_post(request, post_id: uuid.UUID):
     return 200, {"message": "Post removed from saved."}
 
 
-@router.get("/{post_id}", response={200: PostOut, 404: ErrorSchema}, tags=["Posts"])
+@router.get("/{post_id}", response={200: PostOut, 404: ErrorSchema},auth= JWTAuth(), tags=["Posts"])
 def get_post(request, post_id: uuid.UUID):
     """Full post detail with house, seller, images, comments."""
     post = get_object_or_404(
