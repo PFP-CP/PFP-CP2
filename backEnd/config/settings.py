@@ -10,24 +10,31 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-tgoxzv_2^i6ubh^l!tznb4*@1+$yee0z6aj8va70t4wzxj2q$&"
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-tgoxzv_2^i6ubh^l!tznb4*@1+$yee0z6aj8va70t4wzxj2q$&"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = []
-TIME_ZONE = 'Africa/Algiers'  # UTC+1
-USE_TZ = True 
+TIME_ZONE = "Africa/Algiers"  # UTC+1
+USE_TZ = True
 
 # Application definition
 
@@ -58,7 +65,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  
+    "http://localhost:3000",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -87,11 +94,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres.wcnphqrchchdghpjolpa",
-        "PASSWORD": "(nook).DBpassword",
-        "HOST": "aws-1-eu-west-1.pooler.supabase.com",
-        "PORT": "5432",
+        "NAME": os.environ.get("DB_NAME", "postgres"),
+        "USER": os.environ.get("DB_USER", "postgres.wcnphqrchchdghpjolpa"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "(nook).DBpassword"),
+        "HOST": os.environ.get("DB_HOST", "aws-1-eu-west-1.pooler.supabase.com"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 
@@ -99,10 +106,10 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/1"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        },
     }
 }
 
@@ -113,14 +120,25 @@ STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
         "OPTIONS": {
-            "access_key": "a0171b2add80ec93f04b642e0f26f089",
-            "secret_key": "818aa3ea6875dc813d817d6dd12d371547e037b7f4eff83cc18817e0e29dad1c",
+            "access_key": os.environ.get(
+                "AWS_ACCESS_KEY_ID", "a0171b2add80ec93f04b642e0f26f089"
+            ),
+            "secret_key": os.environ.get(
+                "AWS_SECRET_ACCESS_KEY",
+                "818aa3ea6875dc813d817d6dd12d371547e037b7f4eff83cc18817e0e29dad1c",
+            ),
             "bucket_name": "media",
             "region_name": "eu-west-1",
-            "endpoint_url": "https://wcnphqrchchdghpjolpa.supabase.co/storage/v1/s3",
+            "endpoint_url": os.environ.get(
+                "AWS_S3_ENDPOINT_URL",
+                "https://wcnphqrchchdghpjolpa.supabase.co/storage/v1/s3",
+            ),
             "file_overwrite": False,
             "signature_version": "s3v4",
-            "custom_domain": "wcnphqrchchdghpjolpa.supabase.co/storage/v1/object/public/media",
+            "custom_domain": os.environ.get(
+                "AWS_S3_CUSTOM_DOMAIN",
+                "wcnphqrchchdghpjolpa.supabase.co/storage/v1/object/public/media",
+            ),
         },
     },
 }
@@ -149,8 +167,8 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = "nook.app1@gmail.com"
-EMAIL_HOST_PASSWORD = "jgoc okea gwyp nfzl "
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "nook.app1@gmail.com")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "jgoc okea gwyp nfzl ")
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
