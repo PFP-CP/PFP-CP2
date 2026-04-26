@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2025-10-12" view-index="0" gantt-divider-location="351" resource-divider-location="300" version="3.3.3322" locale="en_US">
+    <description/>
+    <view zooming-state="default:5" id="gantt-chart">
+        <field id="tpd3" name="Name" width="200" order="0"/>
+        <field id="tpd4" name="Begin date" width="75" order="1"/>
+        <field id="tpd5" name="End date" width="75" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+        <timeline><![CDATA[54,0,69]]></timeline>
+        <option id="color.recent"><![CDATA[#006666 #cc00cc #ff9999 #ff33cc #999900 #990099 #000066 #00cc33 #00ff00 #00cccc]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="31" uid="afe92ea1dea4468e8bca7b2d3217bccb" name="UI/UX design" meeting="false" start="2026-02-03" duration="16" complete="100" expand="false">
+            <task id="34" uid="7cd78a7dfd96451e8eef232fbc685fae" name="UI design in figma" meeting="false" start="2026-02-09" duration="11" complete="100" expand="false">
+                <task id="35" uid="37348a1b97744b04b490f28608db64ba" name="Main page" color="#cc0033" meeting="false" start="2026-02-12" duration="8" complete="100" expand="true"/>
+                <task id="37" uid="113bc9a93b82479a8663b53aeb1527ea" name="My Nook page" color="#ff0033" meeting="false" start="2026-02-09" duration="8" complete="100" expand="true"/>
+                <task id="38" uid="19e40e537f2b4deb9d3ab24ce0d3400b" name="My reservation page" color="#cc0033" meeting="false" start="2026-02-12" duration="8" complete="100" expand="true"/>
+                <task id="39" uid="8f6fd5af1a56416f9cdd427adb8f69f0" name="search page" color="#ff0033" meeting="false" start="2026-02-12" duration="8" complete="100" expand="true"/>
+                <task id="36" uid="b3bc7af964024da884c5cea3ecb5b3d7" name="authentification page" color="#cc0033" meeting="false" start="2026-02-09" duration="3" complete="100" expand="true">
+                    <depend id="35" type="2" difference="0" hardness="Strong"/>
+                    <depend id="38" type="2" difference="0" hardness="Strong"/>
+                    <depend id="39" type="2" difference="0" hardness="Strong"/>
+                </task>
+            </task>
+            <task id="40" uid="c2d98e18556f4f8ebb58dc8ad70f7118" name="Protype validation" color="#009966" meeting="false" start="2026-02-24" duration="1" complete="100" expand="true"/>
+            <task id="33" uid="4d961a12c84a463b878290f1d6d257da" name="WireFrame (all pages )" color="#660066" meeting="false" start="2026-02-05" duration="2" complete="100" expand="true">
+                <depend id="35" type="2" difference="0" hardness="Strong"/>
+                <depend id="36" type="2" difference="0" hardness="Strong"/>
+                <depend id="37" type="2" difference="0" hardness="Strong"/>
+                <depend id="38" type="2" difference="0" hardness="Strong"/>
+                <depend id="39" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="32" uid="8bc12a13302f4fbda6423207fae69a38" name="User Flow definition" color="#999900" meeting="false" start="2026-02-03" duration="2" complete="100" expand="true">
+                <depend id="33" type="2" difference="0" hardness="Strong"/>
+            </task>
+        </task>
+        <task id="0" uid="22143ef68af445a6ba0dd5fefbf0f5af" name="poject idea and team distribution" meeting="false" start="2026-01-28" duration="9" complete="100" priority="2" expand="false">
+            <notes><![CDATA[destribution of the roles , choice of programation language used and dependencies needed ]]></notes>
+            <task id="25" uid="4da1cd2647a34f86a86d16cab8156fd7" name="Project planning" color="#0033ff" meeting="false" start="2026-01-30" duration="2" complete="100" expand="true">
+                <depend id="27" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="27" uid="b2f13b7d7b874c419b690f26cd8010cf" name="Tech Stack setup" color="#00cccc" meeting="false" start="2026-02-03" duration="2" complete="100" expand="true">
+                <depend id="28" type="2" difference="0" hardness="Strong"/>
+                <depend id="29" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="28" uid="e2790b35db5b4f6fb80408291f900bbd" name="repository Setup" color="#00ff00" meeting="false" start="2026-02-05" duration="3" complete="100" expand="true"/>
+            <task id="29" uid="ea14ac75f512486692b9540904e0c149" name="envirment configuration" color="#00cc33" meeting="false" start="2026-02-05" duration="3" complete="100" expand="true"/>
+            <task id="26" uid="d7ab78e25eae49b39bba4b0bfc4a141c" name="requirments definition" color="#000066" meeting="false" start="2026-01-28" duration="2" complete="100" expand="true">
+                <depend id="25" type="2" difference="0" hardness="Strong"/>
+            </task>
+        </task>
+        <task id="6" uid="3d73748842244b4695b7a950e9057638" name="front end of the website" meeting="false" start="2026-02-09" duration="47" complete="26" expand="false">
+            <task id="41" uid="50a8962ecfb443f887a078575a9c72bb" name="Global Front End setup" meeting="false" start="2026-02-09" duration="3" complete="100" expand="true">
+                <depend id="43" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="42" uid="4dc949c47cc84eae835f7d5ba0628b90" name="page implementation" meeting="false" start="2026-02-12" duration="44" complete="21" expand="false">
+                <task id="44" uid="d2bf01ac993b405e9b537240ed4b222a" name="Main page" color="#ff33cc" meeting="false" start="2026-02-23" duration="11" complete="0" priority="4" expand="true">
+                    <depend id="45" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="88" uid="10a6b838ca854de08d53c7682d00564d" name="Account page" color="#cc00cc" meeting="false" start="2026-04-09" duration="4" complete="0" expand="true"/>
+                <task id="45" uid="dd558ece0d9649b8bfc318713fc6e0a4" name="my reservation page" color="#cc00cc" meeting="false" start="2026-03-10" duration="9" complete="0" expand="true">
+                    <depend id="46" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="46" uid="f1f4566aa216409293aa423d5035ff46" name="my Nook page" color="#cc00cc" meeting="false" start="2026-03-23" duration="10" complete="0" expand="true">
+                    <depend id="47" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="47" uid="d20d6614cac041b7a8bf7148d6d30167" name="search page" color="#cc00cc" meeting="false" start="2026-04-06" duration="3" complete="0" expand="true">
+                    <depend id="88" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="48" uid="dc0f3c4f7ed04ff28c01ca1061fa82cd" name="navigation bar" color="#990099" meeting="false" start="2026-02-18" duration="3" complete="100" expand="true"/>
+                <task id="43" uid="056b6dfb22a947ceb41a0ebe47979908" name="authentification page" color="#cc00cc" meeting="false" start="2026-02-12" duration="7" complete="100" expand="true">
+                    <depend id="44" type="2" difference="0" hardness="Strong"/>
+                </task>
+            </task>
+        </task>
+        <task id="3" uid="c54a5831dc2246a08c2deba86548e347" name="complet backend logic" shape="1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0" meeting="false" project="true" start="2026-02-02" duration="49" complete="68" priority="2" expand="true">
+            <notes><![CDATA[backend logic of authentification , settign APi endpoints , and error handling ]]></notes>
+            <task id="49" uid="97d882739b164dd5b8b47d5e1bf2360a" name="backend Setup" meeting="false" start="2026-02-02" duration="8" complete="100" expand="false">
+                <task id="2" uid="8d4280a7847d4c569e8666d918f76db1" name="core entities definition" shape="1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0" meeting="false" start="2026-02-02" duration="3" complete="100" expand="true">
+                    <notes><![CDATA[difinition of the core entities of the data base , and making the er diagiagram of the relationships between entities ]]></notes>
+                    <depend id="50" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="50" uid="cbbdc85a584e4c5ba4820fc355a2e0d8" name="Er diagram" color="#999900" meeting="false" start="2026-02-05" duration="2" complete="100" expand="true">
+                    <depend id="54" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="54" uid="34977c2c50514b40b64b9acd5e4bb26a" name="database setup" color="#006666" meeting="false" start="2026-02-09" duration="3" complete="100" expand="true"/>
+            </task>
+            <task id="55" uid="4b95c4fa49cf4f03bc9409f987f68d0b" name="page logic" meeting="false" start="2026-02-12" duration="41" complete="65" expand="true">
+                <task id="83" uid="d9573ba508f645479b1858dafa167373" name="detailed post page" meeting="false" start="2026-03-09" duration="6" complete="100" expand="false">
+                    <task id="85" uid="85384cf9081f490d91236b127a78cdc5" name="business logic" meeting="false" start="2026-03-09" duration="6" complete="100" expand="true"/>
+                    <task id="86" uid="e32d5e1cc8754621958e7566e356b350" name="database operation" meeting="false" start="2026-03-09" duration="6" complete="100" expand="true"/>
+                    <task id="84" uid="772546d07272407895ab9e16981d5317" name="API endpoint" meeting="false" start="2026-03-09" duration="6" complete="100" expand="true"/>
+                </task>
+                <task id="89" uid="67f1b169cdcd4b7ebff4c052009d4b28" name="Account page" color="#006666" meeting="false" start="2026-03-19" duration="7" complete="0" expand="false">
+                    <task id="90" uid="236547f9e3164ceca7458cab4b3bb3cc" name="APi endpoint" color="#006666" meeting="false" start="2026-03-27" duration="1" complete="0" expand="true"/>
+                    <task id="91" uid="432f553c96dc419385a4b9da8b172e32" name="database operations" color="#006666" meeting="false" start="2026-03-25" duration="2" complete="0" expand="true">
+                        <depend id="90" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="92" uid="f63fd1bf9ba54b16963fb31faef1883c" name="business logic" color="#006666" meeting="false" start="2026-03-19" duration="4" complete="0" expand="true">
+                        <depend id="91" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                </task>
+                <task id="56" uid="f9a59a23f3164ae5b690e831598ac7ec" name="main page" meeting="false" start="2026-02-27" duration="11" complete="0" expand="false">
+                    <task id="63" uid="584808c58b8445818103644d347dad8a" name="APi endpoint" color="#006666" meeting="false" start="2026-03-13" duration="1" complete="0" expand="true"/>
+                    <task id="64" uid="13d39cd35ada4f3c92fa5cfb3dfb5f4b" name="business logic" color="#006666" meeting="false" start="2026-03-09" duration="4" complete="0" expand="true">
+                        <depend id="63" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="65" uid="7bc9e0191d554378b8272f9409cdab38" name="Database operation" color="#006666" meeting="false" start="2026-02-27" duration="6" complete="0" expand="true">
+                        <depend id="64" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                </task>
+                <task id="57" uid="c9be0b160ba04b838b978a39f9e3db77" name="authentification page" meeting="false" start="2026-02-12" duration="12" complete="100" expand="false">
+                    <task id="82" uid="e48a9d69f1a6439e91a104eaf75d26d5" name="JWT integration" color="#006666" meeting="false" start="2026-02-18" duration="8" complete="100" expand="true"/>
+                    <task id="66" uid="05c2b8b0e81c47b8a46e70ab6697edec" name="APi endpoint" color="#006666" meeting="false" start="2026-02-17" duration="1" complete="100" expand="true">
+                        <depend id="82" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="67" uid="243af972a4ce41a69d0915f8f15dd82b" name="business logic" color="#006666" meeting="false" start="2026-02-16" duration="1" complete="100" expand="true">
+                        <depend id="66" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="68" uid="36156953651843c68548730098ec8a8c" name="Database operation" color="#006666" meeting="false" start="2026-02-12" duration="2" complete="100" expand="true">
+                        <depend id="67" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                </task>
+                <task id="58" uid="e0951345d8184a12b436ffc163ae7863" name="my reservation page" meeting="false" start="2026-03-10" duration="10" complete="100" expand="false">
+                    <task id="75" uid="43a42defbe144e9eae522f3a74ff3615" name="APi endpoint" color="#006666" meeting="false" start="2026-03-19" duration="3" complete="100" expand="true"/>
+                    <task id="76" uid="322869e97ce649db88ab2811179ce108" name="business logic" color="#006666" meeting="false" start="2026-03-16" duration="3" complete="100" expand="true">
+                        <depend id="75" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="77" uid="440a761a084a471db2099200657c4371" name="Database operation" color="#006666" meeting="false" start="2026-03-10" duration="4" complete="100" expand="true">
+                        <depend id="76" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                </task>
+                <task id="59" uid="9e68178de92c48ceb9b9103d477e5abe" name="my nooks page" meeting="false" start="2026-03-18" duration="8" complete="0" expand="false">
+                    <task id="72" uid="da486bef2b9444d7b27b10c63e8a6215" name="APi endpoint" color="#006666" meeting="false" start="2026-03-25" duration="3" complete="0" expand="true"/>
+                    <task id="73" uid="9ec628bc4b724dcc9b2241a4f5cc5689" name="business logic" color="#006666" meeting="false" start="2026-03-23" duration="2" complete="0" expand="true">
+                        <depend id="72" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="74" uid="dcbf928ccc43472da31e237564571a70" name="Database operation" color="#006666" meeting="false" start="2026-03-18" duration="3" complete="0" expand="true">
+                        <depend id="73" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                </task>
+                <task id="62" uid="7290b69a60154310a17af3704cef405e" name="search page" meeting="false" start="2026-03-30" duration="9" complete="100" expand="false">
+                    <task id="69" uid="b1a0fe93c6d94631998c2497cd91c894" name="APi endpoint" color="#006666" meeting="false" start="2026-04-07" duration="3" complete="100" expand="true"/>
+                    <task id="70" uid="a44fb652f3fe4ccc861cedc458557f2b" name="business logic" color="#006666" meeting="false" start="2026-04-02" duration="3" complete="100" expand="true">
+                        <depend id="69" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="71" uid="6da57da2251c406cbd286addaab1fa06" name="Database operation" color="#006666" meeting="false" start="2026-03-30" duration="3" complete="100" expand="true">
+                        <depend id="70" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                </task>
+            </task>
+        </task>
+        <task id="78" uid="23a4a7d8853e4054934803c5390c1bb5" name="Integration phase" meeting="false" start="2026-04-14" duration="9" complete="0" expand="false">
+            <task id="79" uid="74cf8c87c4774929b9710266a9fecd55" name="connect front ned to APi" color="#ff9999" meeting="false" start="2026-04-14" duration="4" complete="0" expand="true">
+                <depend id="80" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="80" uid="467c38ed72b14059b3bee3060fb2391b" name="data validation" color="#ff9999" meeting="false" start="2026-04-20" duration="1" complete="0" expand="true">
+                <depend id="81" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="81" uid="83b8e6d437354e1a8b2078e277816ab5" name="Error handling" color="#ff9999" meeting="false" start="2026-04-21" duration="4" complete="0" expand="true"/>
+        </task>
+    </tasks>
+    <resources>
+        <resource id="0" name="Haithem Namane " function="Default:1" contacts="bh.namane@ensta.edu.dz" phone="0559030271"/>
+        <resource id="1" name="Merouane Akli " function="SoftwareDevelopment:2" contacts="bm.akli@ensta.edu.dz" phone=""/>
+        <resource id="2" name="Sami Fares bennacer" function="SoftwareDevelopment:5" contacts="bs.bennacer@ensta.edu.dz" phone=""/>
+        <resource id="3" name="Tetbirt Abdellah" function="SoftwareDevelopment:9" contacts="ba.tetbirt@ensta.edu.dz" phone=""/>
+        <resource id="4" name="alae eddine djaber" function="SoftwareDevelopment:9" contacts="ba.djaber@ensta.edu.dz" phone=""/>
+        <resource id="5" name="MESSIKH Mohammed Yahia" function="SoftwareDevelopment:2" contacts="bm.messikh@ensta.edu.dz" phone=""/>
+        <resource id="6" name="Baroudi Laid" function="SoftwareDevelopment:2" contacts="bl.baroudi@ensta.edu.dz" phone=""/>
+        <resource id="7" name="Hamed Abdelouahab Mehdi" function="SoftwareDevelopment:3" contacts="bm.hamedabdelouahab@ensta.edu.dz" phone=""/>
+    </resources>
+    <allocations>
+        <allocation task-id="2" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="3" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="64" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="78" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="54" resource-id="0" function="Default:1" responsible="false" load="100.0"/>
+        <allocation task-id="50" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="58" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="75" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="76" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="77" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="89" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="90" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="91" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="92" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="2" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="3" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="66" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="82" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="67" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="68" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="78" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="57" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="54" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="62" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="33" resource-id="2" function="SoftwareDevelopment:5" responsible="false" load="100.0"/>
+        <allocation task-id="43" resource-id="3" function="SoftwareDevelopment:9" responsible="true" load="100.0"/>
+        <allocation task-id="44" resource-id="4" function="SoftwareDevelopment:9" responsible="false" load="100.0"/>
+        <allocation task-id="88" resource-id="4" function="SoftwareDevelopment:9" responsible="true" load="100.0"/>
+        <allocation task-id="2" resource-id="5" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="3" resource-id="5" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="72" resource-id="5" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="73" resource-id="5" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="74" resource-id="5" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="78" resource-id="5" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="46" resource-id="5" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="56" resource-id="5" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="63" resource-id="5" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="64" resource-id="5" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="65" resource-id="5" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="59" resource-id="5" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="2" resource-id="6" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="3" resource-id="6" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="78" resource-id="6" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="45" resource-id="6" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="83" resource-id="6" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+    </allocations>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
