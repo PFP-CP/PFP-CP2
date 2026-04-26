@@ -27,8 +27,8 @@ function SearchResultRow({ result, idx }: { result: SearchResult; idx: number })
     return (
         <tr
             key={idx}
-            onClick={() => result.id && router.push(`/post/${result.id}`)}
-            style={{ cursor: result.id ? "pointer" : "default" }}
+            onClick={() => router.push(`/post/${result.id}`)}
+            style={{ cursor: "pointer" }}
         >
             <td className={styles.td}>
                 {imageUrl && !imgError ? (

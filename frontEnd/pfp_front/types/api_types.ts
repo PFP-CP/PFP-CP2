@@ -389,6 +389,7 @@ export interface SearchCriteria {
 }
 
 export interface SearchResult {
+    id: string;
     renter_name: string;
     wilaya?: string;
     price: number;
@@ -398,7 +399,6 @@ export interface SearchResult {
     contact: string;
     creation_time: string;
     picture: string;
-    id?: string;
 }
 
 // ========== Public Profile Types ==========
