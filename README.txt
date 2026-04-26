@@ -171,14 +171,8 @@ Redis is utilized as a caching layer to improve response times for frequent quer
 3.  **Browsing:** Use the home page or search bar to look for accommodations. Click on a listing to view detailed information and map coordinates.
 4.  **Booking:** On a property details page, select your desired dates and confirm the reservation.
 
-## Known Issues / Limitations
-
-*   **Hardcoded Credentials:** Sensitive credentials (like database passwords, S3 keys, and email passwords) are currently hardcoded in settings.py. These should be migrated to environment variables for security.
-*   **CORS Configuration:** Ensure CORS_ALLOWED_ORIGINS in the backend settings matches the actual frontend URL in production.
-
 ## Future Improvements
 
-*   **Security:** Migrate all sensitive data (Secret Key, DB URLs, API keys) to .env files using python-dotenv.
 *   **Testing:** Implement automated testing using pytest for the backend and Jest or Cypress for the frontend to ensure stability.
 *   **Containerization:** Add Docker and docker-compose.yml to streamline the setup process for new developers and simplify deployment.
 
