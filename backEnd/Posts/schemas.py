@@ -27,12 +27,13 @@ class SearchCriteria(Schema):
     min_price: Optional[int] = None
     max_price: Optional[int] = None
     features: Optional[list[str]] = []
-    allowed_people: Optional[TypeOfPeople]
+    allowed_people: Optional[TypeOfPeople] = None
     rules: Optional[list[str]] = []
     order_by: Optional[str] = "newest"
 
 
 class SearchResult(Schema):
+    id : uuid.UUID
     renter_name: str
     wilaya: Optional[str] = None
     price: int
@@ -45,7 +46,11 @@ class SearchResult(Schema):
 
     class Config:
         from_attributes = True
-
+    
+    @staticmethod
+    def resolve_id(obj):
+        return obj.id
+    
     @staticmethod
     def resolve_renter_name(obj):
         # Adjust to your Account field — e.g. full_name, username, etc.
