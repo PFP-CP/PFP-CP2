@@ -63,6 +63,7 @@ export type FormType = {
 
 export type imageItem = {
   id:number;
-  file:File;
+  file?:File;
   url:string;
+  backendId?:number;
 }

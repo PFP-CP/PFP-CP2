@@ -9,6 +9,7 @@ export async function getReservations() {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
+    cache: 'no-store',
   })
 
   if (!response.ok) {

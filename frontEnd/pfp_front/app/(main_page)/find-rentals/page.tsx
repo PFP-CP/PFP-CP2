@@ -10,11 +10,6 @@ import { SearchCriteria, SearchResult } from "@/types/api_types";
 export default function FindRentalsPage() {
   const [criteria, setCriteria] = useState<SearchCriteria>({
     features: [],
-    allowed_people: {
-      Families: true,
-      Couple: true,
-      Single: true
-    },
     rules: [],
     order_by: "newest"
   });

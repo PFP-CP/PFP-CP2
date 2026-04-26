@@ -51,7 +51,7 @@ function removeAboveTenImages(images: object) {
 
 
 
-export default function Uploader({ images, setImages }: { images: imageItem[], setImages: React.Dispatch<React.SetStateAction<imageItem[]>> }) {
+export default function Uploader({ images, setImages, onRemove }: { images: imageItem[], setImages: React.Dispatch<React.SetStateAction<imageItem[]>>, onRemove?: (item: imageItem) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const imagesIDs = useRef(0);
 
@@ -85,11 +85,10 @@ export default function Uploader({ images, setImages }: { images: imageItem[], s
 
   const removeImage = (e: React.MouseEvent<HTMLDivElement>) => {
     const imgId = Number(e.currentTarget.parentElement?.id);
-    setImages((prev) => {
-      let removedImg = prev.find((img) => img.id === imgId)
-      if (removeImage) URL.revokeObjectURL(removedImg?.url);
-      return prev.filter((img) => img.id !== imgId)
-    })
+    const removedImg = images.find((img) => img.id === imgId);
+    if (removedImg?.file) URL.revokeObjectURL(removedImg.url);
+    if (removedImg && onRemove) onRemove(removedImg);
+    setImages((prev) => prev.filter((img) => img.id !== imgId));
   }
 
 

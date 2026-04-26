@@ -3,15 +3,14 @@ import style from '@/styles/create_post_page_styles/create_post.module.css'
 import Uploader from "@/components/create_post_page_components/image_uploader";
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { number } from 'zod';
 import { wilayas } from '@/data/auth_data/data';
 import { imageItem } from '@/types/types';
-import { createPost } from './actions/createpost';
+import { createPost, getNookDetail, updateNook, deleteNookPicture } from './actions/createpost';
 import { useTransition } from 'react';
 import { getCompressedNookImages } from '@/lib/functions';
 import { useMediaQuery } from '@mui/material';
 import Create_post_mobile_nav from '@/components/create_post_page_components/create_post_page_mobile_nav';
-import { redirect } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 const MapPicker = dynamic(
@@ -22,10 +21,31 @@ const CATEGORIES = ['family', 'single', 'couple'];
 const RULES = ['animals', 'smoking', 'noise'];
 const FEATURES = ['pool', 'wifi', 'heating', 'television', 'kitchen', 'microwave', 'dishes', 'freezer', 'stove', 'oven', 'fridge', 'washing_machine', 'cleaning_product', 'air_conditioning', 'parking', 'sea_view'];
 
+const FEATURE_NAME_TO_FORM: Record<string, string> = {
+  'Pool': 'pool', 'Wifi': 'wifi', 'Heating': 'heating',
+  'Air Conditioning': 'air_conditioning', 'Television': 'television',
+  'Kitchen': 'kitchen', 'Microwave': 'microwave', 'Fridge': 'fridge',
+  'Washing machine': 'washing_machine', 'Cleaning products': 'cleaning_product',
+  'Sea view': 'sea_view', 'Parking': 'parking', 'Dishes': 'dishes',
+  'Freezer': 'freezer', 'Stove': 'stove', 'Oven': 'oven',
+};
+
+const TYPES_TO_CATEGORIES: Record<string, string[]> = {
+  'AL': ['family', 'couple', 'single'],
+  'FA': ['family'],
+  'NC': ['family', 'single'],
+  'NM': ['family', 'couple'],
+};
+
 export default function CreatePost() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
+  const isEditMode = !!editId;
+
   const [NumberOf_Inputs, setNumberOf_Inputs] = useState({ 1: false, 2: false, 3: false });
   const [tenantsAndPriceActive, setTenantsAndPriceActive] = useState({ 1: false, 2: false })
-  const { register, handleSubmit, setValue, watch, setFocus, getValues, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, watch, setFocus, getValues, reset, formState: { errors } } = useForm({
     defaultValues: {
       house_type: 'apartment',
       wilaya: "01",
@@ -35,6 +55,7 @@ export default function CreatePost() {
     }
   });
   const [images, setImages] = useState<imageItem[]>([]);
+  const [imageError, setImageError] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
   const [mapLabel, setMapLabel] = useState<string | null>(null);
 
@@ -63,20 +84,70 @@ export default function CreatePost() {
   }
   const [isPending, startTransition] = useTransition();
 
-
   useEffect(() => {
     if (NumberOf_Inputs[1]) setFocus('bedrooms');
     if (NumberOf_Inputs[2]) setFocus('beds');
     if (NumberOf_Inputs[3]) setFocus('bathrooms');
     if (tenantsAndPriceActive[1]) setFocus('max_tenants');
     if (tenantsAndPriceActive[2]) setFocus('price_per_night');
-    if (!numberOf_Values[1]) number()
   }, [NumberOf_Inputs, tenantsAndPriceActive])
 
+  useEffect(() => {
+    if (!editId) return;
+    getNookDetail(editId).then((post) => {
+      if (!post) return;
+      const houseType = (post.title?.split(' in ')[0] ?? 'apartment').toLowerCase();
+      const features = (post.features ?? [])
+        .map((f: string) => FEATURE_NAME_TO_FORM[f])
+        .filter(Boolean);
+      const categories = TYPES_TO_CATEGORIES[post.house?.Types_of_Renters ?? 'AL'] ?? ['family', 'couple', 'single'];
+      const rules: string[] = [];
+      if (post.house_rules?.allows_animals) rules.push('animals');
+      if (post.house_rules?.allows_smoking) rules.push('smoking');
+      if (post.house_rules?.allows_noise) rules.push('noise');
+
+      reset({
+        house_type: houseType,
+        wilaya: post.location?.State ?? '01',
+        categories,
+        rules,
+        features,
+        description: post.house?.Description ?? '',
+        price_per_night: post.house?.Price ?? '',
+        bedrooms: post.house?.num_bedroom ?? '',
+        bathrooms: post.house?.num_bathroom ?? '',
+        beds: '',
+        max_tenants: '',
+        latitude: String(post.location?.Latitude ?? ''),
+        longitude: String(post.location?.Longitude ?? ''),
+        county: post.location?.County ?? '',
+        map_country: post.location?.Country ?? '',
+        location: '',
+      });
+      if (post.location) {
+        setMapLabel([post.location.County, post.location.State, post.location.Country].filter(Boolean).join(', '));
+      }
+      if (post.house_pictures?.length) {
+        setImages(post.house_pictures
+          .filter((p: any) => p.URL)
+          .map((p: any) => ({ id: -p.id, url: p.URL, backendId: p.id }))
+        );
+      }
+    });
+  }, [editId]);
+
   const handleSubmitForm = (data) => {
+    if (!isEditMode && images.length === 0) {
+      setImageError(true);
+      return;
+    }
+    setImageError(false);
     startTransition(async () => {
-      const createPostRes = await createPost(data, await getCompressedNookImages(images));
-      if (createPostRes) redirect('/mynooks');
+      const compressedImages = await getCompressedNookImages(images);
+      const res = isEditMode
+        ? await updateNook(editId!, data, compressedImages)
+        : await createPost(data, compressedImages);
+      if (res) router.push('/mynooks');
     })
   }
   const screenWidth = useMediaQuery('(max-width:850px)')
@@ -85,10 +156,16 @@ export default function CreatePost() {
     <>
       {screenWidth && <Create_post_mobile_nav />}
       <form style={{ position: 'relative' }} onSubmit={handleSubmit((data) => handleSubmitForm(data))}>
-        {isPending && <div className={style.loading}>Uploading post</div>}
-        {!screenWidth && <div className={style.create_post_header}>Post a new nook</div>}
+        {isPending && <div className={style.loading}>{isEditMode ? 'Updating post' : 'Uploading post'}</div>}
+        {!screenWidth && <div className={style.create_post_header}>{isEditMode ? 'Edit your nook' : 'Post a new nook'}</div>}
         <div className={style.create_post_container}>
-          <Uploader images={images} setImages={setImages} />
+          <Uploader
+            images={images}
+            setImages={setImages}
+            onRemove={(item) => {
+              if (item.backendId && editId) deleteNookPicture(editId, item.backendId);
+            }}
+          />
           <div className={style.house_information_container}>
             <div className={style.house_information_firstSection}>
               <div className={style.type_categores_rules_container}>
@@ -134,8 +211,6 @@ export default function CreatePost() {
                         </div>
                       )
                     })}
-
-
                   </div>
                 </div>
               </div>
@@ -154,8 +229,8 @@ export default function CreatePost() {
                     </button>
                   </div>
                   {mapLabel && <span className={style.map_confirmed_label}>{mapLabel}</span>}
-                  <input type="hidden" {...register('latitude', { required: true })} />
-                  <input type="hidden" {...register('longitude', { required: true })} />
+                  <input type="hidden" {...register('latitude', isEditMode ? {} : { required: true })} />
+                  <input type="hidden" {...register('longitude', isEditMode ? {} : { required: true })} />
                   <input type="hidden" {...register('county')} />
                   <input type="hidden" {...register('map_country')} />
                   {errors.latitude && <span className={style.field_error}>Please pick a location on the map</span>}
@@ -178,7 +253,7 @@ export default function CreatePost() {
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setTenantsAndPriceActive((prev) => { return { ...prev, 1: true } }) } }}
                       className={tenantsAndPrice_Values[1] ? style.filled_input : undefined}
                     >
-                      {tenantsAndPriceActive[1] ? <input type="number" {...register('max_tenants', { required: true, min: 1 })} min={1} onBlur={() => setTenantsAndPriceActive((prev) => { return { ...prev, 1: false } })} /> : `${tenantsAndPrice_Values[1] || "Max number of tenants"}`}
+                      {tenantsAndPriceActive[1] ? <input type="number" {...register('max_tenants', isEditMode ? { min: 1 } : { required: true, min: 1 })} min={1} onBlur={() => setTenantsAndPriceActive((prev) => { return { ...prev, 1: false } })} /> : `${tenantsAndPrice_Values[1] || "Max number of tenants"}`}
                     </div>
                     {errors.max_tenants && <span className={style.field_error}>Max tenants is required</span>}
                   </div>
@@ -203,7 +278,7 @@ export default function CreatePost() {
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNumberOf_Inputs((prev) => { return { ...prev, 2: true } }) } }}
                       className={!numberOf_Values[2] ? style.number_of_buttons : `${style.number_of_buttons} ${style.filled_input}`}
                     >
-                      {NumberOf_Inputs[2] ? <input type="number" {...register('beds', { required: true, min: 1 })} min={1} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 2: false } })} /> : `${numberOf_Values[2] || "Beds"}`}
+                      {NumberOf_Inputs[2] ? <input type="number" {...register('beds', isEditMode ? { min: 1 } : { required: true, min: 1 })} min={1} onBlur={() => setNumberOf_Inputs((prev) => { return { ...prev, 2: false } })} /> : `${numberOf_Values[2] || "Beds"}`}
                     </div>
                     <div
                       tabIndex={NumberOf_Inputs[3] ? -1 : 0}
@@ -215,7 +290,6 @@ export default function CreatePost() {
                     </div>
                   </div>
                   {(errors.bedrooms || errors.beds || errors.bathrooms) && <span className={style.field_error}>Please fill in all number of fields</span>}
-
                 </div>
               </div>
             </div>
@@ -233,8 +307,6 @@ export default function CreatePost() {
                       </div>
                     )
                   })}
-
-
                 </div>
               </div>
             </div>
@@ -244,7 +316,8 @@ export default function CreatePost() {
               {errors.description && <span className={style.field_error}>Description is required</span>}
               </div>
             </div>
-            <button disabled={isPending} type='submit' id={style.submit_button}>{!isPending ? "Post your nook" : "Submitting ..."}</button>
+            {imageError && <span className={style.field_error}>At least one picture is required</span>}
+            <button disabled={isPending} type='submit' id={style.submit_button}>{!isPending ? (isEditMode ? 'Update your nook' : 'Post your nook') : (isEditMode ? 'Updating...' : 'Submitting ...')}</button>
           </div>
         </div>
       </form>

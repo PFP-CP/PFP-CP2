@@ -1,10 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useRouter } from "next/navigation"
 import styles from "@/styles/my_nooks_styles/nooks_table.module.css"
 import NookRow from "./nook_row"
 import { Property } from "@/types/api_types"
-import { api } from "@/lib/api"
 
 type NooksTableProps = {
     nooks: Property[];
@@ -12,29 +11,11 @@ type NooksTableProps = {
     onDelete: (id: string) => void;
 }
 
-export default function NooksTable({ nooks, onRefresh }: NooksTableProps) {
-    const [deletingId, setDeletingId] = useState<string | null>(null)
+export default function NooksTable({ nooks, onDelete }: NooksTableProps) {
+    const router = useRouter()
 
-    const handleEdit = (id: string) => { // Refixed: expects UUID string
-        console.log("Edit nook:", id)
-        alert("Edit functionality will be added soon!")
-    }
-
-    const handleDelete = async (id: string) => { // Refixed: expects UUID string
-        const confirmed = confirm("Are you sure you want to delete this Nook?")
-        if (!confirmed) return
-
-        setDeletingId(id)
-        
-        try {
-            await api.deleteNook(id)
-            onRefresh() 
-        } catch (error) {
-            console.error("Failed to delete:", error)
-            alert("Failed to delete Nook")
-        } finally {
-            setDeletingId(null)
-        }
+    const handleEdit = (id: string) => {
+        router.push(`/mynooks/createpost?edit=${id}`)
     }
 
     if (nooks.length === 0) {
@@ -62,11 +43,11 @@ export default function NooksTable({ nooks, onRefresh }: NooksTableProps) {
                 </thead>
                 <tbody>
                     {nooks.map((nook) => (
-                        <NookRow 
+                        <NookRow
                             key={nook.id}
                             nook={nook}
                             onEdit={handleEdit}
-                            onDelete={handleDelete}
+                            onDelete={onDelete}
                         />
                     ))}
                 </tbody>

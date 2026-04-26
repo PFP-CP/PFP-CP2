@@ -153,6 +153,11 @@
   border-bottom: 2px solid #eee;
 }
 
+.table tbody tr:hover {
+  background: #f4f0fd;
+  transition: background 0.15s;
+}
+
 .td {
   padding: 1.2rem 1.5rem;
   border-bottom: 1px solid #f0f0f0;

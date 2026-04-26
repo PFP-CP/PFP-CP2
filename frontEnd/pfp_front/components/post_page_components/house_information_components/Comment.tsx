@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import style from '@/styles/post_page_styles/house_information_and_booking.module.css'
 import { START_LOGO_X_SMALL } from '@/public/svg/svg'
 import { CommentData } from '@/types/api_types'
@@ -64,12 +65,14 @@ export default function Comment({
   return (
     <div className={style.comment} style={{ position: 'relative', opacity: deleting ? 0.4 : 1, transition: 'opacity 0.2s', pointerEvents: deleting ? 'none' : 'auto' }}>
       <div className={style.user_container}>
-        <div className={style.user_picture_and_name}>
+        <Link href={`/profile/${comment_data.commenter?.id ?? comment_data.user_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <div className={style.user_picture_and_name} style={{ cursor: 'pointer' }}>
           {comment_data.commenter?.profile_picture
             ? <img src={comment_data.commenter.profile_picture} alt="profile" className={style.picture} style={{ objectFit: 'cover', borderRadius: '50%' }} />
             : <div className={style.picture} />}
           <div>{comment_data.commenter?.full_name ?? `User #${comment_data.user_id}`}</div>
         </div>
+        </Link>
         <div className={style.user_rating_and_date}>
           <Stars rating={comment_data.rating} />
           <div className={style.date}>{formatDate(comment_data.created_at)}</div>

@@ -18,10 +18,18 @@ export function compressImage(file:File, maxWidth = 1200, quality = 0.8){
   })
 }
 
+const COMPRESSION_THRESHOLD = 500 * 1024; // 500 KB
+
 export async function getCompressedNookImages(img:imageItem[]){
   let newImages=[];
   for(let i = 0 ; i<img.length ; i++){
-    newImages.push(await compressImage(img[i].file))
+    const file = img[i].file;
+    if(!file) continue;
+    if(file.size <= COMPRESSION_THRESHOLD){
+      newImages.push(file);
+    } else {
+      newImages.push(await compressImage(file));
+    }
   }
   return newImages;
 }

@@ -7,6 +7,7 @@ import { Slider, useMediaQuery } from '@mui/material'
 import MyDatePicker from './ui/date_picker'
 import CarouselImages from "./carousel_images"
 import Image from 'next/image'
+import Link from 'next/link'
 import { addComment, createReservation, rateSeller, updateComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
 
 
@@ -274,7 +275,7 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
 
                 </div>
                 
-                {!isCommenting && (
+                {currentUserId !== sectionData.id && !isCommenting && (
                   !ratingValue?
                   <div onClick={()=>setIsCommenting(true)} className={style.rating_button}>Rate the nook</div>:
                   <div onClick={()=> setIsCommenting(true)} className={style.rated_button}>{ratingValue.toFixed(2)} {STAR_LOGO_SMALL}</div>
@@ -283,7 +284,8 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
               </div>
               {/* this will be a component */}
               <div className={style.rating_and_ratingButton_container}>
-                <div className={style.renter_rating}>
+                <Link href={`/profile/${sectionData.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div className={style.renter_rating} style={{ cursor: 'pointer' }}>
                   <div className={style.profile_picture}><Image src={sectionData.profile_picture} width={55} height={55} alt='profile picture'/></div>
                   <div className={style.name_rating_container}>
                     <div className={style.name_container}>
@@ -295,7 +297,8 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
                     </div>
                   </div>
                 </div>
-                {screenWidth? <>{!isCommenting && <RateRenterButton postId={sectionData.post_id} initialRated={sectionData.user_rating_seller != null} initialRating={Number(sectionData.user_rating_seller ?? 0)} onRated={onCommentAdded} />}</>:<RateRenterButton postId={sectionData.post_id} initialRated={sectionData.user_rating_seller != null} initialRating={Number(sectionData.user_rating_seller ?? 0)} onRated={onCommentAdded} />}
+                </Link>
+                {currentUserId !== sectionData.id && (screenWidth? <>{!isCommenting && <RateRenterButton postId={sectionData.post_id} initialRated={sectionData.user_rating_seller != null} initialRating={Number(sectionData.user_rating_seller ?? 0)} onRated={onCommentAdded} />}</>:<RateRenterButton postId={sectionData.post_id} initialRated={sectionData.user_rating_seller != null} initialRating={Number(sectionData.user_rating_seller ?? 0)} onRated={onCommentAdded} />)}
               </div>
             </div>
             {isCommenting?
@@ -318,7 +321,7 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
                       </div>
 
                   </div>
-                  {!isCommenting && (
+                  {currentUserId !== sectionData.id && !isCommenting && (
                     !ratingValue?
                     <div onClick={()=>setIsCommenting(true)} className={style.rating_button}>Rate the nook</div>:
                     <div onClick={()=> setIsCommenting(true)} className={style.rated_button}>{ratingValue.toFixed(2)} {STAR_LOGO_SMALL}</div>

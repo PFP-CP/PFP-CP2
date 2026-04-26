@@ -140,15 +140,13 @@
 }
 
 .user_settings_container > div {
-  padding: 7px;
-  border-radius: 50%;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
   display: flex;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease;
 }
 
 .user_settings_container > div:hover {
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  border-bottom-color: rgba(255, 255, 255, 0.6);
 }
 
 .user_settings_container{
@@ -157,18 +155,23 @@
 
 .user_settings_container .container{
   position: absolute;
-  background-color: white;
+  background: white;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding:3rem;
+  padding: 3rem;
   width: max-content;
-  border: 3px solid black;
+  border: 2px solid rgba(34, 14, 103, 0.2);
   border-radius: 23px;
   right: -100%;
   top: calc(100% + 30px);
   gap: .5rem;
-  box-shadow: 0 8px 32px rgba(34, 14, 103, 0.18), 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow:
+    0 4px 6px rgba(0,0,0,0.04),
+    0 10px 30px rgba(34, 14, 103, 0.14),
+    0 24px 60px rgba(34, 14, 103, 0.1),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  background-image: linear-gradient(160deg, rgba(157,132,228,0.06) 0%, transparent 40%);
 }
 
 .user_settings svg{
@@ -209,13 +212,30 @@
 .container .user_email{
   font-family: "sansation-700", sans-serif;
   font-size: 20px;
+  color: #220E67;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  text-decoration: none;
+}
+
+.container .user_email:hover {
+  opacity: 0.7;
 }
 
 .container .user_pfp{
   height: 90px;
   width: 90px;
   border-radius: 50px;
-  border:3px solid black;
+  border: 3px solid #220E67;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+  display: block;
+  overflow: hidden;
+}
+
+.container .user_pfp:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 16px rgba(34, 14, 103, 0.3);
 }
 
 .container .hi_user{

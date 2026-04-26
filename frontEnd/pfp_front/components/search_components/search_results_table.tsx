@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "@/styles/search_styles/search.module.css";
 import { SearchResult } from "@/types/api_types";
 import { getWilayaName } from "@/data/auth_data/data";
@@ -19,11 +20,16 @@ interface SearchResultsTableProps {
 }
 
 function SearchResultRow({ result, idx }: { result: SearchResult; idx: number }) {
+    const router = useRouter();
     const [imgError, setImgError] = useState(false);
     const imageUrl = getFullImageUrl(result.picture);
 
     return (
-        <tr key={idx}>
+        <tr
+            key={idx}
+            onClick={() => result.id && router.push(`/post/${result.id}`)}
+            style={{ cursor: result.id ? "pointer" : "default" }}
+        >
             <td className={styles.td}>
                 {imageUrl && !imgError ? (
                     <img

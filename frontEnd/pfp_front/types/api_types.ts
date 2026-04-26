@@ -398,5 +398,37 @@ export interface SearchResult {
     contact: string;
     creation_time: string;
     picture: string;
-    id?: string; // Optional post ID for navigation
+    id?: string;
+}
+
+// ========== Public Profile Types ==========
+export interface PublicNookCard {
+    id: string;
+    title: string;
+    primary_image: string | null;
+    price_per_night: number;
+    rating: number;
+    wilaya: string | null;
+    County: string | null;
+}
+
+export interface PublicSeller {
+    id: number;
+    full_name: string;
+    profile_picture: string | null;
+    gender: string | null;
+    date_of_birth: string | null;
+    host_since: number;
+    rating: number;
+    location: string | null;
+    email: string;
+    mobile_number: string | null;
+    reviews_count: number;
+    nooks_count: number;
+    reservations_count: number;
+}
+
+export interface PublicSellerProfile {
+    seller: PublicSeller;
+    nooks: PublicNookCard[];
 }

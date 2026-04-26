@@ -140,11 +140,11 @@ export default function ComputerNav() {
         </Link>
         <div id={style.user_controls}>
           <div className={style.user_settings_container}>
-            <div onClick={() => setSettingsOpen(!settingsOpen)}>{USER_ICON}</div>
+            <div onMouseDown={(e) => e.stopPropagation()} onClick={() => setSettingsOpen(prev => !prev)}>{USER_ICON}</div>
             {settingsOpen && <UserSettings setSettingsOpen={setSettingsOpen} />}
           </div>
           <div className={style.user_settings_container}>
-            <div onClick={() => setLogoutOpen(!logoutOpen)}>{SETTINGS}</div>
+            <div onMouseDown={(e) => e.stopPropagation()} onClick={() => setLogoutOpen(prev => !prev)}>{SETTINGS}</div>
             {logoutOpen && <LogoutPanel setOpen={setLogoutOpen} />}
           </div>
         </div>

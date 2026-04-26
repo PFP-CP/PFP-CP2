@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import style from '@/styles/nav_bar_styles/nav_bar.module.css'
 import { wilayas } from "@/data/auth_data/data"
@@ -97,6 +98,7 @@ function ChangeInformation({setIsChangingInformation}:{setIsChangingInformation:
     });
     setSubmitting(false);
     if (res.success) {
+      invalidateProfileCache();
       setSuccess(true);
     } else {
       setApiError(res.error ?? 'Update failed.');
@@ -156,13 +158,32 @@ export function LogoutPanel({ setOpen, mobile }: { setOpen: React.Dispatch<React
   );
 }
 
+type ProfileCache = { id: number; full_name: string; email: string; profile_picture: string | null };
+let _cachedProfile: ProfileCache | null = null;
+let _cacheTime = 0;
+const PROFILE_CACHE_TTL = 120_000;
+
+function invalidateProfileCache() {
+  _cachedProfile = null;
+  _cacheTime = 0;
+}
+
 export default function UserSettings({ setSettingsOpen, mobile }: { setSettingsOpen: React.Dispatch<React.SetStateAction<boolean>>, mobile?: boolean }) {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [IsChangingInformation, setIsChangingInformation] = useState(false);
-  const [profile, setProfile] = useState<{ full_name: string; email: string; profile_picture: string | null } | null>(null);
+  const [profile, setProfile] = useState<ProfileCache | null>(_cachedProfile);
   const tabRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { getMyProfile().then(setProfile); }, []);
+  useEffect(() => {
+    if (_cachedProfile && Date.now() - _cacheTime < PROFILE_CACHE_TTL) {
+      setProfile(_cachedProfile);
+      return;
+    }
+    getMyProfile().then((data) => {
+      if (data) { _cachedProfile = data; _cacheTime = Date.now(); }
+      setProfile(data);
+    });
+  }, []);
 
   useEffect(() => {
     if (mobile) return;
@@ -185,12 +206,15 @@ export default function UserSettings({ setSettingsOpen, mobile }: { setSettingsO
         ) : <>
         {(isChangingPassword && <ResetPassword setIsChangingPassword={setIsChangingPassword} />) || (IsChangingInformation && <ChangeInformation setIsChangingInformation={setIsChangingInformation} />) ||
           <>
-            <div className={style.user_email}>{profile.email}</div>
-            <div className={style.user_pfp}>
-              {profile?.profile_picture && (
-                <img src={profile.profile_picture} alt="profile" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'inherit'}} />
-              )}
-            </div>
+            <Link href={`/profile/${profile.id}`} className={style.user_email} onClick={() => setSettingsOpen(false)}>
+              {profile.email}
+            </Link>
+            <Link href={`/profile/${profile.id}`} className={style.user_pfp} onClick={() => setSettingsOpen(false)}>
+              {profile?.profile_picture
+                ? <img src={profile.profile_picture} alt="profile" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'inherit'}} />
+                : <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#220E67,#7c5cdb)',borderRadius:'inherit',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:'2rem'}}>{profile.full_name[0]?.toUpperCase()}</div>
+              }
+            </Link>
             <div className={style.user_change_pfp_icon}>{CHANGE_PFP}</div>
             <div className={style.hi_user}>Hi {firstName}</div>
             <div className={style.user_settings_button}>Get your license</div>

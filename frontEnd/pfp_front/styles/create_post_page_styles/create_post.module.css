@@ -4,6 +4,57 @@
   padding: 0 2rem 2rem;
 }
 
+.uploader_column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.existing_pictures_container {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.existing_pictures_grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
+.existing_picture_item {
+  position: relative;
+  width: 120px;
+  height: 90px;
+  border-radius: 8px;
+  overflow: visible;
+}
+
+.existing_picture_img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.delete_picture_btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 .field_error {
   color: #d00000;
   font-size: 13px;

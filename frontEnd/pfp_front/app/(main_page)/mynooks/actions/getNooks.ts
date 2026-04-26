@@ -1,5 +1,6 @@
 'use server'
 import { cookies } from 'next/headers'
+import { revalidateTag } from 'next/cache'
 
 async function authedFetch(path: string, options: RequestInit = {}) {
   const token = (await cookies()).get('token')?.value
@@ -17,11 +18,15 @@ async function authedFetch(path: string, options: RequestInit = {}) {
 }
 
 export async function getMyNooks() {
-  const profileRes = await authedFetch('/api/Account/my-profile/')
+  const profileRes = await authedFetch('/api/Account/my-profile/', {
+    next: { revalidate: 120, tags: ['current-user'] },
+  } as any)
   const profile = await profileRes.json()
   if (!profile?.id) return []
 
-  const nooksRes = await authedFetch(`/api/Mynook/profile/${profile.id}`)
+  const nooksRes = await authedFetch(`/api/Mynook/profile/${profile.id}`, {
+    next: { revalidate: 60, tags: ['my-nooks', `profile-${profile.id}`] },
+  } as any)
   const publicProfile = await nooksRes.json()
   if (!publicProfile?.nooks) return []
 
@@ -39,4 +44,5 @@ export async function getMyNooks() {
 
 export async function deleteNook(id: string) {
   await authedFetch(`/api/Mynook/${id}`, { method: 'DELETE' })
+  revalidateTag('my-nooks')
 }

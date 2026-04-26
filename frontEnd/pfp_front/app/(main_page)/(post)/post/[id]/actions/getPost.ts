@@ -1,5 +1,6 @@
 'use server'
 import { cookies } from 'next/headers';
+import { revalidateTag } from 'next/cache';
 
 
 export async function verify()
@@ -54,6 +55,7 @@ export async function deleteComment(postId: string, commentId: string) {
       "Authorization": `Bearer ${token}`
     },
   });
+  if (response.ok) revalidateTag(`post-${postId}`);
   return { success: response.ok };
 }
 
@@ -73,6 +75,7 @@ export async function addComment(postId: string, comment: string, rating: number
     return { success: false, status: response.status, detail: body?.detail ?? 'Failed to submit.' };
   }
 
+  revalidateTag(`post-${postId}`);
   return { success: true, status: response.status, detail: null };
 }
 
@@ -92,6 +95,7 @@ export async function createReservation(postId: string, arrivalDate: string, dep
     return { success: false, error: err?.detail ?? 'Reservation failed' };
   }
 
+  revalidateTag(`post-${postId}`);
   return { success: true };
 }
 
@@ -103,6 +107,7 @@ export async function getComments(id: string) {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
+    next: { revalidate: 30, tags: [`post-${id}`] },
   });
 
   if (!response.ok) {
@@ -122,6 +127,7 @@ export async function getCurrentUserId(): Promise<number | null> {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
+    next: { revalidate: 300, tags: ['current-user'] },
   });
 
   if (!response.ok) return null;
@@ -139,6 +145,7 @@ export async function checkIsSaved(postId: string): Promise<boolean> {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
+    cache: 'no-store',
   });
   if (!response.ok) return false;
   const data: { post_id: string }[] = await response.json();
@@ -178,6 +185,7 @@ export async function getSavedPosts(): Promise<{ id: string; title: string; pric
   const response = await fetch(`http://127.0.0.1:8000/api/Posts/saved`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    cache: 'no-store',
   });
   if (!response.ok) return [];
   const data: any[] = await response.json();
@@ -204,6 +212,7 @@ export async function updateComment(postId: string, commentId: string, comment: 
     const body = await response.json().catch(() => ({}));
     return { success: false, detail: body?.detail ?? 'Failed to update.' };
   }
+  revalidateTag(`post-${postId}`);
   return { success: true };
 }
 
@@ -224,6 +233,7 @@ export async function rateSeller(postId: string, rating: number, isUpdate: boole
       const err = await retry.json().catch(() => ({}));
       return { success: false, detail: err?.detail ?? 'Failed to update rating.' };
     }
+    revalidateTag(`post-${postId}`);
     return { success: true, wasAlreadyRated: true };
   }
 
@@ -231,6 +241,7 @@ export async function rateSeller(postId: string, rating: number, isUpdate: boole
     const err = await response.json().catch(() => ({}));
     return { success: false, detail: err?.detail ?? 'Failed to rate.' };
   }
+  revalidateTag(`post-${postId}`);
   return { success: true, wasAlreadyRated: false };
 }
 
@@ -242,6 +253,7 @@ export async function getPost(id: string) {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
+    next: { revalidate: 60, tags: [`post-${id}`] },
   });
 
   if (!response.ok) {
