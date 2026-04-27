@@ -11,7 +11,7 @@ export async function getMyProfile(): Promise<{ id: number; full_name: string; e
   const response = await fetch(`${API}/api/Account/my-profile/`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    next: { revalidate: 120, tags: ['current-user'] },
+    cache: 'no-store',
   });
   if (!response.ok) return null;
   const data = await response.json();

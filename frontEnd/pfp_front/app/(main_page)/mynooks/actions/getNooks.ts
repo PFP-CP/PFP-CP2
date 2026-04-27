@@ -18,15 +18,11 @@ async function authedFetch(path: string, options: RequestInit = {}) {
 }
 
 export async function getMyNooks() {
-  const profileRes = await authedFetch('/api/Account/my-profile/', {
-    next: { revalidate: 120, tags: ['current-user'] },
-  } as any)
+  const profileRes = await authedFetch('/api/Account/my-profile/', { cache: 'no-store' })
   const profile = await profileRes.json()
   if (!profile?.id) return []
 
-  const nooksRes = await authedFetch(`/api/Mynook/profile/${profile.id}`, {
-    next: { revalidate: 60, tags: ['my-nooks', `profile-${profile.id}`] },
-  } as any)
+  const nooksRes = await authedFetch(`/api/Mynook/profile/${profile.id}`, { cache: 'no-store' })
   const publicProfile = await nooksRes.json()
   if (!publicProfile?.nooks) return []
 

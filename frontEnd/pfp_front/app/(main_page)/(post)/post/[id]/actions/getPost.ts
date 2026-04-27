@@ -127,7 +127,7 @@ export async function getCurrentUserId(): Promise<number | null> {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
-    next: { revalidate: 300, tags: ['current-user'] },
+    cache: 'no-store',
   });
 
   if (!response.ok) return null;
