@@ -17,14 +17,15 @@ type NookRowProps = {
     nook: Property;
     onEdit: (id: string) => void;
     onDelete: (id: string) => void;
+    onRowClick: (id: string) => void;
 }
 
-export default function NookRow({ nook, onEdit, onDelete }: NookRowProps) {
+export default function NookRow({ nook, onEdit, onDelete, onRowClick }: NookRowProps) {
     const [imgError, setImgError] = useState(false)
     const imageUrl = getFullImageUrl(nook.primary_image)
 
     return (
-        <tr className={styles.table_row}>
+        <tr className={styles.table_row} onClick={() => onRowClick(nook.id)} style={{ cursor: "pointer" }}>
             {/* الصورة */}
             <td className={styles.table_cell}>
                 <div className={styles.image_container}>

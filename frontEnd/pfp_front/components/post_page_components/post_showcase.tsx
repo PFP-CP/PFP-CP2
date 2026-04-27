@@ -47,7 +47,7 @@ function PostHeader({ title, isSaved, onSaveToggle, lat, lng }: { title: string;
       <div className={style.showcase_header}>
         <div className={style.title_container}>
           <div
-            className={style.title_logo}
+            className={`${style.title_logo} ${hasLocation ? style.title_logo_clickable : ""}`}
             onClick={() => hasLocation && setMapOpen(true)}
             style={{ cursor: hasLocation ? 'pointer' : 'default' }}
             title={hasLocation ? 'View on map' : undefined}

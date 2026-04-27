@@ -3,7 +3,7 @@
 import React from "react";
 import styles from "@/styles/search_styles/search.module.css";
 import { SearchCriteria } from "@/types/api_types";
-import { FEATURES, PROPERTY_TYPES, wilayas_string_only, SEARCH_FEATURES } from "@/data/auth_data/data";
+import { FEATURES, PROPERTY_TYPES, wilayas, SEARCH_FEATURES } from "@/data/auth_data/data";
 
 interface SearchFilterPanelProps {
   criteria: SearchCriteria;
@@ -63,9 +63,9 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
             onChange={(e) => handleInputChange("wilaya", e.target.value)}
           >
             <option value="">Select Wilaya</option>
-            {wilayas_string_only.map((w) => (
-              <option key={w} value={w}>
-                {w}
+            {wilayas.map((w) => (
+              <option key={w.code} value={w.code}>
+                {w.name}
               </option>
             ))}
           </select>
@@ -81,11 +81,20 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
               type="number"
               placeholder="Min"
               className={styles.textInput}
-              value={criteria.renter_rating || ""}
+              min={0}
+              max={5}
+              value={criteria.renter_rating ?? ""}
               onChange={(e) => handleInputChange("renter_rating", parseFloat(e.target.value))}
             />
-            {/* Backend only supports GTE for now, so Max is primarily UI padding or handled via client filter */}
-            <input type="number" placeholder="Max" className={styles.textInput} disabled />
+            <input
+              type="number"
+              placeholder="Max"
+              className={styles.textInput}
+              min={0}
+              max={5}
+              value={criteria.max_renter_rating ?? ""}
+              onChange={(e) => handleInputChange("max_renter_rating", parseFloat(e.target.value))}
+            />
           </div>
         </div>
 
@@ -98,10 +107,20 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
               type="number"
               placeholder="Min"
               className={styles.textInput}
-              value={criteria.post_rating || ""}
+              min={0}
+              max={5}
+              value={criteria.post_rating ?? ""}
               onChange={(e) => handleInputChange("post_rating", parseFloat(e.target.value))}
             />
-            <input type="number" placeholder="Max" className={styles.textInput} disabled />
+            <input
+              type="number"
+              placeholder="Max"
+              className={styles.textInput}
+              min={0}
+              max={5}
+              value={criteria.max_post_rating ?? ""}
+              onChange={(e) => handleInputChange("max_post_rating", parseFloat(e.target.value))}
+            />
           </div>
         </div>
 

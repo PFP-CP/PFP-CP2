@@ -18,6 +18,10 @@ export default function NooksTable({ nooks, onDelete }: NooksTableProps) {
         router.push(`/mynooks/createpost?edit=${id}`)
     }
 
+    const handleRowClick = (id: string) => {
+        router.push(`/post/${id}`)
+    }
+
     if (nooks.length === 0) {
         return (
             <div className={styles.empty_state}>
@@ -48,6 +52,7 @@ export default function NooksTable({ nooks, onDelete }: NooksTableProps) {
                             nook={nook}
                             onEdit={handleEdit}
                             onDelete={onDelete}
+                            onRowClick={handleRowClick}
                         />
                     ))}
                 </tbody>

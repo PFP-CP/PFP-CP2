@@ -46,15 +46,11 @@ const SETTINGS = (
 
 
 
-function getPathName() {
-  return usePathname().split('/')[1] as nav_link_names;
-}
-
 type nav_link_names = 'home' | 'mynooks' | 'myreservations' | 'myfavorites';
 
 
 export default function ComputerNav() {
-  const [current_page, set_current_page] = useState(getPathName());
+  const current_page = usePathname().split('/')[1] as nav_link_names;
   const nav_links_refs: Record<nav_link_names, React.RefObject<HTMLDivElement | null>> = {
     home: useRef<HTMLDivElement>(null),
     mynooks: useRef<HTMLDivElement>(null),
@@ -123,10 +119,10 @@ export default function ComputerNav() {
         </Link>
         <div id={style.navigation}>
           <div ref={nav_links_container} id={style.navigation_links}>
-            <Link href={'/home'}> <div ref={nav_links_refs.home} onClick={() => set_current_page('home')} className={style.nav_text} >Home </div></Link>
-            <Link href={'/mynooks'}><div ref={nav_links_refs.mynooks} onClick={() => set_current_page('mynooks')} className={style.nav_text} > My Nooks </div></Link>
-            <Link href={'/myreservations'}><div ref={nav_links_refs.myreservations} onClick={() => set_current_page('myreservations')} className={style.nav_text} > My Reservations </div></Link>
-            <Link href={'/myfavorites'}><div ref={nav_links_refs.myfavorites} onClick={() => set_current_page('myfavorites')} className={style.nav_text} > My Favorites </div></Link>
+            <Link href={'/home'}> <div ref={nav_links_refs.home} className={style.nav_text} >Home </div></Link>
+            <Link href={'/mynooks'}><div ref={nav_links_refs.mynooks} className={style.nav_text} > My Nooks </div></Link>
+            <Link href={'/myreservations'}><div ref={nav_links_refs.myreservations} className={style.nav_text} > My Reservations </div></Link>
+            <Link href={'/myfavorites'}><div ref={nav_links_refs.myfavorites} className={style.nav_text} > My Favorites </div></Link>
             <motion.div transition={{ duration: .3, ease: "linear" }} layout ref={indicator} className={style.nav_indicator}></motion.div>
           </div>
         </div>

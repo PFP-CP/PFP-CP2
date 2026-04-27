@@ -44,6 +44,18 @@
   width: 40px;
 }
 
+@keyframes map_nudge {
+  0%, 100% { transform: translateY(0); }
+  5%  { transform: translateY(-6px); }
+  10% { transform: translateY(0); }
+  15% { transform: translateY(-3px); }
+  20% { transform: translateY(0); }
+}
+
+.title_logo_clickable {
+  animation: map_nudge 5s ease-in-out 2s infinite;
+}
+
 .copy_link_container{
   cursor: pointer;
 }

@@ -217,7 +217,6 @@ export default function UserSettings({ setSettingsOpen, mobile }: { setSettingsO
             </Link>
             <div className={style.user_change_pfp_icon}>{CHANGE_PFP}</div>
             <div className={style.hi_user}>Hi {firstName}</div>
-            <div className={style.user_settings_button}>Get your license</div>
             <div onClick={() => setIsChangingPassword(true)} className={style.user_settings_button}>Change your password</div>
             <div onClick={() => setIsChangingInformation(true)} className={style.user_settings_button}>Change your information</div>
           </>

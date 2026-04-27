@@ -379,7 +379,9 @@ export interface SearchCriteria {
     number_of_rooms?: number;
     wilaya?: string;
     renter_rating?: number;
+    max_renter_rating?: number;
     post_rating?: number;
+    max_post_rating?: number;
     min_price?: number;
     max_price?: number;
     features?: string[];

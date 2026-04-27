@@ -52,26 +52,45 @@ interface AuthFormData {
   key?: string;
 }
 
-function login_form(register:UseFormRegister<AuthFormData>, setAuthState:React.Dispatch<React.SetStateAction<string>>, errors:FieldErrors<AuthFormData>){
-  
+const EyeIcon = ({ visible, error }: { visible: boolean; error: boolean }) => {
+  const stroke = error ? "red" : "#220E67";
+  return visible
+    ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+        <line x1="1" y1="1" x2="23" y2="23"/>
+      </svg>
+    : <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+}
+
+function login_form(register:UseFormRegister<AuthFormData>, setAuthState:React.Dispatch<React.SetStateAction<string>>, errors:FieldErrors<AuthFormData>, showPassword:boolean, setShowPassword:React.Dispatch<React.SetStateAction<boolean>>){
+
   return(
     <>
       <div className={style.form_fields_container}>
           <input className={errors.email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" aria-label="Email address" />
           <p className={style.error_message} aria-live="polite">{errors.email?.message as string}</p>
           <div className={style.password_container}>
-            <input type="password" {...register("password",{required:'Enter a password man'})} placeholder="Password" aria-label="Password" />
+            <div className={style.password_input_wrapper}>
+              <input type={showPassword?"text":"password"} className={`${style.password_input} ${errors.password?style.input_invalid:""}`} {...register("password",{required:'Enter a password man'})} placeholder="Password" aria-label="Password" />
+              <button type="button" className={style.eye_btn} onClick={()=>setShowPassword(p=>!p)} aria-label={showPassword?"Hide password":"Show password"}>
+                <EyeIcon visible={showPassword} error={!!errors.password} />
+              </button>
+            </div>
             <p className={style.error_message} aria-live="polite">{errors.password?.message as string}</p>
             <button type="button" onClick={()=>setAuthState("forget_password")} className={style.forgot_password}>Forget password?</button>
           </div>
       </div>
-        
+
     </>
   )
 }
 
-function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<AuthFormData>){
-  
+function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<AuthFormData>, showPassword:boolean, setShowPassword:React.Dispatch<React.SetStateAction<boolean>>){
+
   return(
     <>
       <div className={style.form_fields_container}>
@@ -83,10 +102,15 @@ function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<A
           <RadioButton register={register} />
           <input className={errors.phone&&style.input_invalid} {...register("phone",phone_settings)} placeholder="Phone number" />
           {errors.phone?.message&&<p className={style.error_message}>{errors.phone?.message}</p>}
-          
+
           <input className={errors.email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
           {errors.email?.message&&<p className={style.error_message}>{errors.email?.message}</p>}
-          <input type="password" {...register("password",password_settings)} placeholder="password" />
+          <div className={style.password_input_wrapper}>
+            <input type={showPassword?"text":"password"} className={`${style.password_input} ${errors.password?style.input_invalid:""}`} {...register("password",password_settings)} placeholder="Password" />
+            <button type="button" className={style.eye_btn} onClick={()=>setShowPassword(p=>!p)} aria-label={showPassword?"Hide password":"Show password"}>
+              <EyeIcon visible={showPassword} error={!!errors.password} />
+            </button>
+          </div>
           {errors.password?.message&&<p className={style.error_message}>{errors.password?.message}</p>}
       </div>
     </>
@@ -105,12 +129,17 @@ function forgot_password(register:UseFormRegister<AuthFormData>, errors:FieldErr
   )
 }
 
-function forgot_password_code(register:UseFormRegister<AuthFormData>, errors:FieldErrors<AuthFormData>){
+function forgot_password_code(register:UseFormRegister<AuthFormData>, errors:FieldErrors<AuthFormData>, showPassword:boolean, setShowPassword:React.Dispatch<React.SetStateAction<boolean>>){
 
   return(
     <>
       <div className={style.form_fields_container}>
-        <input type="password" {...register("new_password",password_settings)} placeholder="New Password" />
+        <div className={style.password_input_wrapper}>
+          <input type={showPassword?"text":"password"} className={`${style.password_input} ${errors.new_password?style.input_invalid:""}`} {...register("new_password",password_settings)} placeholder="New Password" />
+          <button type="button" className={style.eye_btn} onClick={()=>setShowPassword(p=>!p)} aria-label={showPassword?"Hide password":"Show password"}>
+            <EyeIcon visible={showPassword} error={!!errors.new_password} />
+          </button>
+        </div>
         {errors.new_password?.message&&<p className={style.error_message}>{errors.new_password?.message as string}</p>}
         <input {...register("key",{required:true})} placeholder="Key" />
       </div>
@@ -121,10 +150,12 @@ function forgot_password_code(register:UseFormRegister<AuthFormData>, errors:Fie
 export default function AuthForm() {
   const {register, handleSubmit,setError,reset,formState:{errors}} = useForm<AuthFormData>();
   const [authState, setAuthState] = useState('login');
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/home';
   const handleAuthSwitch= ()=>{
+    setShowPassword(false);
     if(authState==="login") {
       setAuthState("signup");
       reset();
@@ -187,10 +218,10 @@ export default function AuthForm() {
           handle_auth_submit(authState,data);
         })}>
 
-          {authState==="login"&&login_form(register,setAuthState, errors)}
-          {authState==="signup"&&signup_form(register, errors)}
+          {authState==="login"&&login_form(register,setAuthState, errors, showPassword, setShowPassword)}
+          {authState==="signup"&&signup_form(register, errors, showPassword, setShowPassword)}
           {authState==="forget_password"&&forgot_password(register,errors)}
-          {authState==="forget_password_code"&&forgot_password_code(register,errors)}
+          {authState==="forget_password_code"&&forgot_password_code(register,errors, showPassword, setShowPassword)}
 
         <AnimatePresence>
           <div  className={ `${authState==="login"&&style.submit_signBtn_container_login} ${style.submit_signBtn_container} ${(authState!=="login")&&style.submit_signBtn_container_signup}`}>  

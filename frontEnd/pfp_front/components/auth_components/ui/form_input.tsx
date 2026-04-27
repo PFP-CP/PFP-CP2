@@ -1,5 +1,5 @@
 'use client'
-import {useRef} from 'react'
+import {useRef, useState} from 'react'
 import styles from '@/styles/auth_styles/ui_css/auth/form_input.module.css'
 import { inputType, keyValues_input,setErrors,errors } from '@/types/types'
 import { z} from "zod"
@@ -94,6 +94,7 @@ function validate(errors:errors,setErrors:setErrors,isValid:boolean,setIsValid:R
 export default function FormInput({type,name,placeHolder, required, value,setValue,setIsValid,isValid, test, errors,setErrors, input_ref}:inputType){
   let labelExists = true;
   const firstBlur = useRef(false);
+  const [showPassword, setShowPassword] = useState(false);
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
     const name = e.currentTarget.name;
     const new_value = e.currentTarget.value;
@@ -111,12 +112,24 @@ export default function FormInput({type,name,placeHolder, required, value,setVal
   }
     labelExists = !value[name as keyValues_input];
     return(
-    <div ref={name==="email"?input_ref:null} className={styles.input_container}>  
-        <input  onBlur={handleValidate} required={required} value={value[name as keyValues_input]} className={errors!==undefined && errors[name as "full_name"| "email"  | "password"] && test?`${styles.form_input} ${styles.form_input_invalid}`:styles.form_input} type={type} id={name} name={name} onChange={(e)=>handleChange(e)}/>    
+    <div ref={name==="email"?input_ref:null} className={styles.input_container}>
+        <input  onBlur={handleValidate} required={required} value={value[name as keyValues_input]} className={errors!==undefined && errors[name as "full_name"| "email"  | "password"] && test?`${styles.form_input} ${styles.form_input_invalid}`:styles.form_input} type={name==="password"?(showPassword?"text":"password"):type} id={name} name={name} onChange={(e)=>handleChange(e)}/>
         <label className={labelExists? styles.placeHolder:`${styles.placeHolder} ${styles.hidden}`} htmlFor={name}>{placeHolder}</label>
-        {name==="password"&&<svg className={styles.password_lock_image} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={errors!==undefined && errors[name as "full_name"| "email"  | "password" ]?"red":"grey"} xmlns="http://www.w3.org/2000/svg">
-          <path d="M9.23047 9H7.2002C6.08009 9 5.51962 9 5.0918 9.21799C4.71547 9.40973 4.40973 9.71547 4.21799 10.0918C4 10.5196 4 11.0801 4 12.2002V17.8002C4 18.9203 4 19.4801 4.21799 19.9079C4.40973 20.2842 4.71547 20.5905 5.0918 20.7822C5.5192 21 6.07902 21 7.19694 21H16.8031C17.921 21 18.48 21 18.9074 20.7822C19.2837 20.5905 19.5905 20.2842 19.7822 19.9079C20 19.4805 20 18.9215 20 17.8036V12.1969C20 11.079 20 10.5192 19.7822 10.0918C19.5905 9.71547 19.2837 9.40973 18.9074 9.21799C18.4796 9 17.9203 9 16.8002 9H14.7689M9.23047 9H14.7689M9.23047 9C9.10302 9 9 8.89668 9 8.76923V6C9 4.34315 10.3431 3 12 3C13.6569 3 15 4.34315 15 6V8.76923C15 8.89668 14.8964 9 14.7689 9"  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>}
+        {name==="password"&&(
+          <button type="button" className={styles.eye_button} onClick={()=>setShowPassword(prev=>!prev)} aria-label={showPassword?"Hide password":"Show password"}>
+            {showPassword
+              ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={errors!==undefined && errors["password"]?"red":"grey"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={errors!==undefined && errors["password"]?"red":"grey"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+            }
+          </button>
+        )}
     </div>
   )
 }

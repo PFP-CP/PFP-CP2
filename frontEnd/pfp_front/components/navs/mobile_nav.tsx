@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from "framer-motion";
-import { string } from 'zod'
 import UserSettings, { LogoutPanel } from './user_settings'
 
 const SEARCH_ICON = (
@@ -39,15 +38,10 @@ const SETTINGS = (
   </svg>
 
 )
-function getPathName(){
-  return usePathname().split('/')[1] as string;
-}
-
-
 const tabs = ["Home", "My Nooks", "My Reservations", "My Favorites"];
 
 export default function Mobile_nav(){
-  const [current_page,set_current_page]=  useState(getPathName()); 
+  const current_page = usePathname().split('/')[1];
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
 
@@ -105,7 +99,7 @@ export default function Mobile_nav(){
                 return (
                   <div key={tab} style={{display: 'contents'}}>
                     <Link style={{flexGrow:'1'}} href={'/'+newPath}>
-                      <div onClick={()=>set_current_page(newPath)} className={style.nav_link} id={activeTab===tab?style.active:undefined} >
+                      <div className={style.nav_link} id={activeTab===tab?style.active:undefined} >
                         <div style={{zIndex:'1'}}> {tab} </div>
                         {activeTab===tab && <motion.div 
                         layoutId="active-pill"

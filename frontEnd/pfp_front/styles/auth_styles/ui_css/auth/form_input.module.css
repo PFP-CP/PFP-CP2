@@ -11,6 +11,7 @@
   border: none;
   transition: outline 300ms ease-out;
   padding-left:39px;
+  padding-right: 2.75rem;
   font-family: 'sansation-700';
   font-size: var(--font-s-25);
   color: var(--primary-color);
@@ -59,9 +60,16 @@
   opacity: 0;
 }
 
-.password_lock_image{
+.eye_button{
   position: absolute;
   right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  line-height: 0;
 }
 
 .hidden{
