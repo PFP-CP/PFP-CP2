@@ -33,23 +33,26 @@ from .schemas import (
 router = Router()
 search_router = Router()
 
-#main page
+
+# main page
 @router.get("/mainpage", response=List[PostListOut])
-def get_house_list(request, filter_by: str = "newest",size:int = 5):
-    posts = Post.objects.select_related('house').prefetch_related(
-    'house__location',
-    'house__pictures',
-)
+def get_house_list(request, filter_by: str = "newest", size: int = 5):
+    posts = Post.objects.select_related("house").prefetch_related(
+        "house__location",
+        "house__pictures",
+    )
     if filter_by == "rating":
-        posts = posts.order_by("-rating") 
+        posts = posts.order_by("-rating")
     elif filter_by == "state":
         posts = posts.order_by("house__location__State")
     elif filter_by == "county":
         posts = posts.order_by("house__location__County")
     else:
         posts = posts.order_by("-created_at")
-    posts=posts[:size]
+    posts = posts[:size]
     return posts
+
+
 # Filter helpers — all updated to teammate's lowercase field names    #
 def post_rating_query(
     previous_search: QuerySet, rating: float | None = None
@@ -115,15 +118,15 @@ def allowed_people_query(
     previous_search: QuerySet, allowed_people: TypeOfPeople
 ) -> QuerySet:
     """Filter by House.Types_of_Renters (adjust field name if needed)."""
-    
+
     if not allowed_people:
         return previous_search
-    
-    people = "AL" 
-    
+
+    people = "AL"
+
     if not allowed_people.Couple and not allowed_people.Single:
         people = "FA"
-    if not allowed_people.Couple :
+    if not allowed_people.Couple:
         people = "NC"
     if not allowed_people.Single:
         people = "NM"
@@ -138,10 +141,12 @@ def features_query(previous_search: QuerySet, features: list[str] = []) -> Query
         )
     return previous_search
 
-def type_query(previous_search: QuerySet , House_type : str) -> QuerySet:
+
+def type_query(previous_search: QuerySet, House_type: str) -> QuerySet:
     if House_type:
-        return previous_search.filter(title__contains = House_type)
+        return previous_search.filter(title__contains=House_type)
     return previous_search
+
 
 # Sorting — operates on serialised dicts, keys are SearchResult names #
 
@@ -207,7 +212,7 @@ def search(request, Criteria: SearchCriteria):
         results_query = wilaya_query(results_query, Criteria.wilaya)
         results_query = allowed_people_query(results_query, Criteria.allowed_people)
         results_query = features_query(results_query, Criteria.features)
-        results_query = type_query(results_query , Criteria.house_type)
+        results_query = type_query(results_query, Criteria.house_type)
         # Serialise to plain dicts for caching
         results = [SearchResult.from_orm(post).dict() for post in results_query]
 
@@ -307,7 +312,7 @@ def list_saved_posts(request):
 @router.post(
     "/{post_id}/save",
     response={201: MessageSchema, 409: ErrorSchema, 404: ErrorSchema},
- auth=JWTAuth(),
+    auth=JWTAuth(),
     tags=["Saved Posts (my favorite)"],
 )
 def save_post(request, post_id: uuid.UUID):
@@ -317,9 +322,7 @@ def save_post(request, post_id: uuid.UUID):
     try:
         post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
-        raise Http404(
-            "This post cannot be saved because it does not exist "
-        )
+        raise Http404("This post cannot be saved because it does not exist ")
     created = SavedPost.objects.get_or_create(user=request.user, post=post)
     if not created:
         return 409, {"detail": "Post already saved."}
@@ -330,7 +333,7 @@ def save_post(request, post_id: uuid.UUID):
 @router.delete(
     "/{post_id}/save",
     response={200: MessageSchema, 404: ErrorSchema},
-   auth=JWTAuth(),
+    auth=JWTAuth(),
     tags=["Saved Posts (my favorite)"],
 )
 def unsave_post(request, post_id: uuid.UUID):
@@ -341,17 +344,26 @@ def unsave_post(request, post_id: uuid.UUID):
     return 200, {"message": "Post removed from saved."}
 
 
-@router.get("/{post_id}", response={200: PostOut, 404: ErrorSchema},auth= JWTAuth(), tags=["Posts"])
+@router.get(
+    "/{post_id}",
+    response={200: PostOut, 404: ErrorSchema},
+    auth=JWTAuth(),
+    tags=["Posts"],
+)
 def get_post(request, post_id: uuid.UUID):
     """Full post detail with house, seller, images, comments."""
     post = get_object_or_404(
         Post.objects.select_related("house", "seller").prefetch_related(
             "house__location",
-            "house__pictures","house__features__features",
-            "house__features__features","house__rules",
+            "house__pictures",
+            "house__features__features",
+            "house__features__features",
+            "house__rules",
             Prefetch(
                 "comments",
-                queryset=Comment.objects.select_related("user").filter(type="post").order_by("-created_at"),
+                queryset=Comment.objects.select_related("user")
+                .filter(type="post")
+                .order_by("-created_at"),
             ),
         ),
         pk=post_id,
@@ -400,16 +412,22 @@ def mark_rented(request, post_id: uuid.UUID):
 
 
 @router.get(
-    "/{post_id}/comments", response=List[CommentOut], auth=JWTAuth(), tags=["Reviews - Post"]
+    "/{post_id}/comments",
+    response=List[CommentOut],
+    auth=JWTAuth(),
+    tags=["Reviews - Post"],
 )
 def list_comments(request, post_id: uuid.UUID):
     post = get_object_or_404(Post, pk=post_id)
-    return post.comments.select_related("user").filter(type="post").order_by("-created_at")
+    return (
+        post.comments.select_related("user").filter(type="post").order_by("-created_at")
+    )
 
 
 @router.post(
     "/{post_id}/comments",
-    response={201: CommentOut, 409: ErrorSchema, 404: ErrorSchema},auth=JWTAuth(),
+    response={201: CommentOut, 409: ErrorSchema, 404: ErrorSchema},
+    auth=JWTAuth(),
     tags=["Reviews - Post"],
 )
 def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
@@ -418,7 +436,7 @@ def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
     """
     post = get_object_or_404(Post, pk=post_id)
 
-    if Comment.objects.filter(post=post, user=request.user,type="post").exists():
+    if Comment.objects.filter(post=post, user=request.user, type="post").exists():
         return 409, {"detail": "You have already reviewed this post."}
 
     comment = Comment.objects.create(
@@ -428,8 +446,8 @@ def add_comment(request, post_id: uuid.UUID, payload: CommentIn):
         comment=payload.comment,
         rating=payload.rating,
     )
-    Account.objects.filter(pk=comment.user.pk).update(num_review=F('num_review') + 1)
-
+    # Account.objects.filter(pk=request.user.pk).update(num_review=F('num_review') + 1)
+    # commented this in case things crash out
     return 201, comment
 
 
@@ -465,19 +483,25 @@ def delete_comment(request, post_id: uuid.UUID, comment_id: uuid.UUID):
     seller = post.seller
     comment.delete()
     # Recalculate post rating
-    avg = Comment.objects.filter(post=post).aggregate(avg=Avg('rating'))['avg']
+    avg = Comment.objects.filter(post=post).aggregate(avg=Avg("rating"))["avg"]
     post.rating = float(round(avg, 2)) if avg else 0.0
-    post.save(update_fields=['rating'])
+    post.save(update_fields=["rating"])
     post.decrement_comments()
 
     # Recalculate seller rating
-    avg = Comment.objects.filter(post__seller=seller).aggregate(avg=Avg('rating'))['avg']
+    avg = Comment.objects.filter(post__seller=seller).aggregate(avg=Avg("rating"))[
+        "avg"
+    ]
     if avg is not None:
         Account.objects.filter(pk=seller.pk).update(rating=round(avg, 2))
-    Account.objects.filter(pk=comment.user.pk).update(num_review=F('num_review') - 1)
-    return 200, {'message': 'Comment deleted.'}
+    Account.objects.filter(pk=seller.pk).update(
+        num_review=F("num_review") - 1
+    )  # chnaged comment.user by seller
+    return 200, {"message": "Comment deleted."}
+
 
 # ── RATE THE SELLER ─────────────────────────────────────────────────────────
+
 
 @router.post(
     "/{post_id}/rate-seller",
@@ -515,9 +539,7 @@ def rate_seller(request, post_id: uuid.UUID, payload: SellerRatingIn):
 def update_seller_rating(request, post_id: uuid.UUID, payload: SellerRatingUpdate):
     post = get_object_or_404(Post, pk=post_id)
 
-    comment = get_object_or_404(
-        Comment, post=post, user=request.user, type="seller"
-    )
+    comment = get_object_or_404(Comment, post=post, user=request.user, type="seller")
 
     if comment.user != request.user and not request.user.is_staff:
         return 403, {"detail": "You can only edit your own rating."}
@@ -537,9 +559,7 @@ def delete_seller_rating(request, post_id: uuid.UUID):
     post = get_object_or_404(Post, pk=post_id)
     seller = post.seller
 
-    comment = get_object_or_404(
-        Comment, post=post, user=request.user, type="seller"
-    )
+    comment = get_object_or_404(Comment, post=post, user=request.user, type="seller")
 
     if comment.user != request.user and not request.user.is_staff:
         return 403, {"detail": "Not allowed."}
@@ -547,9 +567,9 @@ def delete_seller_rating(request, post_id: uuid.UUID):
     comment.delete()
 
     # Recalculate seller rating after removal
-    avg = Comment.objects.filter(
-        post__seller=seller,type="seller"   
-    )  .aggregate(avg=Avg('rating'))['avg']
+    avg = Comment.objects.filter(post__seller=seller, type="seller").aggregate(
+        avg=Avg("rating")
+    )["avg"]
 
     Account.objects.filter(pk=seller.pk).update(
         rating=round(avg, 2) if avg is not None else 5.0

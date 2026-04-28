@@ -15,7 +15,7 @@ from ninja_jwt.tokens import RefreshToken
 
 import utilitymethods.Pictures as Pic
 from Houses.models import Pictures
-from Posts.models import Comment, Post, PostStatus
+from Posts.models import Post, PostStatus
 from Reservations.models import Reservation
 
 from .models import *
@@ -227,7 +227,6 @@ def get_host_profile(request):
 
     # Calculate total reservations made ON this host's posts
     total_reservations = Reservation.objects.filter(post__seller=host).count()
-    total_reviews = Comment.objects.filter(post__seller=host, type="seller").count()
     # Group Posts by City
     posts_by_city = {}
     active_posts = []
@@ -274,7 +273,7 @@ def get_host_profile(request):
         "date_of_birth": host.date_of_birth,
         "location": host_city,
         "rating": host.rating,
-        "num_reviews": total_reviews,
+        "num_reviews": host.num_review,
         "num_nooks": len(active_posts)
         if (host.type_of_user.upper() == "HOST")
         else -255,
