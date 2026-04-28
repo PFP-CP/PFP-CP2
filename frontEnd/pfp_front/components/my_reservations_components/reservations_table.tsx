@@ -145,7 +145,7 @@ export default function ReservationsTable({ reservations, onRefresh }: Reservati
                             <th className={styles.header_cell}>Photo</th>
                             <th className={styles.header_cell}>Description</th>
                             <th className={styles.header_cell}>Wilaya</th>
-                            <th className={styles.header_cell}>Host&apos;s name</th>
+                            <th className={styles.header_cell}>Tenant&apos;s name</th>
                             <th className={styles.header_cell}>Mobile</th>
                             <th className={styles.header_cell}>Email</th>
                             <th className={styles.header_cell}>Arrival Date</th>
