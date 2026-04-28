@@ -46,7 +46,7 @@ class Account(AbstractUser):
       FEMALE = 'F', 'Female'
   
     default_profile_picture = (
-        "https://i.pinimg.com/1200x/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg"
+        "https://i.pinimg.com/236x/13/74/20/137420f5b9c39bc911e472f5d20f053e.jpg"
     )
     username = None  # Remove username field
     email = models.EmailField(unique=True)
