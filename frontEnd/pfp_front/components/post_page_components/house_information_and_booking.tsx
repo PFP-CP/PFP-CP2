@@ -1,14 +1,22 @@
 'use client'
 import { ChangeEvent, useState,useRef, useEffect } from 'react'
 import style from '@/styles/post_page_styles/house_information_and_booking.module.css'
+<<<<<<< Updated upstream
 import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM, LEAVE_TAB_WHITE, FEATURE_ICONS } from '@/public/svg/svg'
+=======
+import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM, LEAVE_TAB_WHITE } from '@/public/svg/svg'
+>>>>>>> Stashed changes
 import Comment from './house_information_components/Comment'
 import { Slider, useMediaQuery } from '@mui/material'
 import MyDatePicker from './ui/date_picker'
 import CarouselImages from "./carousel_images"
 import Image from 'next/image'
+<<<<<<< Updated upstream
 import Link from 'next/link'
 import { addComment, createReservation, rateSeller, updateComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
+=======
+import { addComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
+>>>>>>> Stashed changes
 
 
 
@@ -38,6 +46,7 @@ function RateRenterButton({postId, initialRated, initialRating, onRated}: {postI
   const handleValueChange = (e:Event, ratingValue:number)=>{
     setValue(ratingValue);
   }
+<<<<<<< Updated upstream
   const handleSubmitRating = async ()=>{
     setLoading(true);
     setError(null);
@@ -56,13 +65,25 @@ function RateRenterButton({postId, initialRated, initialRating, onRated}: {postI
   const handleCloseRating = ()=>{
     setIsRating(false);
     setError(null);
+=======
+  const handleSubmitRating = ()=>{
+    setIsRenterRated(true);
+    user.renterRate=value;
+    user.renterRated=true;
+  };
+  const handleCloseRating = ()=>{
+    setIsRating(false);
+>>>>>>> Stashed changes
   }
   return(
     !isRating?
       (!isRenterRated?<div onClick={()=> setIsRating(true)} className={style.rating_button}>Rate the host</div>:
         <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>):
     <div className={style.rating_slider_container}>
+<<<<<<< Updated upstream
     {loading && <div className={style.loading_overlay}/>}
+=======
+>>>>>>> Stashed changes
     <button className={style.confirm_rating_button} onClick={handleCloseRating}>{LEAVE_TAB_WHITE}</button>
       <Slider
         className={style.rating_slider}
@@ -70,7 +91,11 @@ function RateRenterButton({postId, initialRated, initialRating, onRated}: {postI
         value={value}
         valueLabelDisplay="on"
         aria-label="rating"
+<<<<<<< Updated upstream
         defaultValue={initialRating}
+=======
+        defaultValue={0}
+>>>>>>> Stashed changes
         step={1}
         marks
         min={0}
@@ -106,7 +131,11 @@ function RateNookButton({setRatingValue, initialValue = 0}:{setRatingValue:React
         value={value}
         valueLabelDisplay="on"
         aria-label="rating"
+<<<<<<< Updated upstream
         defaultValue={initialValue}
+=======
+        defaultValue={0}
+>>>>>>> Stashed changes
         step={1}
         marks
         min={0}
@@ -117,6 +146,7 @@ function RateNookButton({setRatingValue, initialValue = 0}:{setRatingValue:React
   )
 }
 
+<<<<<<< Updated upstream
 function Comment_review({ ratingValue, id, setIsCommenting, setRatingValue, onCommentAdded, existingComment }: {
   ratingValue: number;
   id: string;
@@ -171,6 +201,32 @@ function Comment_review({ ratingValue, id, setIsCommenting, setRatingValue, onCo
           setRatingValue={(v) => { setRatingValue(v); setRatingError(false); }}
         />
         <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
+=======
+function Comment_review({ ratingValue,id,setIsCommenting, setRatingValue, onCommentAdded}:{ratingValue:number,id:string,setIsCommenting:React.Dispatch<React.SetStateAction<boolean>>, setRatingValue:React.Dispatch<React.SetStateAction<number | undefined>>, onCommentAdded:()=>Promise<void>}){
+  const comment = useRef(null);
+  const handleCloseSubmit = ()=>{
+    console.log(comment.current.value,ratingValue);
+    setIsCommenting(false);
+  }
+
+  const handleSubmit= async ()=>{
+    if((await addComment(id,comment.current.value,ratingValue)).success){
+      await onCommentAdded();
+      setIsCommenting(false);
+    }
+  }
+  
+  return(
+      <div className={style.nook_review}>
+        <div className={style.nook_rating_and_close_button}>
+          {<RateNookButton setRatingValue={setRatingValue} />}
+          <button onClick={handleCloseSubmit} className={style.close_button}>Close</button>
+        </div>
+        <div className={style.comment_input}>
+          <textarea ref={comment} name="comment" id={style.comment} placeholder='Write your comment'></textarea>
+          <button onClick={handleSubmit}>Submit</button>
+        </div>
+>>>>>>> Stashed changes
       </div>
       {ratingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>Please select a rating before submitting.</p>}
       {submitError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>{submitError}</p>}
@@ -249,6 +305,7 @@ function Rules_categories_features({ house_rules, allowed_people, features }: {
 }
 
 
+<<<<<<< Updated upstream
 function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_list,currentUserId}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,onCommentAdded:()=>Promise<void>,comment_list:import('@/types/api_types').CommentData[],currentUserId:number|null}){
   const [isCommenting, setIsCommenting] = useState(false);
   const existingComment = currentUserId ? comment_list.find(c => c.user_id === currentUserId) : undefined;
@@ -261,6 +318,12 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
       mobileFormRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [isCommenting]);
+=======
+function Comments_invisible({setShowComments,sectionData,onCommentAdded}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,onCommentAdded:()=>Promise<void>}){
+  const [isCommenting, setIsCommenting] = useState(false);
+  const [ratingValue,setRatingValue] = useState<number>(0);
+  const screenWidth = useMediaQuery(('min-width:700px'));
+>>>>>>> Stashed changes
   return(
           <div className={style.nook_and_renter_rating}>
             <div className={style.rating_display}>
@@ -285,12 +348,20 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
               </div>
               {/* this will be a component */}
               <div className={style.rating_and_ratingButton_container}>
+<<<<<<< Updated upstream
                 <Link href={`/profile/${sectionData.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className={style.renter_rating} style={{ cursor: 'pointer' }}>
                   <div className={style.profile_picture}><Image src={sectionData.profile_picture} width={55} height={55} alt='profile picture'/></div>
                   <div className={style.name_rating_container}>
                     <div className={style.name_container}>
                       Host : {sectionData.full_name}
+=======
+                <div className={style.renter_rating}>
+                  <div className={style.profile_picture}><Image src={sectionData.profile_picture} width={55} height={55} alt='profile picture'/></div>
+                  <div className={style.name_rating_container}>
+                    <div className={style.name_container}>
+                      Renter : {sectionData.full_name}
+>>>>>>> Stashed changes
                     </div>
                     <div className={style.rating_container}>
                       {sectionData.rating}
@@ -304,7 +375,11 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
             </div>
             {isCommenting?
               <div className={style.upper_comment_review_mobile_view}>
+<<<<<<< Updated upstream
                 <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded} existingComment={existingComment ? {id: existingComment.id, comment: existingComment.comment, rating: Number(existingComment.rating)} : undefined}/>
+=======
+                <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded}/>
+>>>>>>> Stashed changes
               </div>:
               <Description description={sectionData.description}/>
               }
@@ -341,8 +416,13 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
             )}
             </div>
             {isCommenting&&
+<<<<<<< Updated upstream
             <div ref={mobileFormRef} className={style.lower_comment_review_mobile_view}>
                 <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded} existingComment={existingComment ? {id: existingComment.id, comment: existingComment.comment, rating: Number(existingComment.rating)} : undefined}/>
+=======
+            <div className={style.lower_comment_review_mobile_view}>
+                <Comment_review ratingValue={ratingValue} id={sectionData.post_id} setIsCommenting={setIsCommenting} setRatingValue={setRatingValue} onCommentAdded={onCommentAdded}/>
+>>>>>>> Stashed changes
               </div>}
           </div>
   )
@@ -350,7 +430,10 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
 
 
 function Comments_visible({setShowComments,sectionData,currentUserId,onCommentAdded}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,currentUserId:number|null,onCommentAdded:()=>Promise<void>}){
+<<<<<<< Updated upstream
   console.log(sectionData)
+=======
+>>>>>>> Stashed changes
   return(
     
           <div className={style.nook_and_renter_rating}>
@@ -378,7 +461,11 @@ function Comments_visible({setShowComments,sectionData,currentUserId,onCommentAd
   )
 }
 
+<<<<<<< Updated upstream
 export default function HouseInformationAndBooking({post_data,onCommentAdded,onReservationCreated,currentUserId}:{post_data:any,onCommentAdded:()=>Promise<void>,onReservationCreated:()=>Promise<void>,currentUserId:number|null}){
+=======
+export default function HouseInformationAndBooking({post_data,onCommentAdded,currentUserId}:{post_data:any,onCommentAdded:()=>Promise<void>,currentUserId:number|null}){
+>>>>>>> Stashed changes
   const [showComments, setShowComments] = useState(false);
   const [visitorsActive, setVisitorsActive] = useState(false);
   const [visitorsNumber, setVisitorsNumber] = useState<string>('0');
@@ -435,7 +522,11 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
         <div className={style.nook_data}>
 
           {!showComments?
+<<<<<<< Updated upstream
             <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count,features:post_data.features??[],house_rules:post_data.house_rules??null,allowed_people:post_data.allowed_people??'AL',user_rating_seller:post_data.user_rating_seller??null}} setShowComments={setShowComments} onCommentAdded={onCommentAdded} comment_list={post_data.comment_list??[]} currentUserId={currentUserId}/>:
+=======
+            <Comments_invisible sectionData={{...post_data.seller,post_id:post_data.id,description:post_data.description,nook_rating: post_data.rating,comments_num:post_data.comments_count}} setShowComments={setShowComments} onCommentAdded={onCommentAdded}/>:
+>>>>>>> Stashed changes
             <Comments_visible sectionData={{...post_data.seller,post_id:post_data.id,comment_list:post_data.comment_list,nook_rating:post_data.rating,comments_num:post_data.comments_count}} setShowComments={setShowComments} currentUserId={currentUserId} onCommentAdded={onCommentAdded}/>
           }
         </div>
@@ -447,8 +538,13 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
             {!calendarOpen &&
             <>
               <div className={style.visitors_and_price}>
+<<<<<<< Updated upstream
                 <div className={style.price_container}><span>{post_data.house.Price} DA</span> <span id={style.perNight}>per night</span></div>
                 {visitorsActive?<input autoFocus onBlur={()=>setVisitorsActive(false)} value={visitorsNumber} onChange={handleVisitorsNumber} type="number" />:<div onClick={()=>{ setVisitorsActive(true); setVisitorsHint(false); }} className={`${style.visitors} ${visitors_style}`}>{visitors_value}</div>}
+=======
+                <div className={style.price_container}><span>{post_data.house.Price} DA</span> per night</div>
+                {visitorsActive?<input autoFocus onBlur={()=>setVisitorsActive(false)} value={visitorsNumber} onChange={handleVisitorsNumber} type="number" />:<div onClick={()=>setVisitorsActive(true)} className={`${style.visitors} ${visitors_style}`}>{visitors_value}</div>}
+>>>>>>> Stashed changes
               </div>
               {visitorsHint && <p style={{color:'orange', fontSize:'0.8rem', margin:'0'}}>Please enter the number of visitors.</p>}
               {bookingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0'}}>{bookingError}</p>}

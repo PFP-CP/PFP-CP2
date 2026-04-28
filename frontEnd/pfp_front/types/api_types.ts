@@ -36,15 +36,19 @@ export interface CommentData {
   user_id: number;
   rating: number;
   comment: string;
+<<<<<<< Updated upstream
   commenter: {
     id: number;
     full_name: string;
     profile_picture: string | null;
   };
+=======
+>>>>>>> Stashed changes
   created_at: string;
   modified_at: string;
 }
 
+<<<<<<< Updated upstream
 export interface HouseRules {
   allows_animals: boolean;
   allows_smoking: boolean;
@@ -60,6 +64,8 @@ export interface PostReservation {
   duration_days: number;
 }
 
+=======
+>>>>>>> Stashed changes
 export interface PostData {
   id: string;
   title: string;
@@ -71,18 +77,24 @@ export interface PostData {
   views_count: number;
   saves_count: number;
   comments_count: number;
+<<<<<<< Updated upstream
   user_rating_seller: number | null;
   user_rating_post: number | null;
+=======
+>>>>>>> Stashed changes
   seller: SellerInfo;
   house: HouseInfo;
   location: HouseLocation | null;
   house_pictures: HouseImage[];
   comments: CommentData[];
   comment_list?: CommentData[];
+<<<<<<< Updated upstream
   features: string[];
   house_rules: HouseRules | null;
   allowed_people: string;
   reservations: PostReservation[];
+=======
+>>>>>>> Stashed changes
 }
 
 // ========== أنواع العقار (Property) ==========

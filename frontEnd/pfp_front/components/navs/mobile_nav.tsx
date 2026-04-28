@@ -41,9 +41,14 @@ const SETTINGS = (
 const tabs = ["Home", "My Nooks", "My Reservations", "My Favorites"];
 
 export default function Mobile_nav(){
+<<<<<<< Updated upstream
   const current_page = usePathname().split('/')[1];
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
+=======
+  const [current_page,set_current_page]=  useState(getPathName()); 
+  const [settingsOpen, setSettingsOpen] = useState(false);
+>>>>>>> Stashed changes
 
   let activeTab:string;
   switch (current_page) {
@@ -86,9 +91,15 @@ export default function Mobile_nav(){
 
 
 
+            
+
             <div id={style.user_controls}>
               <div onClick={()=> setSettingsOpen(!settingsOpen)}>{USER_ICON}</div>
+<<<<<<< Updated upstream
               <div onClick={() => setLogoutOpen(!logoutOpen)}>{SETTINGS}</div>
+=======
+              {SETTINGS}
+>>>>>>> Stashed changes
             </div>
           </div>
 

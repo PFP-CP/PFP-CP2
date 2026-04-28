@@ -24,12 +24,17 @@ export async function refreshToken(token:string){
     body:JSON.stringify({refresh:token})
   })
   const data = await res.json();
+<<<<<<< Updated upstream
   if (res.status === 200) {
     await saveToken(data);
     return {success:true,...data};
   }
   (await cookies()).delete('token');
   (await cookies()).delete('refresh');
+=======
+  console.log(data);
+  if (res.status === 200) return {success:true,...data};
+>>>>>>> Stashed changes
   return {success:false};
 }
 

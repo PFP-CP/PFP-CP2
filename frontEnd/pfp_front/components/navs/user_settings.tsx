@@ -33,6 +33,7 @@ interface ResetPasswordData {
 }
 
 function ResetPassword({setIsChangingPassword}:{setIsChangingPassword:React.Dispatch<React.SetStateAction<boolean>>}){
+<<<<<<< Updated upstream
   const {register,handleSubmit,setError,formState:{errors}} = useForm<ResetPasswordData>();
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -42,6 +43,15 @@ function ResetPassword({setIsChangingPassword}:{setIsChangingPassword:React.Disp
     if (data.new_password !== data.repeat_new_password) {
       setError('new_password', { type: 'manual', message: 'Passwords do not match' });
       return;
+=======
+  const {register,handleSubmit,setError,formState:{errors}} = useForm();
+  const handleNewPasswordSubmit = (data:object)=>{
+    if(data.new_password !== data.repeat_new_password){
+      setError('new_password',{
+              type:'manual',
+              message:'they not the same brotha',
+            });
+>>>>>>> Stashed changes
     }
     setSubmitting(true);
     setApiError(null);
@@ -80,10 +90,17 @@ interface ChangeInformationData {
 }
 
 function ChangeInformation({setIsChangingInformation}:{setIsChangingInformation:React.Dispatch<React.SetStateAction<boolean>>}){
+<<<<<<< Updated upstream
   const {register,handleSubmit,formState:{errors}} = useForm<ChangeInformationData>();
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+=======
+  const {register,handleSubmit,setError,formState:{errors}} = useForm();
+  const handleNewPasswordSubmit = (data:object)=>{
+    
+  }
+>>>>>>> Stashed changes
 
   const onSubmit = async (data: ChangeInformationData) => {
     setSubmitting(true);
@@ -173,6 +190,7 @@ export default function UserSettings({ setSettingsOpen, mobile }: { setSettingsO
   const [IsChangingInformation, setIsChangingInformation] = useState(false);
   const [profile, setProfile] = useState<ProfileCache | null>(_cachedProfile);
   const tabRef = useRef<HTMLDivElement>(null);
+<<<<<<< Updated upstream
 
   useEffect(() => {
     if (_cachedProfile && Date.now() - _cacheTime < PROFILE_CACHE_TTL) {
@@ -189,6 +207,11 @@ export default function UserSettings({ setSettingsOpen, mobile }: { setSettingsO
     if (mobile) return;
     const handleClick = (e: MouseEvent) => {
       if (tabRef && !tabRef.current?.contains(e.target as Node)) {
+=======
+  useEffect(()=>{
+    const handleClick = (e:MouseEvent)=>{
+      if(tabRef && !tabRef.current?.contains(e.target as Node)){
+>>>>>>> Stashed changes
         setSettingsOpen(false);
       }
     }

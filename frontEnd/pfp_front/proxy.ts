@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { refreshToken, verifyToken } from './lib/authorization_handling';
+import { refreshToken, saveToken, verifyToken } from './lib/authorization_handling';
+import { cookies } from 'next/headers';
 
 export async function proxy(request: NextRequest) {
-  const token = request.cookies.get('token')?.value
-  const refresh = request.cookies.get('refresh')?.value
+  const token = (await cookies()).get('token')?.value
+  const refresh = (await cookies()).get('refresh')?.value
   const isProtectedRoute = true;
+<<<<<<< Updated upstream
   
   const isAuthRoute = request.nextUrl.pathname.startsWith('/authentication');
   
+=======
+  console.log(refresh)
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/authentication') 
+>>>>>>> Stashed changes
   //this if has to change after changing protected route
   if (isProtectedRoute && !token && !isAuthRoute) {
     const loginUrl = new URL('/authentication', request.url)
     loginUrl.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(loginUrl)
   }
+<<<<<<< Updated upstream
   
   if(token && !(await verifyToken(token))){
     const refresh_res = await refreshToken(refresh!);
@@ -28,6 +35,15 @@ export async function proxy(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7,
     });
     return response;
+=======
+  let isValid;
+   if(token) isValid =await verifyToken(token); 
+   if(token && !isValid){
+     const refresh_res = await refreshToken(refresh!); 
+    if(!refresh_res.success) return NextResponse.redirect(new URL('/authentication',request.url));
+    await saveToken({access:refresh_res.access,refresh:refresh_res.refresh})
+    return NextResponse.next();
+>>>>>>> Stashed changes
   }
 
   if (isAuthRoute && token){
