@@ -68,7 +68,7 @@ class AvalabilityCalendar(models.Model):
 
 
 class Location(models.Model):
-    house = models.ForeignKey(House, on_delete=models.CASCADE, related_name="location")
+    house = models.OneToOneField(House, on_delete=models.CASCADE, related_name="location")
     # BALADIA
     County = models.TextField(max_length=100)
     # Wilaya

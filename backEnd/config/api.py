@@ -31,6 +31,6 @@ API.add_router("/Account/", tags=["Authentication Page"], router="Accounts.api.r
 API.add_router("/Houses/", "Houses.api.router")
 API.add_router("/Posts/", "Posts.api.router")
 API.add_router("/Mynook/", "mynook.api.router")
-
+API.add_router("Recommendations" ,tags=["Recommendations"], router="Recommendations.api.router")
 API.add_router("/Reservations/", "Reservations.api.router")
 API.add_router("/Search/", "Posts.api.search_router")
