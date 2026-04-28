@@ -37,7 +37,7 @@ def get_picture_name(instance, field_name: str):
 
 def get_picture_url(instance, field_name: str):
     field = getattr(instance, field_name)
-    if field == "":
+    if not picture_exists(instance,field_name):
         if field_name == "profile_picture":
             return Account.default_profile_picture
         elif field_name == "picture":
