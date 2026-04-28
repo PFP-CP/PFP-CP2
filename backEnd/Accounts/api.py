@@ -15,7 +15,7 @@ from ninja_jwt.tokens import RefreshToken
 
 import utilitymethods.Pictures as Pic
 from Houses.models import Pictures
-from Posts.models import Post, PostStatus
+from Posts.models import Comment, Post, PostStatus
 from Reservations.models import Reservation
 
 from .models import *
@@ -36,7 +36,11 @@ def Signin(request, Acc: AccountSignin):
     if Contact.objects.filter(Phone_Number=Acc.phone_number).exists():
         return {"Error": "Phone number is already registered"}
 
-    gen = Account.GenderType.MALE if Acc.gender.lower() == "male" else Account.GenderType.FEMALE
+    gen = (
+        Account.GenderType.MALE
+        if Acc.gender.lower() == "male"
+        else Account.GenderType.FEMALE
+    )
 
     # json file that has all of algerias wilayas that gets parced to get the name from code
     main_dir = Path(__file__).parents[1]
@@ -223,11 +227,11 @@ def get_host_profile(request):
 
     # Calculate total reservations made ON this host's posts
     total_reservations = Reservation.objects.filter(post__seller=host).count()
-
+    total_reviews = Comment.objects.filter(post__seller=host, type="seller").count()
     # Group Posts by City
     posts_by_city = {}
     active_posts = []
-    if host.type_of_user.upper() == "HOST" :
+    if host.type_of_user.upper() == "HOST":
         # Fetch hosts active posts
         active_posts = (
             Post.objects.filter(seller=host)
@@ -270,7 +274,7 @@ def get_host_profile(request):
         "date_of_birth": host.date_of_birth,
         "location": host_city,
         "rating": host.rating,
-        "num_reviews": host.num_review,
+        "num_reviews": total_reviews,
         "num_nooks": len(active_posts)
         if (host.type_of_user.upper() == "HOST")
         else -255,
