@@ -232,11 +232,13 @@ class Comment(models.Model):
         self._update_seller_rating()
         self._update_post_rating()
 
-        if is_new and self.type == "post":
-            self.post.increment_comments()
-            Account.objects.filter(pk=self.post.seller.pk).update(
-                num_review=F("num_review") + 1
-            )  # changer user with post.seller
+        if is_new:
+            if self.type == "post":
+                self.post.increment_comments()
+            elif self.type == "seller":
+                Account.objects.filter(pk=self.post.seller.pk).update(
+                    num_review=F("num_review") + 1
+                )  # changer user with post.seller
 
     def _update_seller_rating(self):
         seller = self.post.seller

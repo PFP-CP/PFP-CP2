@@ -492,11 +492,11 @@ def delete_comment(request, post_id: uuid.UUID, comment_id: uuid.UUID):
     avg = Comment.objects.filter(post__seller=seller).aggregate(avg=Avg("rating"))[
         "avg"
     ]
-    if avg is not None:
-        Account.objects.filter(pk=seller.pk).update(rating=round(avg, 2))
-    Account.objects.filter(pk=seller.pk).update(
-        num_review=F("num_review") - 1
-    )  # chnaged comment.user by seller
+    # if avg is not None:
+    #    Account.objects.filter(pk=seller.pk).update(rating=round(avg, 2))
+    # Account.objects.filter(pk=seller.pk).update(
+    #    num_review=F("num_review") - 1
+    # )  # chnaged comment.user by seller
     return 200, {"message": "Comment deleted."}
 
 
@@ -572,7 +572,7 @@ def delete_seller_rating(request, post_id: uuid.UUID):
     )["avg"]
 
     Account.objects.filter(pk=seller.pk).update(
-        rating=round(avg, 2) if avg is not None else 5.0
+        rating=round(avg, 2) if avg is not None else 5.0, num_review=F("num_review") - 1
     )
 
     return 200, {"message": "Seller rating deleted."}
