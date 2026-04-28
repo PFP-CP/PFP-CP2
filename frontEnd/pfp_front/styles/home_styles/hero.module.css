@@ -9,6 +9,7 @@
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
+    height: calc(100vh - 98px);
 }
 .hero::before {
     content: '';
