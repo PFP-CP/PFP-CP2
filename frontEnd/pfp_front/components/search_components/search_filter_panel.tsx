@@ -74,7 +74,7 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
         {/* Ratings Section */}
         <div className={styles.filterSection}>
           <div className={styles.sectionHeader}>
-            <span className={styles.sectionTitle}>Renter's rating</span>
+            <span className={styles.sectionTitle}>Host's rating</span>
           </div>
           <div className={styles.inputPair}>
             <input
@@ -168,7 +168,7 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
             <span className={styles.subLabel}>(select allowed guest types)</span>
           </div>
           <div className={styles.chipContainer}>
-            {(["Families", "Single", "Couple"] as const).map((cat) => (
+            {(["Family", "Single", "Couple"] as const).map((cat) => (
               <div
                 key={cat}
                 className={`${styles.chip} ${criteria.allowed_people?.[cat] ? styles.chipActive : ""}`}

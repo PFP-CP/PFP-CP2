@@ -171,6 +171,7 @@ export async function submitHouseInformation(data: CreatePostData) {
     allows_smoking: data.rules.includes('smoking'),
     allows_noise: data.rules.includes('noise')
   }
+  console.log(toSend);
 
   let token = (await cookies()).get('token')?.value;
 
@@ -212,7 +213,6 @@ export async function submitHouseInformation(data: CreatePostData) {
 
 export async function createPost(data: object, images: any) {
   let newPostId = await submitHouseInformation(data);
-  console.log(newPostId);
   if (newPostId.success) {
     const uploadPictures = await submitHouseImages(newPostId.post_id, images);
     if (uploadPictures) return true;

@@ -89,7 +89,7 @@ const SearchResultsTable: React.FC<SearchResultsTableProps> = ({ results }) => {
                         <th className={styles.th}>Photo</th>
                         <th className={styles.th}>Description</th>
                         <th className={styles.th}>Wilaya</th>
-                        <th className={styles.th}>Renter&apos;s name</th>
+                        <th className={styles.th}>Host&apos;s name</th>
                         <th className={styles.th}>Mobile</th>
                         <th className={styles.th}>Email</th>
                     </tr>

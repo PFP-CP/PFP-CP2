@@ -136,12 +136,12 @@ function image_navigation(
 ) {
   const { house, location, title } = post_data;
   const bedroomStr = house.num_bedroom !== null
-    ? `${house.num_bedroom} bedroom${house.num_bedroom !== 1 ? 's' : ''}`
+    ? `${house.num_bedroom} Bedroom${house.num_bedroom !== 1 ? 's' : ''}`
     : null;
   const bathroomStr = house.num_bathroom !== null
-    ? `${house.num_bathroom} bathroom${house.num_bathroom !== 1 ? 's' : ''}`
+    ? `${house.num_bathroom} Bathroom${house.num_bathroom !== 1 ? 's' : ''}`
     : null;
-  const roomStr = `${house.RoomNum} room${house.RoomNum !== 1 ? 's' : ''}`;
+  const roomStr = `${house.RoomNum} Bed${house.RoomNum !== 1 ? 's' : ''}`;
   const details = [bedroomStr, roomStr, bathroomStr].filter(Boolean).join(' · ');
 
   return (

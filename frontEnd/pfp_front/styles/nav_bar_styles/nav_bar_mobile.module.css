@@ -27,20 +27,19 @@
 }
 
 .upper_container .nav_search{
-  background-color: #D9D9D9;
+  background-color: #220E67;
   display: flex;
   border-radius: 23px;
-  padding-left: 1rem;
-  gap: 1rem;
   cursor:pointer;
   align-items: center;
-  color: #220E67;
+  color: white;
   font-family: "sansation-400", sans-serif;
   flex-basis: 118px;
   height: 26px;
   flex-grow: 1;
   max-width: 118px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  justify-content: center;
+  gap:.5rem;
 }
 
 .upper_container .nav_search h3{

@@ -1,3 +1,5 @@
+/* ── Desktop table ── */
+
 .table_wrapper {
     background: #f8f9fa;
     border-radius: 12px;
@@ -47,6 +49,7 @@
     position: relative;
     border-radius: 8px;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .table_image {
@@ -89,9 +92,166 @@
     color: #666;
 }
 
+/* ── Mobile cards ── */
+
+.cards_grid {
+    display: none;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 16px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.card_link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.card_top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+}
+
+.card_image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image_placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #7c5cdb22, #7c5cdb44);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.card_info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.card_title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card_meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+}
+
+.card_price {
+    color: #555;
+}
+
+.dot {
+    color: #ccc;
+}
+
+.card_rating {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+.card_wilaya {
+    font-size: 0.78rem;
+    color: #4a389d;
+    font-weight: 500;
+}
+
+.card_host {
+    border-top: 1px solid #f0f0f0;
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.host_row {
+    font-size: 0.78rem;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.host_label {
+    color: #aaa;
+    margin-right: 0.3rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.card_dates {
+    border-top: 1px solid #f0f0f0;
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: #333;
+}
+
+.date_item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+}
+
+.date_label {
+    font-size: 0.68rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.date_arrow {
+    color: #4a389d;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ── Responsive toggle ── */
+
 @media (max-width: 1024px) {
     .header_cell:nth-child(n+5),
     .table_cell:nth-child(n+5) {
         display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .table_wrapper {
+        display: none;
+    }
+
+    .cards_grid {
+        display: flex;
     }
 }

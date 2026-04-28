@@ -30,7 +30,7 @@ export async function getMyNooks() {
     id: nook.id,
     title: nook.title,
     primary_image: nook.primary_image || nook.image,
-    price: nook.price || nook.Price || 0,
+    price: nook.price_per_night || nook.price || nook.Price || 0,
     average_rating: nook.rating || nook.average_rating || 0,
     state: nook.wilaya || nook.state || '—',
     status: nook.status || 'available',

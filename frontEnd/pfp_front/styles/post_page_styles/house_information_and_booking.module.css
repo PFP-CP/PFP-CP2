@@ -128,7 +128,7 @@
 
 .rating_and_ratingButton_container .renter_rating .name_rating_container .rating_container{
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap:.3rem;
 }

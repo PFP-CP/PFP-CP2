@@ -59,7 +59,7 @@ function RateRenterButton({postId, initialRated, initialRating, onRated}: {postI
   }
   return(
     !isRating?
-      (!isRenterRated?<div onClick={()=> setIsRating(true)} className={style.rating_button}>Rate the renter</div>:
+      (!isRenterRated?<div onClick={()=> setIsRating(true)} className={style.rating_button}>Rate the host</div>:
         <div onClick={()=> setIsRating(true)} className={style.rated_button}>{value.toFixed(2)} {STAR_LOGO_SMALL}</div>):
     <div className={style.rating_slider_container}>
     {loading && <div className={style.loading_overlay}/>}
@@ -290,7 +290,7 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
                   <div className={style.profile_picture}><Image src={sectionData.profile_picture} width={55} height={55} alt='profile picture'/></div>
                   <div className={style.name_rating_container}>
                     <div className={style.name_container}>
-                      Renter : {sectionData.full_name}
+                      Host : {sectionData.full_name}
                     </div>
                     <div className={style.rating_container}>
                       {sectionData.rating}
