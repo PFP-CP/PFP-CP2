@@ -119,7 +119,8 @@ export async function createReservation(postId: string, arrivalDate: string, dep
     },
     body: JSON.stringify({ post_id: postId, arrival_date: arrivalDate, departure_date: departureDate }),
   });
-
+  const data = await response;
+  console.log(data);
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
     return { success: false, error: err?.detail ?? 'Reservation failed' };

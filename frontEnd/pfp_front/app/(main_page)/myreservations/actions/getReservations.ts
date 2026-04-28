@@ -11,7 +11,6 @@ export async function getReservations() {
     },
     cache: 'no-store',
   })
-
   if (!response.ok) {
     if (response.status === 401) throw new Error('401')
     throw new Error('Failed to fetch reservations')

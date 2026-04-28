@@ -276,7 +276,7 @@ def get_host_profile(request):
         else -255,
         "num_reservations": total_reservations,
         "join_date": host.date_joined.date(),
-        "profile_picture": Pic.get_picture_url(host, "profile_picture"),
+        "profile_picture": Pic.get_picture_url(host, "profile_picture") ,
         "posts_by_city": posts_by_city
         if (host.type_of_user.upper() == "HOST")
         else {"Become an HOST to be able to Post": []},

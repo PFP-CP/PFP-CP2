@@ -35,7 +35,7 @@ search_router = Router()
 
 #main page
 @router.get("/mainpage", response=List[PostListOut])
-def get_house_list(request, filter_by: str = "newest",size:int = 5):
+def get_house_list(request, filter_by: str = "newest",size:int = 20):
     posts = Post.objects.select_related('house').prefetch_related(
     'house__location',
     'house__pictures',
@@ -185,8 +185,7 @@ def search(request, Criteria: SearchCriteria):
     )
 
     results = cache.get(cache_key)
-
-    if results is None:
+    if results == None:
         results_query = Post.objects.select_related(
             "seller__contact",
             "seller",
@@ -194,9 +193,7 @@ def search(request, Criteria: SearchCriteria):
             "house__pictures",
             "house__location",
             "house__features__features",
-            "comments",
         )
-
         # Apply all filters
         results_query = post_rating_query(results_query, Criteria.post_rating)
         results_query = renter_rating_query(results_query, Criteria.renter_rating)
@@ -208,12 +205,12 @@ def search(request, Criteria: SearchCriteria):
         results_query = allowed_people_query(results_query, Criteria.allowed_people)
         results_query = features_query(results_query, Criteria.features)
         results_query = type_query(results_query , Criteria.house_type)
+    
         # Serialise to plain dicts for caching
         results = [SearchResult.from_orm(post).dict() for post in results_query]
-
-        cache.set(cache_key, results, timeout=300)  # 5-minute cache
-
+    cache.set(cache_key, results, timeout=300)  # 5-minute cache
     results = sorting(results, Criteria.order_by)
+
     return results
 
 
@@ -222,19 +219,12 @@ def search(request, Criteria: SearchCriteria):
 def list_posts(
     request,
     # Filters
-    status: str = None,
-    country: str = None,
+    status: str = "active",
     city: str = None,
-    min_price: float = None,
-    max_price: float = None,
-    min_surface: float = None,
-    type_of_people: str = None,
-    min_rooms: int = None,
     # Sorting
     sort_by: str = "newest",  # newest
     # Pagination
-    page: int = 1,
-    per_page: int = 20,
+    limit: int = 20,
 ):
     """
     Main page
@@ -245,40 +235,13 @@ def list_posts(
         Prefetch("comments", queryset=Comment.objects.order_by("-created_at")),
     )
 
-    # ── Filters
-    if country:
-        qs = qs.filter(house__location__Country__icontains=country)
     if status:
         qs = qs.filter(status=status)
     if city:
         qs = qs.filter(house__location__State__icontains=city)
-    if min_price is not None:
-        qs = qs.filter(house__Price__gte=min_price)
-    if max_price is not None:
-        qs = qs.filter(house__Price__lte=max_price)
-    if min_surface is not None:
-        qs = qs.filter(house__Surface__gte=min_surface)
-    if type_of_people:
-        qs = qs.filter(
-            Q(house__Types_of_Renters=type_of_people)
-            | Q(house__Types_of_Renters__isnull=True)
-        )
-    if min_rooms is not None:
-        qs = qs.filter(house__RoomNum__gte=min_rooms)
-
-    # ── Sorting
-    sort_map = {
-        "newest": "-created_at",
-        "oldest": "created_at",
-        "price_asc": "house__Price",
-        "price_desc": "-house__Price",
-        "popular": "-views_count",
-    }
-    qs = qs.order_by(sort_map.get(sort_by, "-created_at"))
-
-    # ── Pagination
-    offset = (page - 1) * per_page
-    qs = qs[offset : offset + per_page]
+    qs = sorting(qs , sort_by)
+    
+    qs = qs[:limit]
 
     return qs
 
@@ -486,7 +449,7 @@ def delete_comment(request, post_id: uuid.UUID, comment_id: uuid.UUID):
     tags=["Reviews - Seller"],
 )
 def rate_seller(request, post_id: uuid.UUID, payload: SellerRatingIn):
-    """Guest rates the seller — rating only, no comment."""
+    """Guest rates the seller rating only, no comment."""
     post = get_object_or_404(Post, pk=post_id)
     seller = post.seller
 
