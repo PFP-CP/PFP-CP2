@@ -19,7 +19,7 @@ class AccountSchema(ModelSchema):
 class AccountSignin(ModelSchema):
     gender: str
     state: str
-    type_of_user: str = "GUEST"
+    type_of_user: str = "HOST"
     phone_number: str
 
     class Meta:

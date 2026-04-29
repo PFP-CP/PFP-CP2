@@ -31,6 +31,7 @@ def profile_create( saved_posts):
     for saved in saved_posts:
             house = saved.post.house
             weight = saved.post.rating if saved.post.rating else 1
+            weight *= saved.post.saves_count
             house_type = saved.post.title.split(" ",1)[0]
             # location
             profile['wilaya'][house.location.County] = profile['wilaya'].get(house.location.County, 0) + weight
