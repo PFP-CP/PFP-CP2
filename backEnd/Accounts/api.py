@@ -8,10 +8,11 @@ from django.core.cache import cache
 from django.core.mail import send_mail
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from ninja import Router
+from ninja import File, Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.tokens import RefreshToken
+from ninja.files import UploadedFile
 
 import utilitymethods.Pictures as Pic
 from Houses.models import Pictures
@@ -349,7 +350,7 @@ def change_password(request, passwords: ChangePassword):
 
     return 200, {"Success": "Password changed"}
 
-@router.patch("/changePicture" , auth=JWTAuth())
+@router.get("/changePicture" , auth=JWTAuth())
 def change_pfp(request ,file: UploadedFile = File(...)):
     user = request.user
     if not Pic.picture_exists(user , "profile_picture"):
