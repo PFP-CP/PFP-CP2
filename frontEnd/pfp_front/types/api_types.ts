@@ -109,7 +109,7 @@ export interface Property {
         couple: boolean;
     };
     ownerId?: number;
-    status: "reserved" | "available";
+    status: "reserved" | "available" | "reserved-today";
     tenant?: {
         name: string;
         mobile: string;

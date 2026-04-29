@@ -65,7 +65,7 @@ export default function NookRow({ nook, onEdit, onDelete, onRowClick }: NookRowP
 
             {/* الحالة */}
             <td className={styles.table_cell}>
-                <StatusBadge status={(nook.status as "reserved" | "available") || "available"} />
+                <StatusBadge status={(nook.status as "reserved" | "available" | "reserved-today") || "available"} />
             </td>
 
             {/* اسم المستأجر */}

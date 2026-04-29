@@ -58,7 +58,7 @@ function MobileCard({ nook, onEdit, onDelete }: { nook: Property; onEdit: (id: s
                     </div>
 
                     <div className={styles.badge_col}>
-                        <StatusBadge status={(nook.status as "reserved" | "available") || "available"} />
+                        <StatusBadge status={(nook.status as "reserved" | "available" | "reserved-today") || "available"} />
                     </div>
                 </div>
 

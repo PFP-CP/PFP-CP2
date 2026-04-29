@@ -37,5 +37,6 @@ export async function getRecommendedPosts(): Promise<Property[]> {
 export async function getPostsByWilaya(code: string, limit = 10): Promise<Property[]> {
   // sort_by=none bypasses a backend sorting bug (sorting() expects dicts but gets model instances)
   const data = await authFetch(`/api/Posts/?city=${code}&limit=${limit}&sort_by=none&status=active`);
+  console.log(await data);
   return data.map(mapPost);
 }

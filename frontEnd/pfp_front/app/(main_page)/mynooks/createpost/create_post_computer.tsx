@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { wilayas } from '@/data/auth_data/data';
 import { imageItem } from '@/types/types';
-import { createPost, getNookDetail, updateNook, deleteNookPicture } from './actions/createpost';
+import { submitHouseInformation, submitHouseUpdate, getNookDetail, deleteNookPicture } from './actions/createpost';
 import { useTransition } from 'react';
-import { getCompressedNookImages } from '@/lib/functions';
+import { getCompressedNookImages, uploadImagesFromClient } from '@/lib/functions';
 import { useMediaQuery } from '@mui/material';
 import Create_post_mobile_nav from '@/components/create_post_page_components/create_post_page_mobile_nav';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -144,11 +144,19 @@ export default function CreatePost() {
     setImageError(false);
     startTransition(async () => {
       const compressedImages = await getCompressedNookImages(images);
-      const res = isEditMode
-        ? await updateNook(editId!, data, compressedImages)
-        : await createPost(data, compressedImages);
-      if (res) router.push('/mynooks');
-    })
+      if (isEditMode) {
+        const res = await submitHouseUpdate(editId!, data);
+        if (!res.success) return;
+        if (compressedImages.length > 0) {
+          await uploadImagesFromClient(res.post_id!, compressedImages);
+        }
+      } else {
+        const res = await submitHouseInformation(data);
+        if (!res.success) return;
+        await uploadImagesFromClient(String(res.post_id), compressedImages);
+      }
+      router.push('/mynooks');
+    });
   }
   const screenWidth = useMediaQuery('(max-width:850px)')
 

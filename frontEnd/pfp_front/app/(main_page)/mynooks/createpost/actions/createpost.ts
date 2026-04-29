@@ -19,6 +19,7 @@ export async function getNookDetail(postId: string) {
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     },
   });
+  console.log(await res);
   if (!res.ok) return null;
   return await res.json();
 }
@@ -76,7 +77,6 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
 }
 
 export async function updateNook(postId: string, data: object, images: Blob[]) {
-  console.log(data);
   const updateRes = await submitHouseUpdate(postId, data as CreatePostData);
   if (!updateRes.success) return false;
   if (images && images.length > 0) {

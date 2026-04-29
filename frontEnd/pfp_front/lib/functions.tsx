@@ -1,5 +1,22 @@
 import { imageItem } from "@/types/types";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+
+export async function uploadImagesFromClient(postId: string, images: Blob[]): Promise<void> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  await Promise.all(
+    images.map((img, i) => {
+      const formData = new FormData();
+      formData.append('file', img, `image_${i}.webp`);
+      return fetch(`${API_BASE}/api/Mynook/${postId}/pictures`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+    })
+  );
+}
+
 export function compressImage(file:File, maxWidth = 1200, quality = 0.8){
   return new Promise((resolve) =>{
     const img = new Image();
