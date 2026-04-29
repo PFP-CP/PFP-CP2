@@ -48,6 +48,13 @@ for f in features:
 
 router = Router(tags=["My Nooks"])
 
+def wilaya_number(number : str):
+        # json file that has all of algerias wilayas that gets parced to get the name from code
+    main_dir = Path(__file__).parents[1]
+    wilaya_dir = main_dir / "wilayas/wilayas.json"
+    with open(wilaya_dir, "r") as file_json:
+        wilayas = json.load(file_json)
+    return wilayas[number]
 
 # ── 1. PUBLIC PROFILE view
 @router.get(
@@ -140,6 +147,7 @@ def post_new_nook(
     request,
     payload: PostNookIn,
 ):
+    wilaya = wilaya_number(payload.state)
     # 1. Create the House
     payload.validate_rules()
     house = House.objects.create(
@@ -165,7 +173,7 @@ def post_new_nook(
     Location.objects.create(
         house=house,
         County=payload.county,
-        State=payload.state,
+        State=wilaya,
         Country=payload.country,
         Longitude=payload.longitude,
         Latitude=payload.latitude,
@@ -179,7 +187,7 @@ def post_new_nook(
     post = Post.objects.create(
         house=house,
         seller=request.user,
-        title=f"{payload.house_type} in {payload.state}",
+        title=f"{payload.house_type} in {wilaya}",
         status=PostStatus.Available,
     )
 

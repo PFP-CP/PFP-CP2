@@ -33,6 +33,13 @@ from .schemas import (
 router = Router()
 search_router = Router()
 
+def wilaya_number(number : str):
+        # json file that has all of algerias wilayas that gets parced to get the name from code
+    main_dir = Path(__file__).parents[1]
+    wilaya_dir = main_dir / "wilayas/wilayas.json"
+    with open(wilaya_dir, "r") as file_json:
+        wilayas = json.load(file_json)
+    return wilayas[number]
 
 # main page
 @router.get("/mainpage", response=List[PostListOut])
@@ -244,7 +251,7 @@ def list_posts(
     if status:
         qs = qs.filter(status=status)
     if city:
-        qs = qs.filter(house__location__State__icontains=city)
+        qs = qs.filter(house__location__State__icontains=wilaya_number(city))
     
     qs = sorting(qs , sort_by)
     

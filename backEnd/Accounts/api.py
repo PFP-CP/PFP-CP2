@@ -62,7 +62,7 @@ def Signin(request, Acc: AccountSignin):
     location.objects.create(
         Account=new_acc,
         County=wilayas[Acc.state],
-        State=Acc.state,
+        State=wilayas[Acc.state],
         Country="Algeria",
     )
     # CREATE contact object
@@ -348,3 +348,10 @@ def change_password(request, passwords: ChangePassword):
     user.save()
 
     return 200, {"Success": "Password changed"}
+
+@router.patch("/changePicture" , auth=JWTAuth())
+def change_pfp(request ,file: UploadedFile = File(...)):
+    user = request.user
+    if not Pic.picture_exists(user , "profile_picture"):
+        return 200 , {"Success" : Pic.upload_picture(user ,"profile_picture" , file)}
+    return 200 , {"Success" : Pic.replace_picture(user , "profile_picture" , file)}
