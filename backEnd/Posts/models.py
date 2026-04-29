@@ -57,6 +57,18 @@ class Post(models.Model):
         location = self.house.location.first()
         return location.State if location else None
 
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+        if is_new:
+            from django.db.models import F
+
+            from Accounts.models import Account
+
+            Account.objects.filter(pk=self.seller.pk).update(
+                num_posts=F("num_posts") + 1
+            )
+
     @property
     def primary_image(self):
         img = self.house.pictures.first()

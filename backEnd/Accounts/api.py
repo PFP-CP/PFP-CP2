@@ -240,7 +240,7 @@ def get_host_profile(request):
 
         for post in active_posts:
             # get city
-            post_loc = post.house.location.first()
+            post_loc = getattr(post.house, "location", None)
             city_name = post_loc.State if post_loc and post_loc.State else "whatever"
 
             # first image

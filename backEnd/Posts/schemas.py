@@ -1,15 +1,16 @@
-from multiprocessing import context
-from multiprocessing.util import info
 import uuid
 from datetime import datetime
 from decimal import Decimal
+from multiprocessing import context
+from multiprocessing.util import info
 from typing import List, Optional
 
 from ninja import Schema
 from pydantic import field_validator
+
 from Accounts.models import Account
 from Houses.models import Pictures
-from Posts.models import Comment
+from Posts.models import Comment, Post
 
 
 class TypeOfPeople(Schema):
@@ -33,7 +34,7 @@ class SearchCriteria(Schema):
 
 
 class SearchResult(Schema):
-    id : uuid.UUID
+    id: uuid.UUID
     renter_name: str
     wilaya: Optional[str] = None
     price: int
@@ -46,15 +47,19 @@ class SearchResult(Schema):
 
     class Config:
         from_attributes = True
-    
+
     @staticmethod
     def resolve_id(obj):
         return obj.id
-    
+
     @staticmethod
     def resolve_renter_name(obj):
         # Adjust to your Account field — e.g. full_name, username, etc.
         return obj.seller.full_name
+
+    @staticmethod
+    def resolve_nooks_count(obj):
+        return Post.objects.filter(seller=obj).count()
 
     @staticmethod
     def resolve_wilaya(obj):
@@ -93,6 +98,7 @@ class SearchResult(Schema):
         if first_pic:
             return first_pic.picture.url
         return Pictures.blank_house_image
+
 
 class SellerRatingIn(Schema):
     rating: Decimal
@@ -166,6 +172,7 @@ class HouseImageMiniOut(Schema):
             return obj.picture.url  # when image exists return its url
         return None
 
+
 class CommenterOut(Schema):
     id: int
     full_name: str
@@ -176,25 +183,29 @@ class CommenterOut(Schema):
         if obj.profile_picture:
             return obj.profile_picture.url
         return Account.default_profile_picture
+
+
 # Comment schemas
 class CommentOut(Schema):
     id: uuid.UUID
     user_id: int
     rating: Decimal
     comment: str
-    commenter:CommenterOut
+    commenter: CommenterOut
     created_at: datetime
     modified_at: datetime
+
     @staticmethod
     def resolve_commenter(obj):
         return obj.user
+
     @staticmethod
     def resolve_user_id(obj):
         return obj.user.id
 
 
 class CommentIn(Schema):
-    comment: str=""
+    comment: str = ""
     rating: Decimal
 
     @field_validator("rating")
@@ -215,12 +226,15 @@ class CommentIn(Schema):
 class CommentUpdate(Schema):
     comment: Optional[str] = None
     rating: Optional[Decimal] = None
+
     @field_validator("rating")
-    @classmethod        
+    @classmethod
     def valid_rating(cls, v):
         if v is not None and not (0 <= v <= 5):
             raise ValueError("Rating must be between 0 and 5.")
         return v
+
+
 # schemas for reservations in the post detail page
 class PostReservationOut(Schema):
     id: int
@@ -321,20 +335,32 @@ class PostOut(Schema):
         if locs and hasattr(locs, "first"):
             return locs.first()
         return locs
+
     @staticmethod
     def resolve_user_rating_post(obj, context):
-     request = context["request"]
-     user = request.user
-     if not user.is_authenticated:
+        request = context["request"]
+        user = request.user
+        if not user.is_authenticated:
             return None
-     return Comment.objects.filter(post=obj, user=user,type="post").values_list("rating", flat=True).first()
+        return (
+            Comment.objects.filter(post=obj, user=user, type="post")
+            .values_list("rating", flat=True)
+            .first()
+        )
 
     @staticmethod
     def resolve_user_rating_seller(obj, context):
-       request = context["request"]
-       if not request.user.is_authenticated:
-        return None
-       return Comment.objects.filter(user=request.user, post__seller=obj.seller, type="seller").values_list("rating", flat=True).first()
+        request = context["request"]
+        if not request.user.is_authenticated:
+            return None
+        return (
+            Comment.objects.filter(
+                user=request.user, post__seller=obj.seller, type="seller"
+            )
+            .values_list("rating", flat=True)
+            .first()
+        )
+
     @staticmethod
     def resolve_house_pictures(obj):
         pics = obj.house.pictures.all()
@@ -429,12 +455,13 @@ class SavedPostOut(Schema):
     title: str
     saved_at: datetime
     price: Decimal
-    State: Optional[str]= None
-    primary_image: Optional[str]= None
- 
+    State: Optional[str] = None
+    primary_image: Optional[str] = None
+
     @staticmethod
     def resolve_post_id(obj):
         return obj.post.id
+
 
 # Utility
 
