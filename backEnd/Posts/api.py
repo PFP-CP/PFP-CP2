@@ -228,13 +228,11 @@ def search(request, Criteria: SearchCriteria):
 
 
 # List Post with query parameter
-@router.get("/", response=List[PostListOut], auth=JWTAuth(), tags=["List post"])
+@router.get("/", response=List[PostListOut], tags=["List post"])
 def list_posts(
     request,
     # Filters
-    status: str = None,
     city: str = None,
-    sort_by: Optional[str] = "newest",  # newest
     limit: int = 20,
 ):
     """
@@ -243,16 +241,11 @@ def list_posts(
     """
     qs = Post.objects.select_related("house").prefetch_related(
         "house__pictures",
-        Prefetch("comments", queryset=Comment.objects.order_by("-created_at")),
-    )
+    ).order_by("updated_at")
 
     # ── Filters
-    if status:
-        qs = qs.filter(status=status)
     if city:
         qs = qs.filter(house__location__State=wilaya_number(city))
-    
-    qs = sorting(qs , sort_by)
     
     qs = qs[:limit]
 
