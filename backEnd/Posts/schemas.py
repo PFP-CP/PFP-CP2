@@ -398,10 +398,7 @@ class PostListOut(Schema):
     @staticmethod
     def resolve_State(obj):
         loc = getattr(obj.house, "location", None)
-        if loc and hasattr(loc, "first"):
-            loc_obj = loc.first()
-            return loc_obj.State if loc_obj else None
-        return None
+        return loc.State if loc else None
 
     @staticmethod
     def resolve_Price(obj):
@@ -409,7 +406,7 @@ class PostListOut(Schema):
 
     @staticmethod
     def resolve_Country(obj):
-        loc = obj.house.location
+        loc = getattr(obj.house, "location", None)
         return loc.Country if loc else None
 
     @staticmethod
@@ -427,10 +424,7 @@ class PostListOut(Schema):
     @staticmethod
     def resolve_County(obj):
         loc = getattr(obj.house, "location", None)
-        if loc and hasattr(loc, "first"):
-            loc_obj = loc.first()
-            return loc_obj.County if loc_obj else None
-        return None
+        return loc.County if loc else None
 
     @staticmethod
     def resolve_average_rating(obj):

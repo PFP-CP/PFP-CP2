@@ -44,8 +44,7 @@ def wilaya_number(number : str):
 # main page
 @router.get("/mainpage", response=List[PostListOut])
 def get_house_list(request, filter_by: str = "newest",size:int = 20):
-    posts = Post.objects.select_related('house').prefetch_related(
-    'house__location',
+    posts = Post.objects.select_related('house', 'house__location').prefetch_related(
     'house__pictures',
 )
     if filter_by == "rating":
