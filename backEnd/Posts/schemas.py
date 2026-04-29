@@ -391,7 +391,7 @@ class PostListOut(Schema):
     RoomNum: int
     Types_of_Renters: Optional[str]
     Country: Optional[str]
-    County: Optional[str]
+    County: Optional[str] 
     State: Optional[str]
     primary_image: Optional[str] = None  # URL of primary image
 
@@ -409,7 +409,7 @@ class PostListOut(Schema):
 
     @staticmethod
     def resolve_Country(obj):
-        loc = obj.house.location.first()
+        loc = obj.house.location
         return loc.Country if loc else None
 
     @staticmethod

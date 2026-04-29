@@ -254,7 +254,7 @@ def update_mynook(request, post_id: str, payload: UpdateNookIn):
         "Latitude": "latitude",
     }
     update_loction_fields = []
-    location = house.location.first()
+    location = house.location
     for field, payload_key in location_payload_maps.items():
         if payload_key in data:
             setattr(location, field, data[payload_key])
