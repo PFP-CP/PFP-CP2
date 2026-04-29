@@ -234,8 +234,8 @@ def get_host_profile(request):
         # Fetch hosts active posts
         active_posts = (
             Post.objects.filter(seller=host)
-            .select_related("house")
-            .prefetch_related("house__location", "house__pictures")
+            .select_related("house", "house__location")
+            .prefetch_related("house__pictures")
         )
 
         for post in active_posts:
@@ -274,9 +274,7 @@ def get_host_profile(request):
         "location": host_city,
         "rating": host.rating,
         "num_reviews": host.num_review,
-        "num_nooks": len(active_posts)
-        if (host.type_of_user.upper() == "HOST")
-        else -255,
+        "num_nooks": len(active_posts),
         "num_reservations": total_reservations,
         "join_date": host.date_joined.date(),
         "profile_picture": Pic.get_picture_url(host, "profile_picture"),

@@ -1,22 +1,26 @@
 from typing import List
+
 from django.core.files.storage import default_storage
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from ninja import File, Router
+from ninja.errors import HttpError
 from ninja.files import UploadedFile
 from ninja_jwt.authentication import JWTAuth
+
 from Accounts.models import Account
 from Houses.models import FeatureList, Features, House, Location, Pictures, houseRules
 from Posts.models import Post, PostStatus
-from ninja.errors import HttpError
+
 from .schemas import (
     NookDetailOut,
     NookPrivateOut,
-    PictureUploadOut,PictureDeleted,
+    PictureDeleted,
+    PictureUploadOut,
     PostNookIn,
     SellerPublicProfileOut,
-    UpdateNookIn,
     TypeOfPeople,
+    UpdateNookIn,
 )
 
 # add feature for the icons shown in create and update post
@@ -112,28 +116,30 @@ def _apply_features(house: House, feature_ids: List[int]):
     else:
         features_obj.features.clear()
 
-def Type_of_renter_helper(Allowed : TypeOfPeople):
+
+def Type_of_renter_helper(Allowed: TypeOfPeople):
     if Allowed.Families and Allowed.Couple and Allowed.Single:
         return "AL"
     if not Allowed.Couple and not Allowed.Single:
         return "FA"
-    if not Allowed.Couple :
+    if not Allowed.Couple:
         return "NC"
     if not Allowed.Single:
         return "NM"
-    
+
 
 # create a nook (house + post) — pictures uploaded separately
 @router.post(
     "/",
-    response={201: NookDetailOut},auth=JWTAuth(),
+    response={201: NookDetailOut},
+    auth=JWTAuth(),
     summary="Create a new nook post new nook",
 )
 @transaction.atomic
 def post_new_nook(
     request,
     payload: PostNookIn,
-): 
+):
     # 1. Create the House
     payload.validate_rules()
     house = House.objects.create(
@@ -177,6 +183,10 @@ def post_new_nook(
         status=PostStatus.Available,
     )
 
+    if request.user.type_of_user.upper() != "HOST":
+        request.user.type_of_user = "Host"
+        request.user.save(update_fields=["type_of_user"])
+
     return 201, post
 
 
@@ -194,17 +204,32 @@ def delete_nook(request, post_id: str):
     post.delete()  # Post deleted first (FK constraint)
     return 204, None
 
-#update a nook (house + post) — pictures updated separately
+
+# update a nook (house + post) — pictures updated separately
 @router.patch(
-    "/{post_id}",response=NookDetailOut,auth=JWTAuth(),summary="Update a nook (house and post details, features) ")
-def update_mynook(request,post_id: str,payload:UpdateNookIn):
+    "/{post_id}",
+    response=NookDetailOut,
+    auth=JWTAuth(),
+    summary="Update a nook (house and post details, features) ",
+)
+def update_mynook(request, post_id: str, payload: UpdateNookIn):
     post = _get_seller_post(post_id, request.user)
     house = post.house
-    payload.validate_rules()#validate num_beds and max_tenatns 
+    payload.validate_rules()  # validate num_beds and max_tenatns
     data = payload.dict(exclude_unset=True)
     # -- update house fields --
-    house_payload_maps = {'Price':'price', 'RoomNum':'room_num', 'num_bedroom':'num_bedroom', 'num_bathroom':'num_bathroom', 'num_beds':'num_beds', 'max_tenants':'max_tenants', 'Surface':'surface', 'Types_of_Renters':'types_of_renters', 'Description':'description'}
-    house_update_fields=[]  
+    house_payload_maps = {
+        "Price": "price",
+        "RoomNum": "room_num",
+        "num_bedroom": "num_bedroom",
+        "num_bathroom": "num_bathroom",
+        "num_beds": "num_beds",
+        "max_tenants": "max_tenants",
+        "Surface": "surface",
+        "Types_of_Renters": "types_of_renters",
+        "Description": "description",
+    }
+    house_update_fields = []
     for field, payload_key in house_payload_maps.items():
         if payload_key in data:
             setattr(house, field, data[payload_key])
@@ -212,27 +237,32 @@ def update_mynook(request,post_id: str,payload:UpdateNookIn):
     if house_update_fields:
         house.save(update_fields=house_update_fields)
 
-    # -- Location update 
-    location_payload_maps = {'County':'county', 'State':'state', 'Country':'country', 'Longitude':'longitude', 'Latitude':'latitude'}
+    # -- Location update
+    location_payload_maps = {
+        "County": "county",
+        "State": "state",
+        "Country": "country",
+        "Longitude": "longitude",
+        "Latitude": "latitude",
+    }
     update_loction_fields = []
-    location=house.location.first()
+    location = house.location.first()
     for field, payload_key in location_payload_maps.items():
-
         if payload_key in data:
             setattr(location, field, data[payload_key])
-            update_loction_fields.append(field)     
+            update_loction_fields.append(field)
     if update_loction_fields:
         location.save(update_fields=list(location_payload_maps.keys()))
-     # -- Post-level fields -- update 
+    # -- Post-level fields -- update
 
-    if 'apartment_type' in data:
-        State=data['state'] if 'state' in data else location.State
+    if "apartment_type" in data:
+        State = data["state"] if "state" in data else location.State
         post.title = f"{data['apartment_type']} in {State}"
-        post.save(update_fields=['title'])
-    #update  rules if included in payload
-    
-    rules=['allows_animals','allows_smoking','allows_noise']
-    house_rules, created =houseRules.objects.get_or_create(house=house)
+        post.save(update_fields=["title"])
+    # update  rules if included in payload
+
+    rules = ["allows_animals", "allows_smoking", "allows_noise"]
+    house_rules, created = houseRules.objects.get_or_create(house=house)
 
     house_updated_fields = []
     for rule in rules:
@@ -242,28 +272,30 @@ def update_mynook(request,post_id: str,payload:UpdateNookIn):
     if house_updated_fields:
         house_rules.save(update_fields=house_updated_fields)
     # -- Features --
-    if 'feature_ids' in data and data['feature_ids'] is not None:
-        _apply_features(house, data['feature_ids'])
+    if "feature_ids" in data and data["feature_ids"] is not None:
+        _apply_features(house, data["feature_ids"])
 
     post.refresh_from_db()
     return post
-
 
 
 # 6.  POST /my-nooks/{post_id}/pictures/
 #     Upload a picture for the nook (max 10)
 
 max_pictures = 10
+
+
 @router.post(
-    '/{post_id}/pictures',
-    response={201: PictureUploadOut},auth=JWTAuth(),
-    summary='Upload a picture to a nook ',
+    "/{post_id}/pictures",
+    response={201: PictureUploadOut},
+    auth=JWTAuth(),
+    summary="Upload a picture to a nook ",
 )
 def upload_picture(request, post_id: str, file: UploadedFile = File(...)):
     post = _get_seller_post(post_id, request.user)
     house = post.house
     # limit to 10 pictures
-    if house.pictures.count() >=max_pictures:
+    if house.pictures.count() >= max_pictures:
         raise HttpError(400, "Maximum 10 pictures allowed per nook.")
     picture = Pictures.objects.create(house=house, picture=file)
     return 201, picture
@@ -272,13 +304,15 @@ def upload_picture(request, post_id: str, file: UploadedFile = File(...)):
 # 7.  DELETE /my-nooks/{post_id}/pictures/{picture_id}/
 #     Delete a specific picture
 
+
 @router.delete(
-    '/{post_id}/pictures/{picture_id}',auth=JWTAuth(),
-    response={200:PictureDeleted},
-    summary='Delete a picture from a nook',
+    "/{post_id}/pictures/{picture_id}",
+    auth=JWTAuth(),
+    response={200: PictureDeleted},
+    summary="Delete a picture from a nook",
 )
 def delete_picture(request, post_id: str, picture_id: int):
     post = _get_seller_post(post_id, request.user)
     picture = get_object_or_404(Pictures, id=picture_id, house=post.house)
     picture.delete()
-    return 200,{'message':'picture deleted successfuly.'}
+    return 200, {"message": "picture deleted successfuly."}
