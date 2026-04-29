@@ -43,7 +43,7 @@ class NookCardOut(Schema):
     price_per_night: float
     rating: float
     wilaya: Optional[str] = None  # used by frontend to group cards
-    County: Optional[str] = None
+    county: Optional[str] = None
 
     @staticmethod
     def resolve_price_per_night(obj):
@@ -51,12 +51,12 @@ class NookCardOut(Schema):
 
     @staticmethod
     def resolve_wilaya(obj):
-        loc = obj.house.location.first()
+        loc = obj.house.location
         return loc.State if loc else None
 
     @staticmethod
-    def resolve_commune(obj):
-        loc = obj.house.location.first()
+    def resolve_county(obj):
+        loc = obj.house.location
         return loc.County if loc else None  # adjust to your Location field name
 
 

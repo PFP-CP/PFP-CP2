@@ -234,7 +234,7 @@ def list_posts(
     # Filters
     status: str = None,
     city: str = None,
-    sort_by: str = "newest",  # newest
+    sort_by: Optional[str] = "newest",  # newest
     limit: int = 20,
 ):
     """
@@ -250,7 +250,7 @@ def list_posts(
     if status:
         qs = qs.filter(status=status)
     if city:
-        qs = qs.filter(house__location__State__icontains=wilaya_number(city))
+        qs = qs.filter(house__location__State=wilaya_number(city))
     
     qs = sorting(qs , sort_by)
     

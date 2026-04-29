@@ -50,13 +50,16 @@ for f in features:
 
 router = Router(tags=["My Nooks"])
 
-def wilaya_number(number : str):
-        # json file that has all of algerias wilayas that gets parced to get the name from code
+def wilaya_number(number: str):
     main_dir = Path(__file__).parents[1]
     wilaya_dir = main_dir / "wilayas/wilayas.json"
-    with open(wilaya_dir, "r") as file_json:
+    
+    with open(wilaya_dir, "r", encoding="utf-8") as file_json:  
         wilayas = json.load(file_json)
-    return wilayas[number]
+    
+    number = str(number).zfill(2)
+    
+    return wilayas.get(number, None)
 
 # ── 1. PUBLIC PROFILE view
 @router.get(
@@ -70,8 +73,8 @@ def get_seller_public_profile(request, seller_id: int):
 
     posts = (
         Post.objects.filter(seller=seller)
-        .select_related("house")
-        .prefetch_related("house__location", "house__pictures")
+        .select_related("house","house__location")
+        .prefetch_related( "house__pictures")
         .order_by(
             "house__location__State", "-rating"
         )  # grouped by wilaya on frontend, best rated first
@@ -193,9 +196,6 @@ def post_new_nook(
         status=PostStatus.Available,
     )
 
-    if request.user.type_of_user.upper() != "HOST":
-        request.user.type_of_user = "Host"
-        request.user.save(update_fields=["type_of_user"])
 
     return 201, post
 
@@ -255,14 +255,14 @@ def update_mynook(request, post_id: str, payload: UpdateNookIn):
         "Longitude": "longitude",
         "Latitude": "latitude",
     }
-    update_loction_fields = []
     location = house.location
     for field, payload_key in location_payload_maps.items():
         if payload_key in data:
+            if field == "State":
+                setattr(location, field, wilaya_number(data[payload_key]))
+                continue 
             setattr(location, field, data[payload_key])
-            update_loction_fields.append(field)
-    if update_loction_fields:
-        location.save(update_fields=list(location_payload_maps.keys()))
+            location.save()
     # -- Post-level fields -- update
 
     if "apartment_type" in data:
