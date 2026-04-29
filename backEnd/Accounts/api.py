@@ -230,58 +230,52 @@ def get_host_profile(request):
     total_reservations = Reservation.objects.filter(post__seller=host).count()
     # Group Posts by City
     posts_by_city = {}
-    active_posts = []
-    if host.type_of_user.upper() == "HOST":
-        # Fetch hosts active posts
-        active_posts = (
-            Post.objects.filter(seller=host)
-            .select_related("house", "house__location")
-            .prefetch_related("house__pictures")
+    actve_posts = []
+    # Fetch hosts active posts
+    active_posts = (
+        Post.objects.filter(seller=host)
+        .select_related("house", "house__location")
+        .prefetch_related("house__pictures")
+    )
+    for post in active_posts:
+        # get city
+        post_loc = getattr(post.house, "location", None)
+        city_name = post_loc.State if post_loc and post_loc.State else "whatever"
+        # first image
+        first_pic = post.house.pictures.first()
+        url = (
+            Pic.get_picture_url(first_pic, "picture")
+            if first_pic
+            else Pictures.blank_house_image
         )
-
-        for post in active_posts:
-            # get city
-            post_loc = getattr(post.house, "location", None)
-            city_name = post_loc.State if post_loc and post_loc.State else "whatever"
-
-            # first image
-            first_pic = post.house.pictures.first()
-            url = (
-                Pic.get_picture_url(first_pic, "picture")
-                if first_pic
-                else Pictures.blank_house_image
-            )
-            # Build the post dictionary
-            post_data = {
-                "id": post.id,
-                "title": post.title,
-                "price": post.house.Price,
-                "rating": post.rating,
-                "primary_image": url,
-            }
-
-            # Add to the dictionary under the correct city
-            if city_name not in posts_by_city:
-                posts_by_city[city_name] = []
-            posts_by_city[city_name].append(post_data)
-    # format output
+        # Build the post dictionary
+        post_data = {
+            "id": post.id,
+            "title": post.title,
+            "price": post.house.Price,
+            "rating": post.rating,
+            "primary_image": url,
+        }
+        # Add to the dictionary under the correct city
+        if city_name not in posts_by_city:
+            posts_by_city[city_name] = []
+        posts_by_city[city_name].append(post_data)
+    # frmat output
     return {
-        "id": host.id,
-        "full_name": host.full_name,
-        "gender": "male" if host.gender.upper() == "M" else "female",
-        "email": host.email,
-        "phone_number": phone_number,
-        "date_of_birth": host.date_of_birth,
-        "location": host_city,
-        "rating": host.rating,
-        "num_reviews": host.num_review,
-        "num_nooks": len(active_posts),
-        "num_reservations": total_reservations,
-        "join_date": host.date_joined.date(),
-        "profile_picture": Pic.get_picture_url(host, "profile_picture"),
-        "posts_by_city": posts_by_city
-        if (host.type_of_user.upper() == "HOST")
-        else {"Become an HOST to be able to Post": []},
+    "id": host.id,
+    "full_name": host.full_name,
+    "gender": "male" if host.gender.upper() == "M" else "female",
+    "email": host.email,
+    "phone_number": phone_number,
+    "date_of_birth": host.date_of_birth,
+    "location": host_city,
+    "rating": host.rating,
+    "num_reviews": host.num_review,
+    "num_nooks": len(active_posts),
+    "num_reservations": total_reservations,
+    "join_date": host.date_joined.date(),
+    "profile_picture": Pic.get_picture_url(host, "profile_picture"),
+    "posts_by_city": posts_by_city,
     }
 
 
