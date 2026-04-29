@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import styles from "@/styles/my_reservations_styles/reservations_table.module.css"
 import { Reservation } from "@/types/api_types"
 import { getWilayaName } from "@/data/auth_data/data"
@@ -112,7 +113,17 @@ export default function ReservationRow({ reservation, onCancel }: ReservationRow
 
             {/* اسم المؤجر */}
             <td className={styles.table_cell}>
-                <span className={styles.renter_name}>{renter?.full_name || "—"}</span>
+                {renter?.id ? (
+                    <Link
+                        href={`/profile/${renter.id}`}
+                        className={styles.renter_name_link}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {renter.full_name || "—"}
+                    </Link>
+                ) : (
+                    <span className={styles.renter_name}>{renter?.full_name || "—"}</span>
+                )}
             </td>
 
             {/* الهاتف */}

@@ -35,8 +35,6 @@ export async function getSellerProfile(sellerId: string): Promise<PublicSellerPr
   return response.json();
 }
 
-// Probes verification status without sending an email.
-// Sends a dummy key which hits the key-check path; 400 means already active.
 export async function checkEmailVerified(email: string): Promise<{ verified: boolean }> {
   const token = (await cookies()).get('token')?.value;
   if (!token) return { verified: false };
@@ -46,13 +44,11 @@ export async function checkEmailVerified(email: string): Promise<{ verified: boo
     body: JSON.stringify({ email, key: '__probe__' }),
     cache: 'no-store',
   });
-  if (response.status === 400) return { verified: true };
-  return { verified: false };
+  // 400 means is_active is already true → verified
+  return { verified: response.status === 400 };
 }
 
-export async function sendVerificationEmail(
-  email: string
-): Promise<{ success: boolean; error?: string }> {
+export async function sendVerificationEmail(email: string): Promise<{ success: boolean; error?: string }> {
   const token = (await cookies()).get('token')?.value;
   if (!token) return { success: false, error: 'Not authenticated' };
   const response = await fetch(`${API}/api/Account/email_confirmation`, {
@@ -65,10 +61,7 @@ export async function sendVerificationEmail(
   return { success: true };
 }
 
-export async function verifyEmailCode(
-  email: string,
-  key: string
-): Promise<{ success: boolean; error?: string }> {
+export async function verifyEmailCode(email: string, key: string): Promise<{ success: boolean; error?: string }> {
   const token = (await cookies()).get('token')?.value;
   if (!token) return { success: false, error: 'Not authenticated' };
   const response = await fetch(`${API}/api/Account/email_confirmation`, {

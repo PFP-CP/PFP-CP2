@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import styles from "@/styles/my_reservations_styles/reservations_table.module.css"
 import ReservationRow from "./reservation_row"
 import { Reservation } from "@/types/api_types"
@@ -28,6 +29,7 @@ function formatDate(dateString: string) {
 
 function MobileCard({ reservation }: { reservation: Reservation }) {
     const [imgError, setImgError] = useState(false)
+    const router = useRouter()
     const post = reservation?.post
     const house = post?.House
     const host = reservation?.renter
@@ -81,7 +83,16 @@ function MobileCard({ reservation }: { reservation: Reservation }) {
                 <div className={styles.card_host}>
                     <span className={styles.host_row}>
                         <span className={styles.host_label}>Host</span>
-                        {host?.full_name || "—"}
+                        {host?.id ? (
+                            <button
+                                className={styles.renter_name_link}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/profile/${host.id}`) }}
+                            >
+                                {host.full_name || "—"}
+                            </button>
+                        ) : (
+                            host?.full_name || "—"
+                        )}
                     </span>
                     <span className={styles.host_row}>
                         <span className={styles.host_label}>Mobile</span>

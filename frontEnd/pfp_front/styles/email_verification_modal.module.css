@@ -1,0 +1,85 @@
+.banner {
+    width: 100%;
+    background: #f0ebff;
+    border-bottom: 2px solid #7c5cdb;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.message {
+    flex: 1;
+    margin: 0;
+    font-size: 0.9rem;
+    color: #220E67;
+    font-weight: 500;
+    min-width: 200px;
+}
+
+.code_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.input {
+    padding: 8px 12px;
+    border: 2px solid #7c5cdb;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    letter-spacing: 0.1em;
+    width: 180px;
+}
+
+.input:focus {
+    border-color: #220E67;
+}
+
+.btn {
+    padding: 8px 18px;
+    background: #220E67;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+    background: #7c5cdb;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.resend {
+    background: none;
+    border: none;
+    color: #7c5cdb;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.resend:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error {
+    width: 100%;
+    color: #dc2626;
+    font-size: 0.82rem;
+    margin: 0;
+}

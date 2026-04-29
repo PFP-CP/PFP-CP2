@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { wilayas } from '@/data/auth_data/data';
 import { imageItem } from '@/types/types';
-import { submitHouseInformation, submitHouseUpdate, getNookDetail, deleteNookPicture } from './actions/createpost';
+import { submitHouseInformation, submitHouseUpdate, getNookDetail, deleteNookPicture, resolveShortUrl } from './actions/createpost';
 import { useTransition } from 'react';
 import { getCompressedNookImages, uploadImagesFromClient } from '@/lib/functions';
 import { useMediaQuery } from '@mui/material';
@@ -36,6 +36,21 @@ const TYPES_TO_CATEGORIES: Record<string, string[]> = {
   'NC': ['family', 'single'],
   'NM': ['family', 'couple'],
 };
+
+function parseGoogleMapsUrl(url: string): { lat: number; lng: number } | null {
+  try {
+    // Most common: /place/Name/@lat,lng,zoom or /@lat,lng,zoom
+    const atMatch = url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+    if (atMatch) return { lat: parseFloat(atMatch[1]), lng: parseFloat(atMatch[2]) };
+    // ?q=lat,lng
+    const qMatch = url.match(/[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+    if (qMatch) return { lat: parseFloat(qMatch[1]), lng: parseFloat(qMatch[2]) };
+    // ?ll=lat,lng
+    const llMatch = url.match(/[?&]ll=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+    if (llMatch) return { lat: parseFloat(llMatch[1]), lng: parseFloat(llMatch[2]) };
+  } catch (e) { /* ignore */ }
+  return null;
+}
 
 export default function CreatePost() {
   const router = useRouter();
@@ -135,6 +150,50 @@ export default function CreatePost() {
       }
     });
   }, [editId]);
+
+  useEffect(() => {
+    const isGoogleMaps = location && (location.includes('google.com/maps') || location.includes('goo.gl'));
+    if (!isGoogleMaps) return;
+
+    const run = async () => {
+      let fullUrl = location;
+      if (!location.includes('google.com/maps')) {
+        const resolved = await resolveShortUrl(location);
+        if (!resolved) return;
+        fullUrl = resolved;
+      }
+      const coords = parseGoogleMapsUrl(fullUrl);
+      if (!coords) return;
+      setValue('latitude', String(coords.lat));
+      setValue('longitude', String(coords.lng));
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&accept-language=en`,
+        { headers: { 'Accept-Language': 'en' } }
+      )
+        .then(r => r.json())
+        .then(data => {
+          const addr = data.address || {};
+          const label = [
+            addr.city || addr.town || addr.municipality || addr.village,
+            addr.state,
+            addr.country,
+          ].filter(Boolean).join(', ');
+          if (label) setMapLabel(label);
+          setValue('county', addr.city || addr.town || addr.county || '');
+          setValue('map_country', addr.country || 'Algeria');
+          if (addr.state) {
+            const matched = wilayas.find(w =>
+              (addr.state as string).toLowerCase().includes(w.name.toLowerCase()) ||
+              w.name.toLowerCase().includes((addr.state as string).toLowerCase())
+            );
+            if (matched) setValue('wilaya', matched.code);
+          }
+        })
+        .catch(() => setMapLabel(`${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`));
+    };
+
+    run();
+  }, [location]);
 
   const handleSubmitForm = (data) => {
     if (!isEditMode && images.length === 0) {

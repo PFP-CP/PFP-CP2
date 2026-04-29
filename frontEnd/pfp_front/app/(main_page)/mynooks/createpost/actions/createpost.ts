@@ -11,6 +11,15 @@ import { refreshToken, verifyToken } from "@/lib/authorization_handling";
 
 
 
+export async function resolveShortUrl(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, { redirect: 'follow', cache: 'no-store' });
+    return res.url;
+  } catch (e) {
+    return null;
+  }
+}
+
 export async function getNookDetail(postId: string) {
   const token = (await cookies()).get('token')?.value;
   const res = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}`, {

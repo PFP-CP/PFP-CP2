@@ -342,7 +342,6 @@ input:focus {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  padding: 0.5rem;
   text-wrap: nowrap;
   color: #220E67;
   box-shadow: 0 2px 8px rgba(34, 14, 103, 0.08);
