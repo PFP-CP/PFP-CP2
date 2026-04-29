@@ -32,6 +32,12 @@ a{
   color: inherit;
 }
 
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -khtml-user-drag: none;
+}
+
 @font-face {
     font-family: 'sansation-700';
     src: url('/fonts/Sansation/Sansation-Bold.woff2');

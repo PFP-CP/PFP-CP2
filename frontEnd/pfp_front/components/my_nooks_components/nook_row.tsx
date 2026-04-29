@@ -60,7 +60,7 @@ export default function NookRow({ nook, onEdit, onDelete, onRowClick }: NookRowP
 
             {/* الولاية */}
             <td className={styles.table_cell}>
-                <span className={styles.wilaya}>{getWilayaName(nook.state) || nook.state || "—"}</span>
+                <span className={styles.wilaya}>{getWilayaName(nook.state) || "—"}</span>
             </td>
 
             {/* الحالة */}

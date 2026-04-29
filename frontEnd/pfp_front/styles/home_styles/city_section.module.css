@@ -26,10 +26,102 @@
   font-weight: 800;
   color: #1e293b;
   margin: 0;
+  flex: 1;
 }
 
-.cards_container {                                                   
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 28px;
+.arrow_group {
+  display: flex;
+  gap: 8px;
+}
+
+.arrow_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #220E67;
+  background: white;
+  color: #220E67;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.arrow_btn:hover {
+  background: #220E67;
+  color: white;
+}
+
+.cards_container {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 10px;
+  padding-right: 2rem;
+  scrollbar-width: thin;
+  scrollbar-color: #220E67 #e8e0ff;
+}
+
+.cards_container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.cards_container::-webkit-scrollbar-track {
+  background: #e8e0ff;
+  border-radius: 99px;
+}
+
+.cards_container::-webkit-scrollbar-thumb {
+  background: #220E67;
+  border-radius: 99px;
+}
+
+.slide {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+}
+
+/* ── Tablet ───────────────────────────────── */
+@media (max-width: 768px) {
+  .city_section {
+    margin-bottom: 32px;
+    padding: 1.25rem 1rem;
+    border-radius: 12px;
+  }
+
+  .city_header {
+    margin-bottom: 16px;
+  }
+
+  .city_header h2 {
+    font-size: 1.25rem;
+  }
+
+  .city_icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .arrow_group {
+    display: none;
+  }
+
+  .cards_container {
+    gap: 14px;
+    padding-right: 1rem;
+  }
+
+  .slide {
+    flex: 0 0 82%;
+  }
+}
+
+/* ── Small phones ─────────────────────────── */
+@media (max-width: 400px) {
+  .slide {
+    flex: 0 0 88%;
+  }
 }

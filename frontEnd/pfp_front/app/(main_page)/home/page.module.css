@@ -35,6 +35,12 @@
   padding: 40px 24px;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 12px;
+  }
+}
+
 .noProperties {
   text-align: center;
   padding: 60px 20px;

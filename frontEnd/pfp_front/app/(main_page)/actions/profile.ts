@@ -29,10 +29,58 @@ export async function getSellerProfile(sellerId: string): Promise<PublicSellerPr
   const response = await fetch(`${API}/api/Mynook/profile/${sellerId}`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` },
-    next: { revalidate: 300, tags: [`profile-${sellerId}`] },
+    cache: 'no-store',
   });
   if (!response.ok) return null;
   return response.json();
+}
+
+// Probes verification status without sending an email.
+// Sends a dummy key which hits the key-check path; 400 means already active.
+export async function checkEmailVerified(email: string): Promise<{ verified: boolean }> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return { verified: false };
+  const response = await fetch(`${API}/api/Account/email_confirmation`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ email, key: '__probe__' }),
+    cache: 'no-store',
+  });
+  if (response.status === 400) return { verified: true };
+  return { verified: false };
+}
+
+export async function sendVerificationEmail(
+  email: string
+): Promise<{ success: boolean; error?: string }> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return { success: false, error: 'Not authenticated' };
+  const response = await fetch(`${API}/api/Account/email_confirmation`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ email }),
+    cache: 'no-store',
+  });
+  if (!response.ok) return { success: false, error: 'Failed to send email.' };
+  return { success: true };
+}
+
+export async function verifyEmailCode(
+  email: string,
+  key: string
+): Promise<{ success: boolean; error?: string }> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return { success: false, error: 'Not authenticated' };
+  const response = await fetch(`${API}/api/Account/email_confirmation`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ email, key }),
+    cache: 'no-store',
+  });
+  if (!response.ok) return { success: false, error: 'Verification failed.' };
+  const data = await response.json().catch(() => ({}));
+  if ((data.detail as string) === 'Success') return { success: true };
+  return { success: false, error: data.detail ?? 'Invalid code.' };
 }
 
 export async function changePassword(old_password: string, new_password: string): Promise<{ success: boolean; error?: string }> {

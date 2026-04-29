@@ -28,8 +28,8 @@ function MobileCard({ nook, onEdit, onDelete }: { nook: Property; onEdit: (id: s
     const [imgError, setImgError] = useState(false)
     const imageUrl = getFullImageUrl(nook.primary_image)
     const type = nook.title?.split(' in ')[0] || nook.title
-    const wilayaName = getWilayaName(nook.state) || nook.state || "—"
-    const displayTitle = wilayaName !== "—" ? `${type} in ${wilayaName}` : type
+    const wilayaName = getWilayaName(nook.state)
+    const displayTitle = wilayaName ? `${type} in ${wilayaName}` : type
 
     return (
         <div className={styles.card}>

@@ -84,7 +84,7 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
               min={0}
               max={5}
               value={criteria.renter_rating ?? ""}
-              onChange={(e) => handleInputChange("renter_rating", parseFloat(e.target.value))}
+              onChange={(e) => handleInputChange("renter_rating", Math.min(5, Math.max(0, parseFloat(e.target.value))))}
             />
             <input
               type="number"
@@ -93,7 +93,7 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
               min={0}
               max={5}
               value={criteria.max_renter_rating ?? ""}
-              onChange={(e) => handleInputChange("max_renter_rating", parseFloat(e.target.value))}
+              onChange={(e) => handleInputChange("max_renter_rating", Math.min(5, Math.max(0, parseFloat(e.target.value))))}
             />
           </div>
         </div>
@@ -110,7 +110,7 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
               min={0}
               max={5}
               value={criteria.post_rating ?? ""}
-              onChange={(e) => handleInputChange("post_rating", parseFloat(e.target.value))}
+              onChange={(e) => handleInputChange("post_rating", Math.min(5, Math.max(0, parseFloat(e.target.value))))}
             />
             <input
               type="number"
@@ -119,7 +119,7 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
               min={0}
               max={5}
               value={criteria.max_post_rating ?? ""}
-              onChange={(e) => handleInputChange("max_post_rating", parseFloat(e.target.value))}
+              onChange={(e) => handleInputChange("max_post_rating", Math.min(5, Math.max(0, parseFloat(e.target.value))))}
             />
           </div>
         </div>

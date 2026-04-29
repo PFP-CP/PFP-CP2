@@ -155,7 +155,7 @@ export default function CreatePost() {
   return (
     <>
       {screenWidth && <Create_post_mobile_nav />}
-      <form style={{ position: 'relative' }} onSubmit={handleSubmit((data) => handleSubmitForm(data))}>
+      <form style={{ position: 'relative' }} onSubmit={handleSubmit((data) => { console.log(data);handleSubmitForm(data)})}>
         {isPending && <div className={style.loading}>{isEditMode ? 'Updating post' : 'Uploading post'}</div>}
         {!screenWidth && <div className={style.create_post_header}>{isEditMode ? 'Edit your nook' : 'Post a new nook'}</div>}
         <div className={style.create_post_container}>

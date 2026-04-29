@@ -52,6 +52,7 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
     allows_smoking: data.rules.includes('smoking'),
     allows_noise: data.rules.includes('noise'),
   };
+  console.log(toSend);
   if (data.beds && Number(data.beds) > 0) toSend.num_beds = Number(data.beds);
   if (data.max_tenants && Number(data.max_tenants) > 0) toSend.max_tenants = Number(data.max_tenants);
 
@@ -75,6 +76,7 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
 }
 
 export async function updateNook(postId: string, data: object, images: Blob[]) {
+  console.log(data);
   const updateRes = await submitHouseUpdate(postId, data as CreatePostData);
   if (!updateRes.success) return false;
   if (images && images.length > 0) {
