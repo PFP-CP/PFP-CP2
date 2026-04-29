@@ -350,7 +350,7 @@ def change_password(request, passwords: ChangePassword):
 
     return 200, {"Success": "Password changed"}
 
-@router.get("/changePicture" , auth=JWTAuth())
+@router.post("/changePicture" , auth=JWTAuth())
 def change_pfp(request ,file: UploadedFile = File(...)):
     user = request.user
     if not Pic.picture_exists(user , "profile_picture"):
