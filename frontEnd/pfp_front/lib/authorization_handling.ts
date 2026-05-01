@@ -17,6 +17,39 @@ export async function apiFetch(url:string, options = {}) {
   }
 }
 
+const BASE = 'http://127.0.0.1:8000';
+
+export async function authedFetch(path: string, options: RequestInit = {}) {
+  const cookieStore = await cookies();
+  let token = cookieStore.get('token')?.value;
+
+  const makeRequest = (accessToken: string | undefined) =>
+    fetch(`${BASE}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken ?? ''}`,
+        ...(options.headers as Record<string, string> | undefined),
+      },
+    });
+
+  let response = await makeRequest(token);
+
+  if (response.status === 401) {
+    const refresh = cookieStore.get('refresh')?.value;
+    if (refresh) {
+      const refreshResult = await refreshToken(refresh);
+      if (refreshResult.success) {
+        response = await makeRequest(refreshResult.access);
+      }
+    }
+    if (response.status === 401) throw new Error('401');
+  }
+
+  if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+  return response;
+}
+
 export async function refreshToken(token:string){
   const res = await fetch("http://127.0.0.1:8000/api/token/refresh",{
     method:"POST",

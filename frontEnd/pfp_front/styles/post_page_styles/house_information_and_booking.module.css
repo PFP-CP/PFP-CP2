@@ -110,7 +110,7 @@
 
 .rating_and_ratingButton_container .renter_rating .profile_picture{
   height: 55px;
-  width: 55px; 
+  min-width: 55px; 
   border: 3px solid #000000;
   border-radius:50px;
   overflow: hidden;
@@ -218,10 +218,11 @@
 .wrapper{
   display: flex;
   background-color: white;
-  overflow: scroll;
+  overflow-y: auto;
   border-left: 3px solid black;
   padding-right: 1rem;
   width: 100%;
+  max-width: 800px;
 }
 
 .leave_show_comments{
@@ -241,6 +242,9 @@
   border-radius: 14px;
   padding: .75rem 1rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .user_container{
@@ -341,6 +345,7 @@
   position: relative;
   border: 3px solid black;
   background-color: #D9D9D9;
+  gap: 1rem;
   padding-top: .7rem;
   padding-right: 1.5rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
@@ -416,6 +421,36 @@
 
 .comment_input #comment::placeholder{
   color: #717171;
+}
+
+.comment_input_footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0 0.25rem;
+  min-height: 1.2rem;
+}
+
+.comment_input_error {
+  color: red;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.char_count {
+  font-size: 0.8rem;
+  color: #888;
+  margin-left: auto;
+  font-family: "sansation-400", sans-serif;
+}
+
+.char_count_limit {
+  font-size: 0.8rem;
+  color: #c0392b;
+  font-weight: bold;
+  margin-left: auto;
+  font-family: "sansation-700", sans-serif;
 }
 
 .nook_review .rating_slider_container{
@@ -563,6 +598,7 @@
   font-family: "sansation-700", sans-serif;
   display:flex;
   gap: .4rem;
+  flex-wrap: wrap;
 }
 
 .price_container span{
@@ -669,6 +705,9 @@
   .lower_comment_review_mobile_view{
     display: block;
   }
+  .visitors_and_price input{
+  max-width: 70px;
+}
 
   .rating_and_ratingButton_container_mobile_view{
     display: block;
@@ -756,8 +795,8 @@
 }
 
 .booking_buttons_row > button {
-  width: auto;
-  flex-shrink: 0;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 /* Cancel Booking button (secondary, outlined) */
@@ -926,6 +965,7 @@
     padding: 0 0.75rem;
   }
   .cancel_booking_btn {
+    padding: 0;
     font-size: 17px;
   }
 }

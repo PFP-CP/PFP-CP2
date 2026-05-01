@@ -63,9 +63,10 @@ const _wilayaByCode: Record<string, string> = Object.fromEntries(
   wilayas.map(w => [w.code, w.name])
 );
 
-export function getWilayaName(code: string | null | undefined): string {
-  if (!code) return '';
-  return _wilayaByCode[code] ?? code;
+export function getWilayaName(code: string | number | null | undefined): string {
+  if (code === null || code === undefined || code === '') return '';
+  const normalized = String(code).padStart(2, '0');
+  return _wilayaByCode[normalized] ?? String(code);
 }
 
 export const wilayas_string_only = [

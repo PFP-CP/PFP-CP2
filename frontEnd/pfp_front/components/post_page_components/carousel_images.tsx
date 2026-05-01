@@ -83,10 +83,11 @@ export default function CarouselImages({ pictures }: { pictures: HouseImage[] })
   return (
     <div className={`glide ${style.glide_container}`} ref={glideRef}>
       <div className="glide__track" data-glide-el="track">
-        <ul className="glide__slides">
-          {pictures.map((pic) => (
-            <PhotoProvider key={pic.id}>
+        <PhotoProvider>
+          <ul className="glide__slides">
+            {pictures.map((pic) => (
               <li
+                key={pic.id}
                 style={{ position: "relative", height: "300px" }}
                 className="glide__slide"
               >
@@ -94,9 +95,9 @@ export default function CarouselImages({ pictures }: { pictures: HouseImage[] })
                   <Image src={getImageUrl(pic.URL)} alt="house picture" fill style={{ objectFit: "cover", borderRadius: "8px" }} />
                 </PhotoView>
               </li>
-            </PhotoProvider>
-          ))}
-        </ul>
+            ))}
+          </ul>
+        </PhotoProvider>
       </div>
 
       {screenWidth>=700 && <div className="glide__arrows" data-glide-el="controls">

@@ -162,6 +162,5 @@ export async function updateProfile(data: {
     const err = await response.json().catch(() => ({}));
     return { success: false, error: err?.message ?? 'Update failed. Please try again.' };
   }
-  revalidateTag('current-user');
   return { success: true };
 }

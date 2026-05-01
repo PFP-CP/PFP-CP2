@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import styles from "@/styles/my_reservations_styles/reservations_table.module.css"
 import ReservationRow from "./reservation_row"
 import { Reservation } from "@/types/api_types"
-import { api } from "@/lib/api"
+import { cancelBooking } from "@/app/(main_page)/myreservations/actions/cancelBooking"
 import { getWilayaName } from "@/data/auth_data/data"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
@@ -126,15 +126,17 @@ type ReservationsTableProps = {
 }
 
 export default function ReservationsTable({ reservations, onRefresh }: ReservationsTableProps) {
+    const router = useRouter()
+
     const handleCancel = async (id: number) => {
         const confirmed = confirm("Are you sure you want to cancel this reservation?")
         if (!confirmed) return
 
-        try {
-            await api.deleteReservation(id)
-            onRefresh()
-        } catch (error) {
-            console.error("Failed to cancel:", error)
+        const result = await cancelBooking(id)
+        if (result.success) {
+            router.refresh()
+        } else {
+            console.error("Failed to cancel:", result.error)
         }
     }
 

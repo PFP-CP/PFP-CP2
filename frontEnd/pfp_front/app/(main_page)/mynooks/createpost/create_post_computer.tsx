@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { wilayas } from '@/data/auth_data/data';
 import { imageItem } from '@/types/types';
-import { submitHouseInformation, submitHouseUpdate, getNookDetail, deleteNookPicture, resolveShortUrl } from './actions/createpost';
+import { submitHouseInformation, submitHouseUpdate, getNookDetail, deleteNookPicture, resolveShortUrl, uploadImage } from './actions/createpost';
 import { useTransition } from 'react';
-import { getCompressedNookImages, uploadImagesFromClient } from '@/lib/functions';
+import { getCompressedNookImages } from '@/lib/functions';
 import { useMediaQuery } from '@mui/material';
 import Create_post_mobile_nav from '@/components/create_post_page_components/create_post_page_mobile_nav';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -203,16 +203,23 @@ export default function CreatePost() {
     setImageError(false);
     startTransition(async () => {
       const compressedImages = await getCompressedNookImages(images);
+      const uploadAll = (postId: string, imgs: Blob[]) =>
+        Promise.all(imgs.map((img, i) => {
+          const fd = new FormData();
+          fd.append('file', img, `image_${i}.webp`);
+          return uploadImage(postId, fd);
+        }));
+
       if (isEditMode) {
         const res = await submitHouseUpdate(editId!, data);
         if (!res.success) return;
         if (compressedImages.length > 0) {
-          await uploadImagesFromClient(res.post_id!, compressedImages);
+          await uploadAll(res.post_id!, compressedImages);
         }
       } else {
         const res = await submitHouseInformation(data);
         if (!res.success) return;
-        await uploadImagesFromClient(String(res.post_id), compressedImages);
+        await uploadAll(String(res.post_id), compressedImages);
       }
       router.push('/mynooks');
     });

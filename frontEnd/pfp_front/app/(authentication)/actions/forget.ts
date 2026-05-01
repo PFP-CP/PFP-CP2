@@ -10,7 +10,7 @@ export async function forget(email:string){
   if(!data.Error){
     return {success:true};
   }
-  return {success:false};
+  return {success:false, error: typeof data.Error === 'string' ? data.Error : 'No account found with that email.'};
 }
 
 
@@ -22,10 +22,9 @@ export async function newPass(email:string, new_password:string, key:string){
   });
   const data = await response.json();
 
-  if(!data.error){
+  if(!data.error && !data.Error){
     return {success:true};
   }
 
-  return {success:false};
-
+  return {success:false, error: (typeof data.error === 'string' ? data.error : null) || (typeof data.Error === 'string' ? data.Error : null) || 'Invalid or expired reset key.'};
 }

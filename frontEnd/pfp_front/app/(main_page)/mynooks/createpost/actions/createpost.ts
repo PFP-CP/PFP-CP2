@@ -94,6 +94,16 @@ export async function updateNook(postId: string, data: object, images: Blob[]) {
   return true;
 }
 
+export async function uploadImage(postId: string, formData: FormData) {
+  const token = (await cookies()).get('token')?.value;
+  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: formData,
+  });
+  return res.ok;
+}
+
 export async function deleteNookPicture(postId: string, pictureId: number) {
   const token = (await cookies()).get('token')?.value;
   const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures/${pictureId}`, {

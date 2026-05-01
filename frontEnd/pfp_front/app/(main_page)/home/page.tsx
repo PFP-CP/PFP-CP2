@@ -12,6 +12,7 @@ const WILAYAS = [
   { code: "16", name: "Algiers" },
   { code: "31", name: "Oran" },
   { code: "09", name: "Blida" },
+  { code: "21", name: "Skikda" },
 ];
 
 export default function Home() {

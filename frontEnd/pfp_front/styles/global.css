@@ -40,11 +40,11 @@ img {
 
 @font-face {
     font-family: 'sansation-700';
-    src: url('/fonts/Sansation/Sansation-Bold.woff2');
+    src: url('/fonts/Sansation/Sansation-Bold.woff2') format('woff2');
   }
 @font-face{
   font-family: 'sansation-400';
-  src: url('/fonts/Sansation/Sansation-Light.woff2');
+  src: url('/fonts/Sansation/Sansation-Light.woff2') format('woff2');
 }
 
 

@@ -117,6 +117,8 @@ function RateNookButton({setRatingValue, initialValue = 0}:{setRatingValue:React
   )
 }
 
+const MAX_COMMENT_LENGTH = 500;
+
 function Comment_review({ ratingValue, id, setIsCommenting, setRatingValue, onCommentAdded, existingComment }: {
   ratingValue: number;
   id: string;
@@ -130,6 +132,7 @@ function Comment_review({ ratingValue, id, setIsCommenting, setRatingValue, onCo
   const [commentError, setCommentError] = useState(false);
   const [submitError, setSubmitError] = useState<string | false>(false);
   const [loading, setLoading] = useState(false);
+  const [charCount, setCharCount] = useState(existingComment?.comment?.length ?? 0);
 
   const handleCloseSubmit = () => {
     setIsCommenting(false);
@@ -142,6 +145,10 @@ function Comment_review({ ratingValue, id, setIsCommenting, setRatingValue, onCo
     }
     if (!comment.current?.value.trim()) {
       setCommentError(true);
+      return;
+    }
+    if (comment.current!.value.length > MAX_COMMENT_LENGTH) {
+      setSubmitError(`Comment cannot exceed ${MAX_COMMENT_LENGTH} characters.`);
       return;
     }
     setRatingError(false);
@@ -162,6 +169,8 @@ function Comment_review({ ratingValue, id, setIsCommenting, setRatingValue, onCo
     }
   }
 
+  const atLimit = charCount >= MAX_COMMENT_LENGTH;
+
   return (
     <div className={style.nook_review}>
       {loading && <div className={style.loading_overlay}/>}
@@ -175,8 +184,22 @@ function Comment_review({ ratingValue, id, setIsCommenting, setRatingValue, onCo
       {ratingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>Please select a rating before submitting.</p>}
       {submitError && <p style={{color:'red', fontSize:'0.8rem', margin:'0 0 4px'}}>{submitError}</p>}
       <div className={style.comment_input}>
-        <textarea ref={comment} name="comment" id={style.comment} placeholder='Write your comment' defaultValue={existingComment?.comment ?? ''} onChange={() => setCommentError(false)}></textarea>
-        {commentError && <p style={{color:'red', fontSize:'0.8rem', margin:'4px 0 0'}}>Please write a comment before submitting.</p>}
+        <textarea
+          ref={comment}
+          name="comment"
+          id={style.comment}
+          placeholder='Write your comment'
+          defaultValue={existingComment?.comment ?? ''}
+          maxLength={MAX_COMMENT_LENGTH}
+          onChange={(e) => { setCommentError(false); setCharCount(e.target.value.length); }}
+        />
+        <div className={style.comment_input_footer}>
+          {commentError && <p className={style.comment_input_error}>Please write a comment before submitting.</p>}
+          {atLimit && <p className={style.comment_input_error}>Character limit reached</p>}
+          <span className={atLimit ? style.char_count_limit : style.char_count}>
+            {charCount}/{MAX_COMMENT_LENGTH}
+          </span>
+        </div>
         <button onClick={handleSubmit} disabled={loading} style={loading ? {opacity:0.5, cursor:'not-allowed'} : {}}>
           {loading ? 'Submitting…' : existingComment ? 'Update' : 'Submit'}
         </button>

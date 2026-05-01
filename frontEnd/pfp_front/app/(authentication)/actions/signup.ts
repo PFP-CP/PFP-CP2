@@ -22,12 +22,10 @@ export async function signup(gender:string,state:string,type_of_user:string,phon
   })
 
   const data = await response.json();
-  console.log(data);
   if(!data.Error){
-    location.reload();
     return {success:true};
   }
-  return {success:false};
+  return {success:false, error: typeof data.Error === 'string' ? data.Error : 'Signup failed. Please try again.'};
 
 }
 

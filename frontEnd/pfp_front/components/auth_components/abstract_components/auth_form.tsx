@@ -13,7 +13,6 @@ import RadioButton from "@/components/auth_components/ui/radio_input";
 
 
 
-//animation function
 const email_settings = {required:"Email is required",
           pattern: {
             value: /\S+@\S+\.\S+/,
@@ -36,9 +35,6 @@ const password_settings = {
     message: "at least one special and upper-case character"
   },
 }
-const logo = <svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-  <text x="0" y="60" font-family="sansation-700" font-weight="bold" font-size="72" fill="#2E1B7B">Nook</text>
-</svg>
 
 interface AuthFormData {
   email?: string;
@@ -67,7 +63,6 @@ const EyeIcon = ({ visible, error }: { visible: boolean; error: boolean }) => {
 }
 
 function login_form(register:UseFormRegister<AuthFormData>, setAuthState:React.Dispatch<React.SetStateAction<string>>, errors:FieldErrors<AuthFormData>, showPassword:boolean, setShowPassword:React.Dispatch<React.SetStateAction<boolean>>){
-
   return(
     <>
       <div className={style.form_fields_container}>
@@ -84,13 +79,11 @@ function login_form(register:UseFormRegister<AuthFormData>, setAuthState:React.D
             <button type="button" onClick={()=>setAuthState("forget_password")} className={style.forgot_password}>Forget password?</button>
           </div>
       </div>
-
     </>
   )
 }
 
 function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<AuthFormData>, showPassword:boolean, setShowPassword:React.Dispatch<React.SetStateAction<boolean>>){
-
   return(
     <>
       <div className={style.form_fields_container}>
@@ -102,7 +95,6 @@ function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<A
           <RadioButton register={register} />
           <input className={errors.phone&&style.input_invalid} {...register("phone",phone_settings)} placeholder="Phone number" />
           {errors.phone?.message&&<p className={style.error_message}>{errors.phone?.message}</p>}
-
           <input className={errors.email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
           {errors.email?.message&&<p className={style.error_message}>{errors.email?.message}</p>}
           <div className={style.password_input_wrapper}>
@@ -117,20 +109,19 @@ function signup_form(register:UseFormRegister<AuthFormData>,errors:FieldErrors<A
   )
 }
 
-function forgot_password(register:UseFormRegister<AuthFormData>, errors:FieldErrors<AuthFormData>){
+function forgot_password_form(register:UseFormRegister<AuthFormData>, errors:FieldErrors<AuthFormData>){
   return(
     <>
       <div className={style.form_fields_container}>
           <input className={errors.email&&style.input_invalid} {...register("email",email_settings)} placeholder="Email address" />
           <p className={style.error_message}>{errors.email?.message as string}</p>
-          <p id={style.forget_pass_p}>Please enter the email address you’d like your password reset information sent to</p>
+          <p id={style.forget_pass_p}>Please enter the email address you'd like your password reset information sent to</p>
       </div>
     </>
   )
 }
 
-function forgot_password_code(register:UseFormRegister<AuthFormData>, errors:FieldErrors<AuthFormData>, showPassword:boolean, setShowPassword:React.Dispatch<React.SetStateAction<boolean>>){
-
+function forgot_password_code_form(register:UseFormRegister<AuthFormData>, errors:FieldErrors<AuthFormData>, showPassword:boolean, setShowPassword:React.Dispatch<React.SetStateAction<boolean>>){
   return(
     <>
       <div className={style.form_fields_container}>
@@ -141,21 +132,41 @@ function forgot_password_code(register:UseFormRegister<AuthFormData>, errors:Fie
           </button>
         </div>
         {errors.new_password?.message&&<p className={style.error_message}>{errors.new_password?.message as string}</p>}
-        <input {...register("key",{required:true})} placeholder="Key" />
+        <input {...register("key",{required:true})} placeholder="Reset key" />
+        {errors.key && <p className={style.error_message}>Reset key is required</p>}
       </div>
     </>
   )
 }
 
+const SUBMIT_LABELS: Record<string, string> = {
+  login: "Sign in",
+  signup: "Sign Up",
+  forget_password: "Request reset link",
+  forget_password_code: "Set new password",
+}
+const LOADING_LABELS: Record<string, string> = {
+  login: "Signing in...",
+  signup: "Creating account...",
+  forget_password: "Sending...",
+  forget_password_code: "Submitting...",
+}
+
 export default function AuthForm() {
-  const {register, handleSubmit,setError,reset,formState:{errors}} = useForm<AuthFormData>();
+  const {register, handleSubmit, setError, reset, formState:{errors}} = useForm<AuthFormData>();
   const [authState, setAuthState] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [serverError, setServerError] = useState<string|null>(null);
+  const [resetSuccess, setResetSuccess] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/home';
-  const handleAuthSwitch= ()=>{
+
+  const handleAuthSwitch = () => {
     setShowPassword(false);
+    setServerError(null);
+    setResetSuccess(false);
     if(authState==="login") {
       setAuthState("signup");
       reset();
@@ -165,49 +176,65 @@ export default function AuthForm() {
     reset();
   }
 
-
-  const handle_auth_submit =async (type:string, form:AuthFormData)=>{
+  const handle_auth_submit = async (type:string, form:AuthFormData) => {
+    setIsPending(true);
+    setServerError(null);
+    setResetSuccess(false);
+    try {
       let res;
-
-        switch (type) {
-          case "login":
-
-            res = await login(form.email!,form.password!);
-            if(res.success){
-              if(res.needsVerification) router.push('/verify');
-              else router.push(redirectTo);
-            }else{
-              setError('password',{
-              type:'manual',
-              message:'Wrong password or email',
-            });
-            }
-            
-            break;
-          case "forget_password":
-            res = await forget(form.email!);
-            if(res.success){
-              setAuthState('forget_password_code');
-            }
+      switch (type) {
+        case "login":
+          res = await login(form.email!, form.password!);
+          if(res.success){
+            if(res.needsVerification) router.push('/verify');
+            else router.push(redirectTo);
+          } else {
+            setError('password', { type:'manual', message:'Wrong password or email' });
+          }
           break;
 
-          case "forget_password_code":
-            res= await newPass(form.email!, form.new_password!, form.key!);
-            if(res.success) location.reload();
-          break
-          case "signup":
-            res = await signup(form.gender!,form.location!,'GUEST',form.phone!,form.full_name!,form.email!,form.password!,form.date!);
-            if(res.success){
-              setAuthState("login");
-            }
+        case "forget_password":
+          res = await forget(form.email!);
+          if(res.success){
+            setAuthState('forget_password_code');
+          } else {
+            setServerError(res.error ?? 'Something went wrong. Please try again.');
+          }
           break;
-         
-          default:
-            break;
-        }
-      
+
+        case "forget_password_code":
+          res = await newPass(form.email!, form.new_password!, form.key!);
+          if(res.success){
+            setResetSuccess(true);
+            setTimeout(() => {
+              setAuthState('login');
+              reset();
+              setResetSuccess(false);
+            }, 2000);
+          } else {
+            setServerError(res.error ?? 'Could not reset password. Please try again.');
+          }
+          break;
+
+        case "signup":
+          res = await signup(form.gender!, form.location!, 'GUEST', form.phone!, form.full_name!, form.email!, form.password!, form.date!);
+          if(res.success){
+            setAuthState("login");
+            reset();
+          } else {
+            setServerError(res.error ?? 'Signup failed. Please try again.');
+          }
+          break;
+
+        default:
+          break;
+      }
+    } catch {
+      setServerError('Something went wrong. Please try again.');
+    } finally {
+      setIsPending(false);
     }
-
+  }
 
   return (
     <div className={style.auth_page_container}>
@@ -215,23 +242,43 @@ export default function AuthForm() {
         <div className={style.logo_container}>
           <Image loading="eager" src="/logo/logo.png" alt="logo_image" fill style={{objectFit:'contain'}} />
         </div>
-        <form className={style.form_container} onSubmit={handleSubmit((data)=>{
-          handle_auth_submit(authState,data);
-        })}>
+        <form className={style.form_container} onSubmit={handleSubmit((data) => handle_auth_submit(authState, data))}>
 
-          {authState==="login"&&login_form(register,setAuthState, errors, showPassword, setShowPassword)}
+          {authState==="login"&&login_form(register, setAuthState, errors, showPassword, setShowPassword)}
           {authState==="signup"&&signup_form(register, errors, showPassword, setShowPassword)}
-          {authState==="forget_password"&&forgot_password(register,errors)}
-          {authState==="forget_password_code"&&forgot_password_code(register,errors, showPassword, setShowPassword)}
+          {authState==="forget_password"&&forgot_password_form(register, errors)}
+          {authState==="forget_password_code"&&forgot_password_code_form(register, errors, showPassword, setShowPassword)}
 
-        <AnimatePresence>
-          <div  className={ `${authState==="login"&&style.submit_signBtn_container_login} ${style.submit_signBtn_container} ${(authState!=="login")&&style.submit_signBtn_container_signup}`}>  
-            <input type="submit" value={(authState==="login"&&"Sign in") || (authState==="signup"&&"Sign Up")|| (authState==="forget_password"&&"Request reset link") || (authState==="forget_password_code"&&"Submit Code") as string}/>
-            <div className={style.signBTN_container}>
-              {authState==="login"&&<div>Have you an account?</div>}
-              <button type="button" onClick={handleAuthSwitch}>{authState==="login"?<>Sign up</>:<>Back to sign in</>}</button>
+          <AnimatePresence>
+            <div className={`${authState==="login"&&style.submit_signBtn_container_login} ${style.submit_signBtn_container} ${(authState!=="login")&&style.submit_signBtn_container_signup}`}>
+              {serverError && (
+                <p className={style.server_error} role="alert">{serverError}</p>
+              )}
+              {resetSuccess && (
+                <p className={style.server_success} role="status">Password updated! Redirecting...</p>
+              )}
+              <button
+                type="submit"
+                className={style.submit_btn}
+                disabled={isPending}
+              >
+                {isPending
+                  ? <><span className={style.spinner} aria-hidden="true" />{LOADING_LABELS[authState]}</>
+                  : SUBMIT_LABELS[authState]
+                }
+              </button>
+              <div className={style.signBTN_container}>
+                {authState==="login"&&<div>Have you an account?</div>}
+                {(authState==="login"||authState==="signup") && (
+                  <button type="button" onClick={handleAuthSwitch} disabled={isPending}>
+                    {authState==="login" ? <>Sign up</> : <>Back to sign in</>}
+                  </button>
+                )}
+                {(authState==="forget_password"||authState==="forget_password_code") && (
+                  <button type="button" onClick={handleAuthSwitch} disabled={isPending}>Back to sign in</button>
+                )}
+              </div>
             </div>
-          </div>
           </AnimatePresence>
         </form>
       </div>

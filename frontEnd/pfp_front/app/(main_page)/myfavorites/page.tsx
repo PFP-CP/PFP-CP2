@@ -1,24 +1,16 @@
-'use client'
+import { getSavedPosts } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
+import { Property } from '@/types/api_types'
+import PropertyCard from '@/components/home_components/property_card'
+import styles from '@/styles/my_favorites_styles/favorites_page.module.css'
+import { redirect } from 'next/navigation'
 
-import { useEffect, useState } from "react"
-import { getSavedPosts } from "@/app/(main_page)/(post)/post/[id]/actions/getPost"
-import { Property } from "@/types/api_types"
-import PropertyCard from "@/components/home_components/property_card"
-import Loading from "@/components/loading"
-import styles from "@/styles/my_favorites_styles/favorites_page.module.css"
-
-export default function MyFavoritesPage() {
-    const [favorites, setFavorites] = useState<Property[]>([])
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        getSavedPosts().then((data) => {
-            setFavorites(data as Property[])
-            setLoading(false)
-        })
-    }, [])
-
-    if (loading) return <Loading text="Loading your Favorites..." />
+export default async function MyFavoritesPage() {
+    let favorites: Property[] = []
+    try {
+        favorites = await getSavedPosts() as Property[]
+    } catch (err: any) {
+        if (String(err?.message).includes('401')) redirect('/authentication')
+    }
 
     return (
         <main className={styles.page}>

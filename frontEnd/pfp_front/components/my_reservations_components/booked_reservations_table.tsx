@@ -246,6 +246,7 @@ type BookedReservationsTableProps = {
 }
 
 export default function BookedReservationsTable({ reservations, onRefresh }: BookedReservationsTableProps) {
+    const router = useRouter()
     const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set())
 
     const handleCancel = async (id: number, postId: string) => {
@@ -257,7 +258,7 @@ export default function BookedReservationsTable({ reservations, onRefresh }: Boo
 
         if (result.success) {
             cleanupLocalStorageReservation(id, postId)
-            onRefresh()
+            router.refresh()
         } else {
             console.error("Failed to cancel:", result.error)
             setDeletingIds((prev) => {

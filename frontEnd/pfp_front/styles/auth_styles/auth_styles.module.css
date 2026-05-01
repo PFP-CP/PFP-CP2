@@ -254,6 +254,88 @@
 }
 
 
+.submit_btn {
+  max-width: 400px;
+  min-height: 78px;
+  border-radius: 70px;
+  border: none;
+  width: 100%;
+  background-color: #9D84E4;
+  font-size: 38px;
+  color: white;
+  font-family: "sansation-700", sans-serif;
+  cursor: pointer;
+  transition: background-color 300ms linear, transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 6px 22px rgba(34, 14, 103, 0.45), 0 2px 6px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.submit_btn:hover:not(:disabled) {
+  background-color: #220E67;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(34, 14, 103, 0.5), 0 4px 10px rgba(0,0,0,0.18);
+}
+
+.submit_btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(34, 14, 103, 0.35);
+}
+
+.submit_btn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255,255,255,0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: auth_spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes auth_spin {
+  to { transform: rotate(360deg); }
+}
+
+.server_error {
+  color: #c0392b;
+  background: rgba(192,57,43,0.08);
+  border: 1px solid rgba(192,57,43,0.25);
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  font-size: 17px;
+  font-family: "sansation-400", sans-serif;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.server_success {
+  color: #1a7a4a;
+  background: rgba(26,122,74,0.08);
+  border: 1px solid rgba(26,122,74,0.25);
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  font-size: 17px;
+  font-family: "sansation-400", sans-serif;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+@media (max-width:500px) {
+  .submit_btn {
+    font-size: 23px;
+  }
+}
+
 .password_input_wrapper{
   position: relative;
   width: 100%;

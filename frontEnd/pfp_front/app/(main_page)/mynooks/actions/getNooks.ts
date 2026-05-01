@@ -1,21 +1,6 @@
 'use server'
-import { cookies } from 'next/headers'
 import { revalidateTag } from 'next/cache'
-
-async function authedFetch(path: string, options: RequestInit = {}) {
-  const token = (await cookies()).get('token')?.value
-  const response = await fetch(`http://127.0.0.1:8000${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      ...options.headers,
-    },
-  })
-  if (response.status === 401) throw new Error('401')
-  if (!response.ok) throw new Error(`Request failed: ${response.status}`)
-  return response
-}
+import { authedFetch } from '@/lib/authorization_handling'
 
 export async function getMyNooks() {
   const profileRes = await authedFetch('/api/Account/my-profile/', { cache: 'no-store' })
@@ -68,5 +53,4 @@ export async function getMyNooks() {
 
 export async function deleteNook(id: string) {
   await authedFetch(`/api/Mynook/${id}`, { method: 'DELETE' })
-  revalidateTag('my-nooks')
 }

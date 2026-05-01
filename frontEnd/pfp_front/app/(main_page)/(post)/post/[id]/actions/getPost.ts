@@ -1,6 +1,7 @@
 'use server'
 import { cookies } from 'next/headers';
 import { revalidateTag } from 'next/cache';
+import { authedFetch } from '@/lib/authorization_handling';
 
 
 export async function verify()
@@ -55,7 +56,6 @@ export async function deleteComment(postId: string, commentId: string) {
       "Authorization": `Bearer ${token}`
     },
   });
-  if (response.ok) revalidateTag(`post-${postId}`);
   return { success: response.ok };
 }
 
@@ -75,7 +75,6 @@ export async function addComment(postId: string, comment: string, rating: number
     return { success: false, status: response.status, detail: body?.detail ?? 'Failed to submit.' };
   }
 
-  revalidateTag(`post-${postId}`);
   return { success: true, status: response.status, detail: null };
 }
 
@@ -96,7 +95,6 @@ export async function createReservation(postId: string, arrivalDate: string, dep
   }
 
   const data = await response.json();
-  revalidateTag(`post-${postId}`);
   return {
     success: true as const,
     reservation: {
@@ -140,7 +138,6 @@ export async function cancelReservation(reservationId: number, postId: string) {
     const err = await response.json().catch(() => ({}));
     return { success: false as const, error: err?.detail ?? 'Failed to cancel reservation' };
   }
-  revalidateTag(`post-${postId}`);
   return { success: true as const };
 }
 
@@ -225,14 +222,7 @@ export async function unsavePost(postId: string): Promise<{ success: boolean }> 
 }
 
 export async function getSavedPosts(): Promise<{ id: string; title: string; price: number; state: string; primary_image: string | null }[]> {
-  const token = (await cookies()).get('token')?.value;
-  if (!token) return [];
-  const response = await fetch(`http://127.0.0.1:8000/api/Posts/saved`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    cache: 'no-store',
-  });
-  if (!response.ok) return [];
+  const response = await authedFetch('/api/Posts/saved', { method: 'GET', cache: 'no-store' });
   const data: any[] = await response.json();
   return data.map((item) => ({
     id: item.post_id,
@@ -257,7 +247,6 @@ export async function updateComment(postId: string, commentId: string, comment: 
     const body = await response.json().catch(() => ({}));
     return { success: false, detail: body?.detail ?? 'Failed to update.' };
   }
-  revalidateTag(`post-${postId}`);
   return { success: true };
 }
 
@@ -278,7 +267,6 @@ export async function rateSeller(postId: string, rating: number, isUpdate: boole
       const err = await retry.json().catch(() => ({}));
       return { success: false, detail: err?.detail ?? 'Failed to update rating.' };
     }
-    revalidateTag(`post-${postId}`);
     return { success: true, wasAlreadyRated: true };
   }
 
@@ -286,7 +274,6 @@ export async function rateSeller(postId: string, rating: number, isUpdate: boole
     const err = await response.json().catch(() => ({}));
     return { success: false, detail: err?.detail ?? 'Failed to rate.' };
   }
-  revalidateTag(`post-${postId}`);
   return { success: true, wasAlreadyRated: false };
 }
 
@@ -298,7 +285,7 @@ export async function getPost(id: string) {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
-    next: { revalidate: 60, tags: [`post-${id}`] },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
