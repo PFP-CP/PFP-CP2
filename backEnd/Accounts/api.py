@@ -351,6 +351,7 @@ def change_pfp(request ,file: UploadedFile = File(...)):
         return 200 , {"Success" : Pic.upload_picture(user ,"profile_picture" , file)}
     return 200 , {"Success" : Pic.replace_picture(user , "profile_picture" , file)}
 
-@router.get("/isUserVerfied" , auth=JWTAuth() )
-def check_verification(request):
-    return {"Is User Verified" :request.user.is_active}
+@router.get("/isUserVerfied" )
+def check_verification(request , mail : str):
+    user = Account.objects.filter(email__exact= mail).first()
+    return {"Is User Verified" :user.is_active}
