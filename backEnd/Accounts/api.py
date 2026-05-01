@@ -102,7 +102,7 @@ def verify_confirmation_key(cached_key, user_key):
 
 # add a function for email confirmation
 @router.patch(
-    "/email_confirmation", auth=JWTAuth(), response={200: dict, 400: dict, 404: dict}
+    "/email_confirmation", response={200: dict, 400: dict, 404: dict}
 )
 def confirm_email(request, confirmdata: EmailConfirmation):
     User = Account.objects.filter(email__exact=confirmdata.email).first()
@@ -350,3 +350,7 @@ def change_pfp(request ,file: UploadedFile = File(...)):
     if not Pic.picture_exists(user , "profile_picture"):
         return 200 , {"Success" : Pic.upload_picture(user ,"profile_picture" , file)}
     return 200 , {"Success" : Pic.replace_picture(user , "profile_picture" , file)}
+
+@router.get("/isUserVerfied" , auth=JWTAuth() )
+def check_verification(request):
+    return {"Is User Verified" :request.user.is_active}
