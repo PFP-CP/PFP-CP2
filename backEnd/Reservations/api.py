@@ -6,10 +6,15 @@ from ninja_jwt.authentication import JWTAuth
 import utilitymethods.Pictures as Pic
 from Accounts.models import Account, Contact
 from Houses.models import Location, Pictures
-from Posts.models import Post
+from Posts.models import Post, SavedPost
 
 from .models import Reservation
-from .schemas import DeleteReservationOut, ReservationIn, ReservationOut
+from .schemas import (
+    DeleteReservationOut,
+    ReservationIn,
+    ReservationOut,
+    SimpleReservationOut,
+)
 
 router = Router()
 
@@ -110,7 +115,38 @@ def create_reservation(request, payload: ReservationIn):
         "renter", "post", "post__house"
     ).get(pk=reservation.pk)
 
+    # Auto-save the post to the user's favorites
+    saved_post, created = SavedPost.objects.get_or_create(user=user, post=post)
+    if created:
+        post.increment_saves()
+
     return 201, _reservation_to_dict(reservation)
+
+
+@router.get(
+    "/post/{post_id}",
+    response=list[SimpleReservationOut],
+    auth=JWTAuth(),
+    tags=["Reservations"],
+)
+def get_user_reservations_for_post(request, post_id: str):
+    """
+    Get all reservations that the current user made on a specific post.
+    """
+    user: Account = request.user
+
+    reservations = Reservation.objects.filter(post_id=post_id, renter=user).order_by(
+        "-created_at"
+    )
+
+    return [
+        {
+            "id": r.id,
+            "arrival_date": r.arrival_date,
+            "departure_date": r.departure_date,
+        }
+        for r in reservations
+    ]
 
 
 @router.delete(

@@ -33,6 +33,12 @@ class PostOut(Schema):
     House: HouseOut
 
 
+class SimpleReservationOut(Schema):
+    id: int
+    arrival_date: date
+    departure_date: date
+
+
 # Full reservation row (one row in the UI table)
 
 
