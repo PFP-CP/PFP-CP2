@@ -72,6 +72,19 @@
     background-color: #6a4bc4;
 }
 
+.section {
+    margin-bottom: 52px;
+}
+
+.section_title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #4a389d;
+    margin: 0 0 4px 0;
+    padding-left: 12px;
+    border-left: 4px solid #7c5cdb;
+}
+
 /* للتجاوب */
 @media (max-width: 768px) {
     .page {

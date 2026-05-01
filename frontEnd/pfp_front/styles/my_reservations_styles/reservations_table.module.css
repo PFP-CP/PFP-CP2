@@ -252,6 +252,42 @@
     flex-shrink: 0;
 }
 
+.row_deleting {
+    opacity: 0.45;
+    pointer-events: none;
+    filter: grayscale(0.4);
+}
+
+.card_deleting {
+    opacity: 0.45;
+    pointer-events: none;
+    filter: grayscale(0.4);
+}
+
+.cancel_btn {
+    padding: 6px 14px;
+    background: #fff;
+    color: #dc3545;
+    border: 1.5px solid #dc3545;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.cancel_btn:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+.card_cancel {
+    border-top: 1px solid #f0f0f0;
+    padding: 0.6rem 0.75rem;
+}
+
 /* ── Responsive toggle ── */
 
 @media (max-width: 1024px) {

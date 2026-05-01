@@ -86,6 +86,7 @@
   color: white;
   box-shadow: 0 4px 14px rgba(34, 14, 103, 0.35);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: .5rem;
 }
 
 .date_container_after_choice:hover {

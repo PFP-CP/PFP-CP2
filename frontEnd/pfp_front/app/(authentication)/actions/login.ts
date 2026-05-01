@@ -12,28 +12,42 @@ export async function login(Identifier:string, password:string){
   });
   const data = await response.json();
   if(!data.Error){
-    (await cookies()).set('token', data.tokens.access, {
+    const cookieStore = await cookies();
+    const opts = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7
-    });
-    (await cookies()).set('refresh', data.tokens.refresh, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7
-    });
+      sameSite: 'lax' as const,
+      maxAge: 60 * 60 * 24 * 7,
+    };
+    cookieStore.set('token', data.tokens.access, opts);
+    cookieStore.set('refresh', data.tokens.refresh, opts);
+    cookieStore.set('user_email', Identifier, opts);
 
-    return {success: true};
+    try {
+      const verRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/Account/isUserVerfied?mail=${encodeURIComponent(Identifier)}`,
+        { method: 'GET', headers: { Authorization: `Bearer ${data.tokens.access}` } }
+      );
+      if (verRes.ok) {
+        const verData = await verRes.json();
+        if (verData['Is User Verified'] === false) {
+          return { success: true, needsVerification: true };
+        }
+      }
+    } catch {}
+
+    return { success: true, needsVerification: false };
   }
 
   return { success: false, error: 'Invalid credentials' }
 }
 
 export async function logout() {
-  (await cookies()).delete('token');
-  (await cookies()).delete('refresh');
+  const cookieStore = await cookies();
+  cookieStore.delete('token');
+  cookieStore.delete('refresh');
+  cookieStore.delete('user_email');
+  cookieStore.delete('email_verified');
 }
 
 

@@ -1,0 +1,128 @@
+.page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f0ebff 0%, #e8e0ff 100%);
+    padding: 24px;
+    font-family: "sansation-400", sans-serif;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 48px 40px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 8px 40px rgba(124, 92, 219, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.title {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #220E67;
+    text-align: center;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.primary_btn {
+    width: 100%;
+    padding: 14px;
+    background: #220E67;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+
+.primary_btn:hover:not(:disabled) {
+    background: #3a1fa0;
+}
+
+.primary_btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.code_section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.code_input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #7c5cdb;
+    border-radius: 10px;
+    font-size: 1rem;
+    text-align: center;
+    letter-spacing: 2px;
+    outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.code_input:focus {
+    border-color: #220E67;
+}
+
+.link_btn {
+    background: none;
+    border: none;
+    color: #7c5cdb;
+    font-size: 0.88rem;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    padding: 0;
+}
+
+.link_btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error_msg {
+    margin: 0;
+    color: #dc2626;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.success_msg {
+    margin: 0;
+    color: #16a34a;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 36px 24px;
+    }
+}

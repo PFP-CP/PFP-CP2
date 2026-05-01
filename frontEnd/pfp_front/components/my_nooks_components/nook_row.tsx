@@ -1,4 +1,5 @@
 import { useState } from "react"
+import Link from "next/link"
 import styles from "@/styles/my_nooks_styles/nooks_table.module.css"
 import StatusBadge from "./status_badge"
 import { Property } from "@/types/api_types"
@@ -70,9 +71,17 @@ export default function NookRow({ nook, onEdit, onDelete, onRowClick }: NookRowP
 
             {/* اسم المستأجر */}
             <td className={styles.table_cell}>
-                <span className={styles.tenant_name}>
-                    {nook.tenant?.name || "-"}
-                </span>
+                {nook.tenant?.name && nook.tenant?.id ? (
+                    <Link
+                        href={`/profile/${nook.tenant.id}`}
+                        className={styles.tenant_name_link}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        {nook.tenant.name}
+                    </Link>
+                ) : (
+                    <span className={styles.tenant_name}>{nook.tenant?.name || "-"}</span>
+                )}
             </td>
 
             {/* الهاتف */}

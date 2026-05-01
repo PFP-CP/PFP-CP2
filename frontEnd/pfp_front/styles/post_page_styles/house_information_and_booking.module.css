@@ -522,7 +522,8 @@
   box-shadow: 0 8px 32px rgba(34, 14, 103, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.nook_scheduler_container>button{
+.nook_scheduler_container>button,
+.booking_buttons_row>button:not(.cancel_booking_btn){
   height: 49px;
   width: 100%;
   max-width: 180px;
@@ -538,12 +539,14 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.nook_scheduler_container>button:hover {
+.nook_scheduler_container>button:hover,
+.booking_buttons_row>button:not(.cancel_booking_btn):hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 22px rgba(34, 14, 103, 0.5);
 }
 
-.nook_scheduler_container>button:active {
+.nook_scheduler_container>button:active,
+.booking_buttons_row>button:not(.cancel_booking_btn):active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(34, 14, 103, 0.3);
 }
@@ -574,7 +577,7 @@
 .visitors_and_price input::-webkit-outer-spin-button{
   transform: scale(2);
   cursor: pointer;
-} 
+}
 
 .visitors_and_price .visitors{
   font-size:25px;
@@ -741,6 +744,190 @@
     padding: .5rem;
   }
 
+}
+
+/* Book + Cancel side by side */
+.booking_buttons_row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.booking_buttons_row > button {
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* Cancel Booking button (secondary, outlined) */
+.cancel_booking_btn {
+  height: 49px;
+  width: 100%;
+  max-width: 180px;
+  align-self: center;
+  border-radius: 23px;
+  border: 2px solid #D00000;
+  background-color: white;
+  color: #D00000;
+  cursor: pointer;
+  font-family: "sansation-700", sans-serif;
+  font-size: 20px;
+  padding: .5rem;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cancel_booking_btn:hover {
+  background-color: #D00000;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(208, 0, 0, 0.35);
+}
+
+.cancel_booking_btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(208, 0, 0, 0.25);
+}
+
+/* Cancel Booking modal */
+.modal_backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancel_modal {
+  background: white;
+  border-radius: 23px;
+  border: 3px solid black;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal_title {
+  font-size: 24px;
+  font-family: "sansation-700", sans-serif;
+}
+
+.modal_close_btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.modal_close_btn:hover {
+  background: #f0f0f0;
+}
+
+.modal_list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+}
+
+.modal_reservation_item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border: 2px solid #D9D9D9;
+  border-radius: 14px;
+  gap: 1rem;
+}
+
+.modal_dates {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "sansation-400", sans-serif;
+  font-size: 18px;
+  flex-wrap: wrap;
+}
+
+.modal_arrow {
+  color: #220E67;
+  font-family: "sansation-700", sans-serif;
+}
+
+.modal_cancel_btn {
+  height: 40px;
+  padding: 0 1.25rem;
+  background-color: #D00000;
+  color: white;
+  border: none;
+  border-radius: 23px;
+  cursor: pointer;
+  font-family: "sansation-700", sans-serif;
+  font-size: 16px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(208, 0, 0, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modal_cancel_btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 16px rgba(208, 0, 0, 0.4);
+}
+
+.modal_cancel_btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.modal_cancel_btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal_empty {
+  font-family: "sansation-400", sans-serif;
+  font-size: 18px;
+  color: #717171;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.modal_error {
+  color: #D00000;
+  font-size: 0.85rem;
+  font-family: "sansation-400", sans-serif;
+  margin: 0;
+}
+
+@media (max-width: 500px) {
+  .modal_dates {
+    font-size: 14px;
+  }
+  .modal_cancel_btn {
+    font-size: 14px;
+    padding: 0 0.75rem;
+  }
+  .cancel_booking_btn {
+    font-size: 17px;
+  }
 }
 
 /* Comment 3-dot menu */

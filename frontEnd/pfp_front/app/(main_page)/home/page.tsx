@@ -48,6 +48,8 @@ export default function Home() {
       const map: Record<string, Property[]> = {};
       WILAYAS.forEach((w, i) => { map[w.name] = results[i]; });
       setWilayaPosts(map);
+    }).catch(() => {
+      // treat any failure (including 401) as not logged in — show nothing
     }).finally(() => setLoading(false));
   }, []);
 

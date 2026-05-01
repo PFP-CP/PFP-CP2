@@ -8,7 +8,7 @@ import MyDatePicker from './ui/date_picker'
 import CarouselImages from "./carousel_images"
 import Image from 'next/image'
 import Link from 'next/link'
-import { addComment, createReservation, rateSeller, updateComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
+import { addComment, cancelReservation, createReservation, getMyReservationsForPost, rateSeller, updateComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
 
 
 
@@ -378,6 +378,56 @@ function Comments_visible({setShowComments,sectionData,currentUserId,onCommentAd
   )
 }
 
+type MyReservation = { id: number; arrival_date: string; departure_date: string };
+
+function CancelBookingModal({
+  reservations,
+  onClose,
+  onCancel,
+  cancellingId,
+  cancelError,
+}: {
+  reservations: MyReservation[];
+  onClose: () => void;
+  onCancel: (id: number) => Promise<void>;
+  cancellingId: number | null;
+  cancelError: string | null;
+}) {
+  return (
+    <div className={style.modal_backdrop} onClick={onClose}>
+      <div className={style.cancel_modal} onClick={e => e.stopPropagation()}>
+        <div className={style.modal_header}>
+          <span className={style.modal_title}>Your Bookings</span>
+          <button className={style.modal_close_btn} onClick={onClose}>{LEAVE_TAB}</button>
+        </div>
+        {cancelError && <p className={style.modal_error}>{cancelError}</p>}
+        {reservations.length === 0 ? (
+          <p className={style.modal_empty}>No bookings to cancel.</p>
+        ) : (
+          <div className={style.modal_list}>
+            {reservations.map(r => (
+              <div key={r.id} className={style.modal_reservation_item}>
+                <div className={style.modal_dates}>
+                  <span>{r.arrival_date}</span>
+                  <span className={style.modal_arrow}>→</span>
+                  <span>{r.departure_date}</span>
+                </div>
+                <button
+                  className={style.modal_cancel_btn}
+                  onClick={() => onCancel(r.id)}
+                  disabled={cancellingId !== null}
+                >
+                  {cancellingId === r.id ? 'Cancelling…' : 'Cancel'}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function HouseInformationAndBooking({post_data,onCommentAdded,onReservationCreated,currentUserId}:{post_data:any,onCommentAdded:()=>Promise<void>,onReservationCreated:()=>Promise<void>,currentUserId:number|null}){
   const [showComments, setShowComments] = useState(false);
   const [visitorsActive, setVisitorsActive] = useState(false);
@@ -388,6 +438,15 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [visitorsHint, setVisitorsHint] = useState(false);
+  const [myReservations, setMyReservations] = useState<MyReservation[]>([]);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    getMyReservationsForPost(post_data.id).then(setMyReservations);
+  }, [post_data.id, currentUserId]);
 
   const handleVisitorsNumber = (e:React.ChangeEvent<HTMLInputElement>)=>{
     if(Number(e.currentTarget.value)<1){
@@ -421,9 +480,27 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
     setBookingLoading(false);
     if (res.success) {
       setBookingSuccess(true);
+      setMyReservations(prev => [...prev, res.reservation]);
       await onReservationCreated();
     } else {
       setBookingError(res.error ?? 'Reservation failed. Please try again.');
+    }
+  };
+
+  const handleCancelReservation = async (reservationId: number) => {
+    setCancellingId(reservationId);
+    setCancelError(null);
+    const res = await cancelReservation(reservationId, post_data.id);
+    setCancellingId(null);
+    if (res.success) {
+      setMyReservations(prev => {
+        const updated = prev.filter(r => r.id !== reservationId);
+        if (updated.length === 0) setShowCancelModal(false);
+        return updated;
+      });
+      await onReservationCreated();
+    } else {
+      setCancelError(res.error ?? 'Failed to cancel reservation.');
     }
   };
 
@@ -453,16 +530,35 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
               {visitorsHint && <p style={{color:'orange', fontSize:'0.8rem', margin:'0'}}>Please enter the number of visitors.</p>}
               {bookingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0'}}>{bookingError}</p>}
               {bookingSuccess && <p style={{color:'green', fontSize:'0.8rem', margin:'0'}}>Reservation confirmed!</p>}
-              <button
-                onClick={handleBook}
-                disabled={bookingLoading}
-                style={bookingLoading ? {opacity:0.5, cursor:'not-allowed'} : {}}
-              >
-                {bookingLoading ? 'Booking...' : 'Book'}
-              </button>
+              <div className={style.booking_buttons_row}>
+                <button
+                  onClick={handleBook}
+                  disabled={bookingLoading}
+                  style={bookingLoading ? {opacity:0.5, cursor:'not-allowed'} : {}}
+                >
+                  {bookingLoading ? 'Booking...' : 'Book'}
+                </button>
+                {myReservations.length > 0 && (
+                  <button
+                    className={style.cancel_booking_btn}
+                    onClick={() => { setShowCancelModal(true); setCancelError(null); }}
+                  >
+                    Cancel Booking
+                  </button>
+                )}
+              </div>
             </>}
           </div>
         </div>
+        )}
+        {showCancelModal && (
+          <CancelBookingModal
+            reservations={myReservations}
+            onClose={() => { setShowCancelModal(false); setCancelError(null); }}
+            onCancel={handleCancelReservation}
+            cancellingId={cancellingId}
+            cancelError={cancelError}
+          />
         )}
       </section>
   )

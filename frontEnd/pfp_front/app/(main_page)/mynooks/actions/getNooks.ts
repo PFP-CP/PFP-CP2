@@ -56,6 +56,7 @@ export async function getMyNooks() {
       status: active ? 'reserved-today' : 'available',
       tenant: active
         ? {
+            id: active.renter?.id ?? null,
             name: active.renter?.full_name || null,
             mobile: active.renter?.phone || null,
             email: active.renter?.email || null,

@@ -20,13 +20,17 @@ function mapPost(item: any): Property {
 async function authFetch(path: string): Promise<any[]> {
   const token = (await cookies()).get('token')?.value;
   if (!token) return [];
-  const res = await fetch(`${API}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: 'no-store',
-  });
-  if (!res.ok) return [];
-  const data = await res.json().catch(() => []);
-  return Array.isArray(data) ? data : [];
+  try {
+    const res = await fetch(`${API}${path}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (res.status === 401 || !res.ok) return [];
+    const data = await res.json().catch(() => []);
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
 }
 
 export async function getRecommendedPosts(): Promise<Property[]> {

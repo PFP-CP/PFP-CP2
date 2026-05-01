@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "@/styles/my_nooks_styles/seller_profile.module.css";
 import Loading from "@/components/loading";
-import { getSellerProfile } from "@/app/(main_page)/actions/profile";
+import { getSellerProfile, getMyProfile, changeProfilePicture } from "@/app/(main_page)/actions/profile";
 import { PublicSellerProfile, PublicNookCard } from "@/types/api_types";
 import { getWilayaName } from "@/data/auth_data/data";
 
@@ -60,23 +60,44 @@ export default function SellerProfilePage() {
   const [profile, setProfile] = useState<PublicSellerProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!sellerId) return;
-    getSellerProfile(sellerId)
-      .then((data) => {
-        if (!data) setError("Profile not found.");
-        else setProfile(data);
-      })
-      .catch(() => setError("Failed to load profile."))
-      .finally(() => setLoading(false));
+    Promise.all([getSellerProfile(sellerId), getMyProfile()]).then(([data, me]) => {
+      if (!data) { setError("Profile not found."); setLoading(false); return; }
+      setProfile(data);
+      setAvatarUrl(getFullImageUrl(data.seller.profile_picture));
+      if (me && String(me.id) === String(sellerId)) setIsOwner(true);
+      setLoading(false);
+    }).catch(() => { setError("Failed to load profile."); setLoading(false); });
   }, [sellerId]);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadLoading(true);
+    setUploadError(null);
+    const formData = new FormData();
+    formData.append('file', file);
+    const result = await changeProfilePicture(formData);
+    setUploadLoading(false);
+    if (result.success) {
+      setAvatarUrl(URL.createObjectURL(file));
+    } else {
+      setUploadError(result.error ?? 'Failed to update picture.');
+    }
+    e.target.value = '';
+  };
 
   if (loading) return <Loading text="Loading profile..." />;
   if (error || !profile) return <div className={styles.error}>{error ?? "Profile not found."}</div>;
 
   const { seller, nooks } = profile;
-  const avatarUrl = getFullImageUrl(seller.profile_picture);
 
   const grouped = nooks.reduce<Record<string, PublicNookCard[]>>((acc, nook) => {
     const key = getWilayaName(nook.wilaya ?? "") || nook.wilaya || "Other";
@@ -111,6 +132,34 @@ export default function SellerProfilePage() {
             </div>
           )}
           <div className={styles.rating_badge}>★ {seller.rating.toFixed(1)}</div>
+          {isOwner && (
+            <>
+              <button
+                className={styles.change_picture_btn}
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadLoading}
+                title="Change profile picture"
+              >
+                {uploadLoading ? (
+                  <span className={styles.upload_spinner} />
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 3L7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9Zm3 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                  </svg>
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+            </>
+          )}
+          {uploadError && (
+            <p className={styles.upload_error}>{uploadError}</p>
+          )}
         </div>
 
         <div className={styles.info}>

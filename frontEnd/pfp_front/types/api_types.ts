@@ -111,6 +111,7 @@ export interface Property {
     ownerId?: number;
     status: "reserved" | "available" | "reserved-today";
     tenant?: {
+        id: number | null;
         name: string;
         mobile: string;
         email: string;
@@ -143,6 +144,25 @@ export interface Reservation {
     arrival_date: string;
     departure_date: string;
     created_at: string;
+}
+
+export interface BookedReservation {
+    id: number;
+    arrival_date: string;
+    departure_date: string;
+    post: {
+        id: string;
+        title: string;
+        photo: string | null;
+        price: number;
+        wilaya: string;
+        rating: number;
+        seller: {
+            id: number;
+            full_name: string;
+            email: string;
+        };
+    };
 }
 
 // ========== طلبات إنشاء الحجز ==========

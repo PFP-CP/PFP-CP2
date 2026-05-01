@@ -2,45 +2,64 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Reservation } from "@/types/api_types"
+import { Reservation, BookedReservation } from "@/types/api_types"
 import { getReservations } from "./actions/getReservations"
+import { getMyBookings } from "./actions/getMyBookings"
 import ReservationsTable from "@/components/my_reservations_components/reservations_table"
+import BookedReservationsTable from "@/components/my_reservations_components/booked_reservations_table"
 import styles from "@/styles/my_reservations_styles/reservations_page.module.css"
 import Loading from "@/components/loading"
 
 export default function MyReservationsPage() {
     const router = useRouter()
-    const [reservations, setReservations] = useState<Reservation[]>([])
+
+    const [hostReservations, setHostReservations] = useState<Reservation[]>([])
+    const [bookedReservations, setBookedReservations] = useState<BookedReservation[]>([])
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+    const [hostError, setHostError] = useState<string | null>(null)
+    const [bookedError, setBookedError] = useState<string | null>(null)
     const [isUnauthorized, setIsUnauthorized] = useState(false)
 
-    const fetchReservations = async () => {
+    const fetchAll = async () => {
         setLoading(true)
-        setError(null)
-        try {
-            const response = await getReservations()
-            const data = Array.isArray(response) ? response : []
-            setReservations(data)
-        } catch (err: any) {
-            const msg: string = err?.message || "Failed to fetch reservations"
-            if (
-                err?.status === 401 ||
-                msg.toLowerCase().includes("unauthorized") ||
-                msg.includes("401")
-            ) {
-                setIsUnauthorized(true)
+        setHostError(null)
+        setBookedError(null)
+
+        const [hostResult, bookedResult] = await Promise.allSettled([
+            getReservations(),
+            getMyBookings(),
+        ])
+
+        let unauthorized = false
+
+        if (hostResult.status === "fulfilled") {
+            setHostReservations(Array.isArray(hostResult.value) ? hostResult.value : [])
+        } else {
+            const msg: string = (hostResult.reason as any)?.message || ""
+            if (msg.includes("401") || msg.toLowerCase().includes("unauthorized")) {
+                unauthorized = true
             } else {
-                setError(msg)
+                setHostError(msg || "Failed to fetch reservations on your listings")
             }
-            console.error("Error fetching reservations:", err)
-        } finally {
-            setLoading(false)
         }
+
+        if (bookedResult.status === "fulfilled") {
+            setBookedReservations(Array.isArray(bookedResult.value) ? bookedResult.value : [])
+        } else {
+            const msg: string = (bookedResult.reason as any)?.message || ""
+            if (msg.includes("401") || msg.toLowerCase().includes("unauthorized")) {
+                unauthorized = true
+            } else {
+                setBookedError(msg || "Failed to fetch your bookings")
+            }
+        }
+
+        if (unauthorized) setIsUnauthorized(true)
+        setLoading(false)
     }
 
     useEffect(() => {
-        fetchReservations()
+        fetchAll()
     }, [])
 
     if (loading) return <Loading text="Loading your reservations..." />
@@ -69,24 +88,6 @@ export default function MyReservationsPage() {
         )
     }
 
-    if (error) {
-        return (
-            <main className={styles.page}>
-                <div className={styles.header}>
-                    <div className={styles.title_section}>
-                        <h1 className={styles.page_title}>Reservations</h1>
-                    </div>
-                </div>
-                <div className={styles.error}>
-                    <p className={styles.error_message}>Error: {error}</p>
-                    <button onClick={fetchReservations} className={styles.retry_btn}>
-                        Retry
-                    </button>
-                </div>
-            </main>
-        )
-    }
-
     return (
         <main className={styles.page}>
             <div className={styles.header}>
@@ -98,7 +99,29 @@ export default function MyReservationsPage() {
                 </div>
             </div>
 
-            <ReservationsTable reservations={reservations} onRefresh={fetchReservations} />
+            <div className={styles.section}>
+                <h2 className={styles.section_title}>Reservations on Your Listings</h2>
+                {hostError ? (
+                    <div className={styles.error}>
+                        <p className={styles.error_message}>Error: {hostError}</p>
+                        <button onClick={fetchAll} className={styles.retry_btn}>Retry</button>
+                    </div>
+                ) : (
+                    <ReservationsTable reservations={hostReservations} onRefresh={fetchAll} />
+                )}
+            </div>
+
+            <div className={styles.section}>
+                <h2 className={styles.section_title}>Your Bookings</h2>
+                {bookedError ? (
+                    <div className={styles.error}>
+                        <p className={styles.error_message}>Error: {bookedError}</p>
+                        <button onClick={fetchAll} className={styles.retry_btn}>Retry</button>
+                    </div>
+                ) : (
+                    <BookedReservationsTable reservations={bookedReservations} onRefresh={fetchAll} />
+                )}
+            </div>
         </main>
     )
 }

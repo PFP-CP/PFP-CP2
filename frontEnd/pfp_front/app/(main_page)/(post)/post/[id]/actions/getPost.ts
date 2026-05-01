@@ -92,11 +92,56 @@ export async function createReservation(postId: string, arrivalDate: string, dep
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    return { success: false, error: err?.detail ?? 'Reservation failed' };
+    return { success: false as const, error: err?.detail ?? 'Reservation failed' };
   }
 
+  const data = await response.json();
   revalidateTag(`post-${postId}`);
-  return { success: true };
+  return {
+    success: true as const,
+    reservation: {
+      id: data.id as number,
+      arrival_date: data.arrival_date as string,
+      departure_date: data.departure_date as string,
+    },
+  };
+}
+
+export async function getMyReservationsForPost(postId: string): Promise<{ id: number; arrival_date: string; departure_date: string }[]> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return [];
+  const response = await fetch(`http://127.0.0.1:8000/api/Reservations/post/${postId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    cache: 'no-store',
+  });
+  if (!response.ok) return [];
+  const data = await response.json();
+  return (Array.isArray(data) ? data : []).map((r: any) => ({
+    id: r.id,
+    arrival_date: r.arrival_date,
+    departure_date: r.departure_date,
+  }));
+}
+
+export async function cancelReservation(reservationId: number, postId: string) {
+  const token = (await cookies()).get('token')?.value;
+  const response = await fetch(`http://127.0.0.1:8000/api/Reservations/${reservationId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    return { success: false as const, error: err?.detail ?? 'Failed to cancel reservation' };
+  }
+  revalidateTag(`post-${postId}`);
+  return { success: true as const };
 }
 
 export async function getComments(id: string) {

@@ -96,6 +96,17 @@
     font-size: 0.9rem;
 }
 
+.tenant_name_link {
+    color: #220E67;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.tenant_name_link:hover {
+    color: #3d1db5;
+}
+
 .operations {
     display: flex;
     gap: 8px;

@@ -65,7 +65,11 @@ function MobileCard({ nook, onEdit, onDelete }: { nook: Property; onEdit: (id: s
                 <div className={styles.card_tenant}>
                     <span className={styles.tenant_row}>
                         <span className={styles.tenant_label}>Tenant</span>
-                        {nook.tenant?.name || "—"}
+                        {nook.tenant?.name && nook.tenant?.id ? (
+                            <Link href={`/profile/${nook.tenant.id}`} className={styles.tenant_name_link} onClick={e => e.stopPropagation()}>
+                                {nook.tenant.name}
+                            </Link>
+                        ) : (nook.tenant?.name || "—")}
                     </span>
                     <span className={styles.tenant_row}>
                         <span className={styles.tenant_label}>Mobile</span>

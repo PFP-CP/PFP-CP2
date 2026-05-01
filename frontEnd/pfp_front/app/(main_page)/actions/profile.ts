@@ -41,14 +41,15 @@ export async function checkEmailVerified(email: string): Promise<{ verified: boo
   const response = await fetch(`${API}/api/Account/email_confirmation`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ email, key: '__probe__' }),
+    body: JSON.stringify({ email, key: "" }),
     cache: 'no-store',
   });
+  console.log(response)
   // 400 means is_active is already true → verified
   return { verified: response.status === 400 };
 }
 
-export async function sendVerificationEmail(email: string): Promise<{ success: boolean; error?: string }> {
+export async function sendVerificationEmail(email: string): Promise<{ success: boolean; alreadyVerified?: boolean; error?: string }> {
   const token = (await cookies()).get('token')?.value;
   if (!token) return { success: false, error: 'Not authenticated' };
   const response = await fetch(`${API}/api/Account/email_confirmation`, {
@@ -57,6 +58,12 @@ export async function sendVerificationEmail(email: string): Promise<{ success: b
     body: JSON.stringify({ email }),
     cache: 'no-store',
   });
+  console.log(response)
+  if (response.status === 400) {
+    const data = await response.json().catch(() => ({}));
+    if ((data.detail as string)?.includes('already active')) return { success: true, alreadyVerified: true };
+    return { success: false, error: data.detail ?? 'Failed to send email.' };
+  }
   if (!response.ok) return { success: false, error: 'Failed to send email.' };
   return { success: true };
 }
@@ -72,8 +79,49 @@ export async function verifyEmailCode(email: string, key: string): Promise<{ suc
   });
   if (!response.ok) return { success: false, error: 'Verification failed.' };
   const data = await response.json().catch(() => ({}));
-  if ((data.detail as string) === 'Success') return { success: true };
+  if ((data.detail as string) === 'Success') {
+    (await cookies()).set('email_verified', '1', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24,
+    });
+    return { success: true };
+  }
   return { success: false, error: data.detail ?? 'Invalid code.' };
+}
+
+export async function isUserVerified(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token')?.value;
+  const email = cookieStore.get('user_email')?.value;
+  if (!token || !email) return false;
+  try {
+    const response = await fetch(
+      `${API}/api/Account/isUserVerfied?mail=${encodeURIComponent(email)}`,
+      { method: 'GET', headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' }
+    );
+    if (!response.ok) return false;
+    const data = await response.json();
+    return data['Is User Verified'] === true;
+  } catch {
+    return false;
+  }
+}
+
+export async function changeProfilePicture(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const token = (await cookies()).get('token')?.value;
+  if (!token) return { success: false, error: 'Not authenticated' };
+  const response = await fetch(`${API}/api/Account/changePicture`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    return { success: false, error: err?.detail ?? 'Failed to update picture.' };
+  }
+  return { success: true };
 }
 
 export async function changePassword(old_password: string, new_password: string): Promise<{ success: boolean; error?: string }> {

@@ -174,7 +174,8 @@ export default function AuthForm() {
 
             res = await login(form.email!,form.password!);
             if(res.success){
-              router.push(redirectTo);
+              if(res.needsVerification) router.push('/verify');
+              else router.push(redirectTo);
             }else{
               setError('password',{
               type:'manual',
