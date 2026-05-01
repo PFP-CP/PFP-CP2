@@ -4,8 +4,8 @@ from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
 
 import utilitymethods.Pictures as Pic
-from Accounts.models import Account, Contact
-from Houses.models import Location, Pictures
+from Accounts.models import Account
+from Houses.models import Pictures
 from Posts.models import Post, SavedPost
 
 from .models import Reservation
@@ -25,18 +25,27 @@ router = Router()
 
 
 def _reservation_to_dict(r: Reservation) -> dict:
-    # Wilaya comes from Houses.Location (FK from House)
+    # Safely access Location without N+1
     try:
-        wilaya = Location.objects.get(house=r.post.house).State
-    except Location.DoesNotExist:
+        wilaya = (
+            r.post.house.location.State if hasattr(r.post.house, "location") else "—"
+        )
+    except Exception:
         wilaya = "—"
 
-    # Phone comes from Accounts.Contact (OneToOne from Account)
+    # Safely access Phone without N+1
     try:
-        phone = Contact.objects.get(Account=r.renter).Phone_Number
-    except Contact.DoesNotExist:
+        phone = r.renter.contact.Phone_Number if hasattr(r.renter, "contact") else None
+    except Exception:
         phone = None
-    first_pic = Pictures.objects.filter(house=r.post.house).first()
+
+    # Safely access Pictures without N+1
+    try:
+        house_pics = r.post.house.pictures.all()
+        first_pic = house_pics[0] if house_pics else None
+    except Exception:
+        first_pic = None
+
     photo = (
         Pic.get_picture_url(first_pic, "picture")
         if first_pic
@@ -75,8 +84,13 @@ def list_reservations(request):
         Reservation.objects.filter(post__seller=user)  # only this host's listings
         .select_related(
             "renter",  # avoids N+1 on renter fields
+            "renter__contact",  # avoids N+1 on contact
             "post",
             "post__house",  # avoids N+1 on house fields
+            "post__house__location",  # avoids N+1 on location
+        )
+        .prefetch_related(
+            "post__house__pictures"  # avoids N+1 on pictures
         )
         .order_by("-created_at")  # most recent first
     )
@@ -110,10 +124,14 @@ def create_reservation(request, payload: ReservationIn):
         departure_date=payload.departure_date,
     )
 
-    # select_related so _reservation_to_dict can access renter/post/House
-    reservation = Reservation.objects.select_related(
-        "renter", "post", "post__house"
-    ).get(pk=reservation.pk)
+    # select_related so _reservation_to_dict can access renter/post/House without N+1
+    reservation = (
+        Reservation.objects.select_related(
+            "renter", "renter__contact", "post", "post__house", "post__house__location"
+        )
+        .prefetch_related("post__house__pictures")
+        .get(pk=reservation.pk)
+    )
 
     # Auto-save the post to the user's favorites
     saved_post, created = SavedPost.objects.get_or_create(user=user, post=post)
