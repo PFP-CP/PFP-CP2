@@ -54,7 +54,6 @@ class Account(AbstractUser):
     REQUIRED_FIELDS = []  # No additional required fields
 
     objects = AccountManager()
-    verified = models.BooleanField(default=False)
     first_name = None
     last_name = None
     full_name = models.TextField(max_length=150)
