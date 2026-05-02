@@ -263,7 +263,7 @@ export default function AuthForm() {
                 disabled={isPending}
               >
                 {isPending
-                  ? <><span className={style.spinner} aria-hidden="true" />{LOADING_LABELS[authState]}</>
+                  ? <span className={style.spinner} aria-hidden="true" />
                   : SUBMIT_LABELS[authState]
                 }
               </button>
