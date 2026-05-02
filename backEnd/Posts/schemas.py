@@ -148,6 +148,8 @@ class HouseMiniOut(Schema):
     num_bedroom: Optional[int]
     num_bathroom: Optional[int]
     Types_of_Renters: Optional[str]
+    num_beds : Optional[int]
+    max_tenants: Optional[int]
 
     Description: str
 
