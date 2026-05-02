@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2026-01-25" view-index="0" gantt-divider-location="375" resource-divider-location="300" version="3.3.3322" locale="en_US">
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2026-03-08" view-index="0" gantt-divider-location="360" resource-divider-location="300" version="3.3.3322" locale="en_US">
     <description/>
     <view zooming-state="default:5" id="gantt-chart">
-        <field id="tpd3" name="Name" width="205" order="0"/>
-        <field id="tpd4" name="Begin date" width="77" order="1"/>
-        <field id="tpd5" name="End date" width="77" order="2"/>
+        <field id="tpd3" name="Name" width="196" order="0"/>
+        <field id="tpd4" name="Begin date" width="74" order="1"/>
+        <field id="tpd5" name="End date" width="74" order="2"/>
         <field id="tpd15" name="Notes" width="20" order="3"/>
         <option id="filter.completedTasks" value="false"/>
         <option id="filter.dueTodayTasks" value="false"/>
         <option id="filter.overdueTasks" value="false"/>
         <option id="filter.inProgressTodayTasks" value="false"/>
-        <timeline><![CDATA[0,54,74,69]]></timeline>
+        <timeline><![CDATA[69,74,0,54]]></timeline>
         <option id="color.recent"><![CDATA[#006666 #cc00cc #ff9999 #ff33cc #999900 #990099 #000066 #00cc33 #00ff00 #00cccc]]></option>
     </view>
     <view id="resource-table">
@@ -79,15 +79,15 @@
                 <depend id="25" type="2" difference="0" hardness="Strong"/>
             </task>
         </task>
-        <task id="6" uid="3d73748842244b4695b7a950e9057638" name="front end of the website" meeting="false" start="2026-02-09" duration="47" complete="92" expand="true">
+        <task id="6" uid="3d73748842244b4695b7a950e9057638" name="front end of the website" meeting="false" start="2026-02-09" duration="47" complete="100" expand="true">
             <task id="41" uid="50a8962ecfb443f887a078575a9c72bb" name="Global Front End setup" meeting="false" start="2026-02-09" duration="3" complete="100" expand="true">
                 <depend id="43" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="42" uid="4dc949c47cc84eae835f7d5ba0628b90" name="page implementation" meeting="false" start="2026-02-12" duration="44" complete="91" expand="true">
+            <task id="42" uid="4dc949c47cc84eae835f7d5ba0628b90" name="page implementation" meeting="false" start="2026-02-12" duration="44" complete="100" expand="true">
                 <task id="44" uid="d2bf01ac993b405e9b537240ed4b222a" name="Main page" color="#ff33cc" meeting="false" start="2026-02-23" duration="11" complete="100" priority="4" expand="true">
                     <depend id="45" type="2" difference="0" hardness="Strong"/>
                 </task>
-                <task id="88" uid="10a6b838ca854de08d53c7682d00564d" name="Account page" color="#cc00cc" meeting="false" start="2026-04-09" duration="4" complete="0" expand="true"/>
+                <task id="88" uid="10a6b838ca854de08d53c7682d00564d" name="Account page" color="#cc00cc" meeting="false" start="2026-04-09" duration="4" complete="100" expand="true"/>
                 <task id="45" uid="dd558ece0d9649b8bfc318713fc6e0a4" name="my reservation page" color="#cc00cc" meeting="false" start="2026-03-10" duration="9" complete="100" expand="true">
                     <depend id="46" type="2" difference="0" hardness="Strong"/>
                 </task>
