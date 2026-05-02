@@ -1,0 +1,19 @@
+.container {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9999;
+}
+
+.spinner {
+    width: 38px;
+    height: 38px;
+    border: 4px solid rgba(34, 14, 103, 0.2);
+    border-top-color: #220E67;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

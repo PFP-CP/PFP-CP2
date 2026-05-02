@@ -161,6 +161,7 @@ export interface BookedReservation {
             id: number;
             full_name: string;
             email: string;
+            mobile_number: string | null;
         };
     };
 }

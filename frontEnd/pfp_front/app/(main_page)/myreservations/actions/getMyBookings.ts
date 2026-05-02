@@ -25,34 +25,55 @@ export async function getMyBookings(): Promise<BookedReservation[]> {
   if (withReservations.length === 0) return []
 
   // Step 3: fetch full post details only for posts that have reservations
-  const results = await Promise.all(
+  const postDetails = await Promise.all(
     withReservations.map(async ({ postId, reservations }) => {
       try {
         const postRes = await authedFetch(`/api/Posts/${postId}`, { method: 'GET', cache: 'no-store' })
         const p: any = await postRes.json()
-
-        return reservations.map((r) => ({
-          id: r.id,
-          arrival_date: r.arrival_date,
-          departure_date: r.departure_date,
-          post: {
-            id: postId,
-            title: p.title || p.Title || '',
-            photo: p.house_pictures?.[0]?.URL || null,
-            price: p.house?.Price || 0,
-            wilaya: p.location?.State || '',
-            rating: p.rating || 0,
-            seller: {
-              id: p.seller?.id ?? 0,
-              full_name: p.seller?.full_name || '—',
-              email: p.seller?.email || '—',
-            },
-          },
-        }))
+        return { postId, reservations, p }
       } catch {
-        return []
+        return null
       }
     })
+  )
+
+  const validPosts = postDetails.filter(Boolean) as { postId: string; reservations: { id: number; arrival_date: string; departure_date: string }[]; p: any }[]
+
+  // Deduplicate seller IDs, then fetch all profiles in parallel
+  const sellerIds = [...new Set(validPosts.map(({ p }) => p.seller?.id).filter(Boolean))] as number[]
+  const sellerProfiles = await Promise.all(
+    sellerIds.map(async (sellerId) => {
+      try {
+        const res = await authedFetch(`/api/Mynook/profile/${sellerId}`, { method: 'GET', cache: 'no-store' })
+        const data: any = await res.json()
+        return { sellerId, mobile_number: data.seller?.mobile_number ?? null }
+      } catch {
+        return { sellerId, mobile_number: null }
+      }
+    })
+  )
+  const mobileBySellerID = Object.fromEntries(sellerProfiles.map(({ sellerId, mobile_number }) => [sellerId, mobile_number]))
+
+  const results = validPosts.map(({ postId, reservations, p }) =>
+    reservations.map((r) => ({
+      id: r.id,
+      arrival_date: r.arrival_date,
+      departure_date: r.departure_date,
+      post: {
+        id: postId,
+        title: p.title || p.Title || '',
+        photo: p.house_pictures?.[0]?.URL || null,
+        price: p.house?.Price || 0,
+        wilaya: p.location?.State || '',
+        rating: p.rating || 0,
+        seller: {
+          id: p.seller?.id ?? 0,
+          full_name: p.seller?.full_name || '—',
+          email: p.seller?.email || '—',
+          mobile_number: mobileBySellerID[p.seller?.id] ?? null,
+        },
+      },
+    }))
   )
 
   return results.flat()

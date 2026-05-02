@@ -6,6 +6,7 @@ import Image from "next/image"
 import styles from "@/styles/home_styles/property_card.module.css"
 import { Property } from "@/types/api_types"
 import { getWilayaName } from "@/data/auth_data/data"
+import { useNavigationLoader } from "@/lib/navigation-loader-context"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -22,13 +23,14 @@ type PropertyCardProps = {
 
 export default function PropertyCard({ property }: PropertyCardProps) {
     const router = useRouter()
+    const { startLoading } = useNavigationLoader()
     const [imgError, setImgError] = useState(false)
     const imageUrl = getFullImageUrl(property.primary_image)
 
     return (
         <div
             className={styles.card}
-            onClick={() => property.id && router.push(`/post/${property.id}`)}
+            onClick={() => { if (property.id) { startLoading(); router.push(`/post/${property.id}`) } }}
             style={{ cursor: property.id ? "pointer" : "default" }}
         >
             <div className={styles.card_image}>

@@ -227,7 +227,7 @@ export async function getSavedPosts(): Promise<{ id: string; title: string; pric
   return data.map((item) => ({
     id: item.post_id,
     title: item.title,
-    price: item.Price || 0,
+    price: item.price ?? 0,
     state: item.State || '',
     primary_image: item.primary_image || null,
   }));

@@ -123,7 +123,7 @@ function BookedReservationRow({
             </td>
 
             <td className={styles.table_cell}>
-                <span className={styles.mobile}>—</span>
+                <span className={styles.mobile}>{seller?.mobile_number || '—'}</span>
             </td>
 
             <td className={styles.table_cell}>
@@ -208,6 +208,10 @@ function MobileCard({
                         ) : (
                             seller?.full_name || "—"
                         )}
+                    </span>
+                    <span className={styles.host_row}>
+                        <span className={styles.host_label}>Mobile</span>
+                        {seller?.mobile_number || "—"}
                     </span>
                     <span className={styles.host_row}>
                         <span className={styles.host_label}>Email</span>

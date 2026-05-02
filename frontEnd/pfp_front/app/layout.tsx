@@ -1,6 +1,7 @@
 import "@/styles/global.css"
 import "leaflet/dist/leaflet.css"
 import { html } from "motion/react-client";
+import { NavigationLoaderProvider } from "@/lib/navigation-loader-context"
 
 export default function RootLayout({
   children,
@@ -9,7 +10,11 @@ export default function RootLayout({
 }>){
   return (
     <html>
-      <body>{children}</body>
+      <body>
+        <NavigationLoaderProvider>
+          {children}
+        </NavigationLoaderProvider>
+      </body>
     </html>
   )
 }

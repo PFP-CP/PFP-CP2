@@ -812,7 +812,6 @@
   cursor: pointer;
   font-family: "sansation-700", sans-serif;
   font-size: 20px;
-  padding: .5rem;
   transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
