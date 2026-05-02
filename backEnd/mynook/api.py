@@ -57,7 +57,6 @@ def wilaya_number(number: str):
     with open(wilaya_dir, "r", encoding="utf-8") as file_json:  
         wilayas = json.load(file_json)
     
-    number = str(number).zfill(2)
     
     return wilayas.get(number, None)
 
@@ -154,7 +153,6 @@ def post_new_nook(
 ):
     wilaya = wilaya_number(payload.state)
     # 1. Create the House
-    payload.validate_rules()
     house = House.objects.create(
         Price=payload.price,
         RoomNum=payload.room_num,
@@ -225,7 +223,6 @@ def delete_nook(request, post_id: str):
 def update_mynook(request, post_id: str, payload: UpdateNookIn):
     post = _get_seller_post(post_id, request.user)
     house = post.house
-    payload.validate_rules()  # validate num_beds and max_tenatns
     data = payload.dict(exclude_unset=True)
     # -- update house fields --
     house_payload_maps = {
@@ -255,14 +252,18 @@ def update_mynook(request, post_id: str, payload: UpdateNookIn):
         "Longitude": "longitude",
         "Latitude": "latitude",
     }
-    location = house.location
+    location_update_fields = []
+    location = house.location 
     for field, payload_key in location_payload_maps.items():
         if payload_key in data:
             if field == "State":
                 setattr(location, field, wilaya_number(data[payload_key]))
-                continue 
-            setattr(location, field, data[payload_key])
-            location.save()
+            else:
+                setattr(location, field, data[payload_key])
+            location_update_fields.append(field)
+
+    if location_update_fields:
+        location.save(update_fields=location_update_fields) 
     # -- Post-level fields -- update
 
     if "apartment_type" in data:

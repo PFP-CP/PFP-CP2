@@ -8,7 +8,6 @@ from Houses.models import Pictures
 from Posts.models import PostStatus
 from Reservations.models import Reservation  # avoid circular import
 
-
 # Sub-schemas (reusable pieces)
 class LocationOut(Schema):
     County: str
@@ -229,18 +228,6 @@ class PostNookIn(Schema):
     allows_smoking: bool = False
     allows_noise: bool = False
 
-    def validate_rules(self):
-        """Validate that number of beds and max tenants are correct"""
-        # Validate num_beds
-        if self.num_beds is not None and self.num_beds < self.num_bedroom:
-            raise ValueError("Number of beds cannot be less than number of bedrooms")
-
-        # Validate max_tenants
-        if self.max_tenants is not None:
-            beds = self.num_beds if self.num_beds is not None else self.num_bedroom
-            if self.max_tenants > beds:
-                raise ValueError("Max tenants cannot be greater than number of beds")
-
 
 # Modify your nook
 # All fields optional — only sent fields are updated
@@ -274,17 +261,6 @@ class UpdateNookIn(Schema):
     allows_smoking: Optional[bool] = None
     allows_noise: Optional[bool] = None
 
-    def validate_rules(self):
-        """Validate that number of beds and max tenants are correct"""
-        # Validate num_beds
-        if self.num_beds is not None and self.num_beds < self.num_bedroom:
-            raise ValueError("Number of beds cannot be less than number of bedrooms")
-
-        # Validate max_tenants
-        if self.max_tenants is not None:
-            beds = self.num_beds if self.num_beds is not None else self.num_bedroom
-            if self.max_tenants > beds:
-                raise ValueError("max tenants cannot be greater than number of beds")
 
 
 # Full nook detail  (pre-fills the Modify form)
@@ -305,8 +281,10 @@ class NookDetailOut(Schema):
     # House
     price_per_night: Optional[int]
     room_num: Optional[int]
+    num_beds: Optional[int]
     num_bedroom: Optional[int]
     num_bathroom: Optional[int]
+    max_tenants: Optional[int]
     surface: Optional[float]
     types_of_renters: Optional[str]
 
@@ -385,8 +363,14 @@ class NookDetailOut(Schema):
     @staticmethod
     def resolve_updated_at(obj):
         return obj.updated_at.isoformat()
-
-
+    
+    @staticmethod
+    def resolve_num_beds(obj):
+        return obj.house.num_beds
+    
+    @staticmethod
+    def resolve_max_tenants(obj):
+        return obj.house.max_tenants
 # Picture upload response
 
 

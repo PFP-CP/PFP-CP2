@@ -127,7 +127,7 @@ def confirm_email(request, confirmdata: EmailConfirmation):
 
     send_mail(
         "Email Confirmation",
-        f"Here is the code that will enable you to confirm your email address\n {key}\n please copy it into the appropriate field ",
+        f"Here is the code that will en-able you to confirm your email address\n {key}\n please copy it into the appropriate field ",
         "nook.app1@gmail.com",
         [confirmdata.email],
     )
