@@ -3,14 +3,13 @@ import style from '@/styles/create_post_page_styles/create_post.module.css'
 import Uploader from "@/components/create_post_page_components/image_uploader";
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { wilayas } from '@/data/auth_data/data';
+import { wilayaFrNameToCode } from '@/data/auth_data/data';
 import { imageItem } from '@/types/types';
 import { submitHouseInformation, submitHouseUpdate, getNookDetail, deleteNookPicture, resolveShortUrl, uploadImage } from './actions/createpost';
-import { useTransition } from 'react';
 import { getCompressedNookImages } from '@/lib/functions';
 import { useMediaQuery } from '@mui/material';
 import Create_post_mobile_nav from '@/components/create_post_page_components/create_post_page_mobile_nav';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 const MapPicker = dynamic(
@@ -53,7 +52,6 @@ function parseGoogleMapsUrl(url: string): { lat: number; lng: number } | null {
 }
 
 export default function CreatePost() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get('edit');
   const isEditMode = !!editId;
@@ -97,7 +95,7 @@ export default function CreatePost() {
       setValue(`${section_name}`, [...watchedCheckBoxes[section_name], `${item}`])
     }
   }
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
     if (NumberOf_Inputs[1]) setFocus('bedrooms');
@@ -120,7 +118,7 @@ export default function CreatePost() {
       if (post.house_rules?.allows_animals) rules.push('animals');
       if (post.house_rules?.allows_smoking) rules.push('smoking');
       if (post.house_rules?.allows_noise) rules.push('noise');
-
+      console.log(post)
       reset({
         house_type: houseType,
         wilaya: post.location?.State ?? '01',
@@ -131,7 +129,7 @@ export default function CreatePost() {
         price_per_night: post.house?.Price ?? '',
         bedrooms: post.house?.num_bedroom ?? '',
         bathrooms: post.house?.num_bathroom ?? '',
-        beds: '',
+        beds:'',
         max_tenants: '',
         latitude: String(post.location?.Latitude ?? ''),
         longitude: String(post.location?.Longitude ?? ''),
@@ -195,41 +193,41 @@ export default function CreatePost() {
     run();
   }, [location]);
 
-  const handleSubmitForm = (data) => {
+  const handleSubmitForm = async (data) => {
     if (!isEditMode && images.length === 0) {
       setImageError(true);
       return;
     }
     setImageError(false);
-    startTransition(async () => {
-      const compressedImages = await getCompressedNookImages(images);
-      const uploadAll = (postId: string, imgs: Blob[]) =>
-        Promise.all(imgs.map((img, i) => {
-          const fd = new FormData();
-          fd.append('file', img, `image_${i}.webp`);
-          return uploadImage(postId, fd);
-        }));
+    setIsPending(true);
+    const compressedImages = await getCompressedNookImages(images);
+    const uploadAll = (postId: string, imgs: Blob[]) =>
+      Promise.all(imgs.map((img, i) => {
+        const fd = new FormData();
+        fd.append('file', img, `image_${i}.webp`);
+        return uploadImage(postId, fd);
+      }));
 
-      if (isEditMode) {
-        const res = await submitHouseUpdate(editId!, data);
-        if (!res.success) return;
-        if (compressedImages.length > 0) {
-          await uploadAll(res.post_id!, compressedImages);
-        }
-      } else {
-        const res = await submitHouseInformation(data);
-        if (!res.success) return;
-        await uploadAll(String(res.post_id), compressedImages);
+    if (isEditMode) {
+      const res = await submitHouseUpdate(editId!, data);
+      if (!res.success) { setIsPending(false); return; }
+      if (compressedImages.length > 0) {
+        await uploadAll(res.post_id!, compressedImages);
       }
-      router.push('/mynooks');
-    });
+    } else {
+      const res = await submitHouseInformation(data);
+      if (!res.success) { setIsPending(false); return; }
+      await uploadAll(String(res.post_id), compressedImages);
+    }
+    setIsPending(false);
+    window.location.href = '/mynooks';
   }
   const screenWidth = useMediaQuery('(max-width:850px)')
 
   return (
     <>
       {screenWidth && <Create_post_mobile_nav />}
-      <form style={{ position: 'relative' }} onSubmit={handleSubmit((data) => { console.log(data);handleSubmitForm(data)})}>
+      <form style={{ position: 'relative' }} onSubmit={handleSubmit((data) => { ;handleSubmitForm(data)})}>
         {isPending && <div className={style.loading}>{isEditMode ? 'Updating post' : 'Uploading post'}</div>}
         {!screenWidth && <div className={style.create_post_header}>{isEditMode ? 'Edit your nook' : 'Post a new nook'}</div>}
         <div className={style.create_post_container}>
@@ -403,11 +401,17 @@ export default function CreatePost() {
             setValue('longitude', String(loc.lng))
             setValue('county', loc.baladia)
             setValue('map_country', loc.country)
-            const wilayas_match = wilayas.find(w =>
-              loc.wilaya.toLowerCase().includes(w.name.toLowerCase()) ||
-              w.name.toLowerCase().includes(loc.wilaya.toLowerCase())
-            )
-            if (wilayas_match) setValue('wilaya', wilayas_match.code)
+            if (loc.wilayaCode) {
+              setValue('wilaya', loc.wilayaCode)
+            } else if (loc.wilaya) {
+              const stripped = loc.wilaya
+                .replace(/^wilaya\s+(?:de\s+|du\s+|des\s+|of\s+|d\W)/i, '')
+                .trim()
+                .toLowerCase()
+                .normalize('NFD').replace(/[̀-ͯ]/g, '')
+              const code = wilayaFrNameToCode[stripped]
+              if (code) setValue('wilaya', code)
+            }
             setMapLabel([loc.baladia, loc.wilaya, loc.country].filter(Boolean).join(', '))
             setMapOpen(false)
           }}

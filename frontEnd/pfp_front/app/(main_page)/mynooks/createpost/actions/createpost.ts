@@ -1,7 +1,7 @@
 'use server'
 
 import { logout } from "@/app/(authentication)/actions/login";
-import { FEATURES } from "@/data/auth_data/data";
+import { FEATURES, wilayas, wilayaFrNameToCode } from "@/data/auth_data/data";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { refreshToken, verifyToken } from "@/lib/authorization_handling";
@@ -28,7 +28,6 @@ export async function getNookDetail(postId: string) {
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     },
   });
-  console.log(await res);
   if (!res.ok) return null;
   return await res.json();
 }
@@ -44,7 +43,6 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
   if (hasFamily && !hasCouple && !hasSingle) types_code = 'FA';
   else if (hasFamily && !hasCouple && hasSingle) types_code = 'NC';
   else if (hasFamily && hasCouple && !hasSingle) types_code = 'NM';
-
   const toSend: Record<string, any> = {
     house_type: data.house_type,
     description: data.description,
@@ -53,7 +51,14 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
     num_bathroom: Number(data.bathrooms),
     types_of_renters: types_code,
     county: data.county || '',
-    state: data.wilaya,
+    state: (() => {
+      if (wilayas.find(w => w.code === data.wilaya)) return data.wilaya;
+      const v = data.wilaya.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      const frMatch = wilayaFrNameToCode[v];
+      if (frMatch) return frMatch;
+      const enMatch = wilayas.find(w => w.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '') === v);
+      return enMatch ? enMatch.code : data.wilaya;
+    })(),
     country: data.map_country || 'Algeria',
     longitude: data.longitude ? Number(data.longitude) : 0,
     latitude: data.latitude ? Number(data.latitude) : 0,
@@ -62,10 +67,9 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
     allows_smoking: data.rules.includes('smoking'),
     allows_noise: data.rules.includes('noise'),
   };
-  console.log(toSend);
   if (data.beds && Number(data.beds) > 0) toSend.num_beds = Number(data.beds);
   if (data.max_tenants && Number(data.max_tenants) > 0) toSend.max_tenants = Number(data.max_tenants);
-
+  console.log(toSend);
   const token = (await cookies()).get('token')?.value;
   const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}`, {
     method: 'PATCH',
@@ -81,8 +85,7 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
     return { success: false };
   }
   const response = await res.json().catch(() => null);
-  if (!response?.id) return { success: false };
-  return { success: true, post_id: String(response.id) };
+  return { success: true, post_id: String(response?.id ?? postId) };
 }
 
 export async function updateNook(postId: string, data: object, images: Blob[]) {
@@ -118,7 +121,6 @@ export async function submitHouseImages(postId: string, images: Array<Blob>) {
   const token = (await cookies()).get('token')?.value;
   const uploadPromises = images.map((img, i) => {
     const formData = new FormData();
-    console.log("compressed image :", img);
     formData.append('file', img, `image_${i}.webp`);
 
     return fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
@@ -192,7 +194,6 @@ export async function submitHouseInformation(data: CreatePostData) {
     allows_smoking: data.rules.includes('smoking'),
     allows_noise: data.rules.includes('noise')
   }
-  console.log(toSend);
 
   let token = (await cookies()).get('token')?.value;
 

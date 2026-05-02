@@ -8,7 +8,7 @@ import MyDatePicker from './ui/date_picker'
 import CarouselImages from "./carousel_images"
 import Image from 'next/image'
 import Link from 'next/link'
-import { addComment, cancelReservation, createReservation, getMyReservationsForPost, rateSeller, updateComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
+import { addComment, cancelReservation, createReservation, rateSeller, updateComment } from '@/app/(main_page)/(post)/post/[id]/actions/getPost'
 
 
 
@@ -451,7 +451,7 @@ function CancelBookingModal({
   );
 }
 
-export default function HouseInformationAndBooking({post_data,onCommentAdded,onReservationCreated,currentUserId}:{post_data:any,onCommentAdded:()=>Promise<void>,onReservationCreated:()=>Promise<void>,currentUserId:number|null}){
+export default function HouseInformationAndBooking({post_data,onCommentAdded,onReservationCreated,currentUserId,initialReservations}:{post_data:any,onCommentAdded:()=>Promise<void>,onReservationCreated:()=>Promise<void>,currentUserId:number|null,initialReservations:MyReservation[]}){
   const [showComments, setShowComments] = useState(false);
   const [visitorsActive, setVisitorsActive] = useState(false);
   const [visitorsNumber, setVisitorsNumber] = useState<string>('0');
@@ -461,15 +461,10 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [visitorsHint, setVisitorsHint] = useState(false);
-  const [myReservations, setMyReservations] = useState<MyReservation[]>([]);
+  const [myReservations, setMyReservations] = useState<MyReservation[]>(initialReservations);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancellingId, setCancellingId] = useState<number | null>(null);
   const [cancelError, setCancelError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!currentUserId) return;
-    getMyReservationsForPost(post_data.id).then(setMyReservations);
-  }, [post_data.id, currentUserId]);
 
   const handleVisitorsNumber = (e:React.ChangeEvent<HTMLInputElement>)=>{
     if(Number(e.currentTarget.value)<1){

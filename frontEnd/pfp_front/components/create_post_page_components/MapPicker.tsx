@@ -6,6 +6,7 @@ interface PickedLocation {
   lat: number
   lng: number
   wilaya: string
+  wilayaCode: string
   baladia: string
   country: string
   display: string
@@ -66,12 +67,14 @@ export default function MapPicker({ onConfirm, onClose }: Props) {
           const data = await res.json()
           const addr = data.address ?? {}
           const wilaya = addr.state ?? addr.province ?? addr.region ?? ''
+          const isoMatch = (addr['ISO3166-2-lvl4'] ?? '').match(/^DZ-(\d+)$/i)
+          const wilayaCode = isoMatch ? isoMatch[1].padStart(2, '0') : ''
           const baladia = addr.city ?? addr.town ?? addr.village ?? addr.county ?? ''
           const country = addr.country ?? ''
           const display = data.display_name ?? `${lat.toFixed(5)}, ${lng.toFixed(5)}`
-          if (!cancelled) setPicked({ lat, lng, wilaya, baladia, country, display })
+          if (!cancelled) setPicked({ lat, lng, wilaya, wilayaCode, baladia, country, display })
         } catch {
-          if (!cancelled) setPicked({ lat, lng, wilaya: '', baladia: '', country: '', display: `${lat.toFixed(5)}, ${lng.toFixed(5)}` })
+          if (!cancelled) setPicked({ lat, lng, wilaya: '', wilayaCode: '', baladia: '', country: '', display: `${lat.toFixed(5)}, ${lng.toFixed(5)}` })
         } finally {
           if (!cancelled) setLoading(false)
         }

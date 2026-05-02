@@ -20,15 +20,20 @@ function mapPost(item: any): Property {
 async function authFetch(path: string): Promise<any[]> {
   const token = (await cookies()).get('token')?.value;
   if (!token) return [];
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
   try {
     const res = await fetch(`${API}${path}`, {
       headers: { Authorization: `Bearer ${token}` },
-      cache: 'no-store',
+      next: { revalidate: 30 },
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
     if (res.status === 401 || !res.ok) return [];
     const data = await res.json().catch(() => []);
     return Array.isArray(data) ? data : [];
   } catch {
+    clearTimeout(timeout);
     return [];
   }
 }
