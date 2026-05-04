@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 
 export async function login(Identifier:string, password:string){
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/Account/Login`,{
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://10.93.250.163:8000'}/api/Account/Login`,{
     method:'POST',
     headers:{'Content-Type': 'application/json'},
     body: JSON.stringify({password,Identifier}),
@@ -25,7 +25,7 @@ export async function login(Identifier:string, password:string){
 
     try {
       const verRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/Account/isUserVerfied?mail=${encodeURIComponent(Identifier)}`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://10.93.250.163:8000'}/api/Account/isUserVerfied?mail=${encodeURIComponent(Identifier)}`,
         { method: 'GET', headers: { Authorization: `Bearer ${data.tokens.access}` } }
       );
       if (verRes.ok) {

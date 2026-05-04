@@ -265,11 +265,8 @@ def list_saved_posts(request):
     """Return all posts saved by the authenticated user."""
     return (
         SavedPost.objects.filter(user=request.user)
-        .select_related(
-            "post",
-            "post__house",
-        )
-        .prefetch_related("post__house__pictures", "post__house__location")
+        .prefetch_related("post__house__pictures",).select_related("post__house",
+            "post__house__location",)
     )
 
 

@@ -17,7 +17,7 @@ export async function apiFetch(url:string, options = {}) {
   }
 }
 
-const BASE = 'http://127.0.0.1:8000';
+const BASE = 'http://10.93.250.163:8000';
 
 export async function authedFetch(path: string, options: RequestInit = {}) {
   const cookieStore = await cookies();
@@ -51,7 +51,7 @@ export async function authedFetch(path: string, options: RequestInit = {}) {
 }
 
 export async function refreshToken(token:string){
-  const res = await fetch("http://127.0.0.1:8000/api/token/refresh",{
+  const res = await fetch("http://10.93.250.163:8000/api/token/refresh",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({refresh:token})
@@ -82,7 +82,7 @@ export async function saveToken(tokenObject: { access: string; refresh: string }
 }
 
 export async function verifyToken(token:string){
-  const res = await fetch("http://127.0.0.1:8000/api/token/verify",{
+  const res = await fetch("http://10.93.250.163:8000/api/token/verify",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({token:token})

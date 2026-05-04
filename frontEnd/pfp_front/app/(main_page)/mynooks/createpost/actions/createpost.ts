@@ -22,7 +22,7 @@ export async function resolveShortUrl(url: string): Promise<string | null> {
 
 export async function getNookDetail(postId: string) {
   const token = (await cookies()).get('token')?.value;
-  const res = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}`, {
+  const res = await fetch(`http://10.93.250.163:8000/api/Posts/${postId}`, {
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -71,7 +71,7 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
   if (data.max_tenants && Number(data.max_tenants) > 0) toSend.max_tenants = Number(data.max_tenants);
   console.log(toSend);
   const token = (await cookies()).get('token')?.value;
-  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}`, {
+  const res = await fetch(`http://10.93.250.163:8000/api/Mynook/${postId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ export async function updateNook(postId: string, data: object, images: Blob[]) {
 
 export async function uploadImage(postId: string, formData: FormData) {
   const token = (await cookies()).get('token')?.value;
-  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
+  const res = await fetch(`http://10.93.250.163:8000/api/Mynook/${postId}/pictures`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${token}` },
     body: formData,
@@ -109,7 +109,7 @@ export async function uploadImage(postId: string, formData: FormData) {
 
 export async function deleteNookPicture(postId: string, pictureId: number) {
   const token = (await cookies()).get('token')?.value;
-  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures/${pictureId}`, {
+  const res = await fetch(`http://10.93.250.163:8000/api/Mynook/${postId}/pictures/${pictureId}`, {
     method: 'DELETE',
     headers: { 'Authorization': `Bearer ${token}` },
   });
@@ -123,7 +123,7 @@ export async function submitHouseImages(postId: string, images: Array<Blob>) {
     const formData = new FormData();
     formData.append('file', img, `image_${i}.webp`);
 
-    return fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
+    return fetch(`http://10.93.250.163:8000/api/Mynook/${postId}/pictures`, {
       method: "POST",
       headers: { 'Authorization': `Bearer ${token}` },
       body: formData
@@ -213,7 +213,7 @@ export async function submitHouseInformation(data: CreatePostData) {
 
   token = (await cookies()).get('token')?.value;
 
-  const res = await fetch("http://127.0.0.1:8000/api/Mynook/", {
+  const res = await fetch("http://10.93.250.163:8000/api/Mynook/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

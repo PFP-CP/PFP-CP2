@@ -29,13 +29,14 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.93.250.163']
 TIME_ZONE = "Africa/Algiers"  # UTC+1
 USE_TZ = True
 
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -47,11 +48,12 @@ INSTALLED_APPS = [
     "Posts.apps.PostsConfig",
     "Houses.apps.HousesConfig",
     "Reservations.apps.ReservationsConfig",
-    "corsheaders",
+    'silk',
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    'silk.middleware.SilkyMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -62,8 +64,8 @@ MIDDLEWARE = [
     "utilitymethods.timing.TimingMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
-
+#CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+CORS_ALLOW_ALL_ORIGINS = True 
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
@@ -81,6 +83,9 @@ TEMPLATES = [
     },
 ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 WSGI_APPLICATION = "config.wsgi.application"
 
 

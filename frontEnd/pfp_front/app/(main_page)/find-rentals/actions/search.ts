@@ -16,7 +16,7 @@ export async function searchPosts(criteria: SearchCriteria): Promise<SearchResul
   }
   console.log(payload);
 
-  const response = await fetch('http://127.0.0.1:8000/api/Search/', {
+  const response = await fetch('http://10.93.250.163:8000/api/Search/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

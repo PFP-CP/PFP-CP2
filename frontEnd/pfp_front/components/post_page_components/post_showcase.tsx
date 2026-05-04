@@ -18,7 +18,7 @@ import { getWilayaName } from "@/data/auth_data/data"
 import CarouselImages from "./carousel_images"
 import { useMediaQuery } from "@mui/material"
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+const BACKEND_URL = 'http://10.93.250.163:8000';
 
 function getImageUrl(url: string): string {
   if (url.startsWith('http')) return url;

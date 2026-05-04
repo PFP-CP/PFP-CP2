@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const API = 'http://127.0.0.1:8000'
+const API = 'http://10.93.250.163:8000'
 
 // Decode JWT expiry locally — no network call needed
 function isTokenExpired(token: string): boolean {

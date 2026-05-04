@@ -30,7 +30,7 @@ class Post(models.Model):
     )
     # post.seller_id -> User.id
     # seller = a User whose type_of_user = 'SELLER'
-    seller = models.ForeignKey(
+    seller = models.OneToOneField(
         "Accounts.Account",
         on_delete=models.CASCADE,
         related_name="posts",

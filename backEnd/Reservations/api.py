@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
+from django.core.mail import send_mail
 
 import utilitymethods.Pictures as Pic
 from Accounts.models import Account
@@ -123,7 +124,13 @@ def create_reservation(request, payload: ReservationIn):
         arrival_date=payload.arrival_date,
         departure_date=payload.departure_date,
     )
-
+    message = f"{user.full_name} has made a reservation on your Posting "
+    send_mail(
+        "A Reservation has been made ",
+        message,
+        "nook.app1@gmail.com",
+        [post.seller.email],
+    )
     # select_related so _reservation_to_dict can access renter/post/House without N+1
     reservation = (
         Reservation.objects.select_related(
@@ -132,6 +139,7 @@ def create_reservation(request, payload: ReservationIn):
         .prefetch_related("post__house__pictures")
         .get(pk=reservation.pk)
     )
+
 
     # Auto-save the post to the user's favorites
     saved_post, created = SavedPost.objects.get_or_create(user=user, post=post)

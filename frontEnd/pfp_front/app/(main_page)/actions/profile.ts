@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { revalidateTag } from 'next/cache';
 import { PublicSellerProfile } from '@/types/api_types';
 
-const API = 'http://127.0.0.1:8000';
+const API = 'http://10.93.250.163:8000';
 
 export async function getMyProfile(): Promise<{ id: number; full_name: string; email: string; profile_picture: string | null } | null> {
   const token = (await cookies()).get('token')?.value;

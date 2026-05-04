@@ -451,13 +451,31 @@ class SavedPostOut(Schema):
     title: str
     saved_at: datetime
     price: Decimal
-    State: Optional[str] = None
+    state: Optional[str] = None
     primary_image: Optional[str] = None
 
     @staticmethod
     def resolve_post_id(obj):
         return obj.post.id
 
+    @staticmethod
+    def resolve_title(obj):
+        return obj.post.title
+
+    @staticmethod
+    def resolve_price(obj):
+        return obj.post.house.Price
+
+    @staticmethod
+    def resolve_state(obj):
+        return obj.post.house.location.State  # direct OneToOne access
+
+    @staticmethod
+    def resolve_primary_image(obj):
+        img = obj.post.house.pictures.first()
+        if not img or not img.picture:
+            return Pictures.blank_house_image
+        return img.picture.url
 
 # Utility
 
