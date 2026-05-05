@@ -52,10 +52,7 @@ function SearchResultRow({ result, idx }: { result: SearchResult; idx: number })
             </td>
             <td className={styles.td}>
                 <div className={styles.descriptionCell}>
-                    <span className={styles.propertyType}>
-                        {result.description?.split(".")[0] || "Property"}
-                    </span>
-                    <p>{result.description}</p>
+                    <h2>hello</h2>
                     <span className={styles.propertyPrice}>{result.price} DA per night</span>
                     <div className={styles.rating}>
                         <span>{result.rating}</span>
@@ -87,7 +84,7 @@ const SearchResultsTable: React.FC<SearchResultsTableProps> = ({ results }) => {
                 <thead>
                     <tr>
                         <th className={styles.th}>Photo</th>
-                        <th className={styles.th}>Description</th>
+                        <th className={styles.th}>Information</th>
                         <th className={styles.th}>Wilaya</th>
                         <th className={styles.th}>Host&apos;s name</th>
                         <th className={styles.th}>Mobile</th>

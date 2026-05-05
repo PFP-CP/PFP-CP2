@@ -281,10 +281,14 @@
   }
 }
 
-@media (max-width:500px) {
+@media (max-width:780px) {
   .copy_link,.save{
-      font-size: 17px;
+      font-size: 15px;
   }
+}
+
+@media (max-width:500px) {
+  
   .mobile_view{
     display: block;
   }

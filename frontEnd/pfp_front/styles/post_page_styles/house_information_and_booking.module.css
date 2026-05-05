@@ -6,7 +6,7 @@
   margin-top: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-  padding: 2rem;
+  padding: .5rem;
 }
 
 
@@ -114,6 +114,11 @@
   border: 3px solid #000000;
   border-radius:50px;
   overflow: hidden;
+
+}
+
+.rating_and_ratingButton_container .renter_rating .profile_picture img{
+    object-fit: cover;
 }
 
 .rating_and_ratingButton_container .renter_rating .name_rating_container{
@@ -547,7 +552,7 @@
   max-width: 690px;
   border: 3px solid black;
   height: fit-content;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 23px;
   display: flex;
   flex-direction: column;
@@ -698,7 +703,22 @@
 .lower_comment_review_mobile_view{
   display: none;
 }
-@media (max-width:700px){
+@media (max-width:780px){
+  .visitors_and_price .visitors{
+  height: 41px;
+}
+.visitors_and_price .visitors_before{
+    padding: .5rem;
+    font-size: 14px;
+  }
+  .visitors_and_price .visitors_after{
+    padding: .5rem;
+    font-size: 14px;
+  }
+  .visitors_and_price .price_container{
+  font-size: 18px;
+}
+
   .upper_comment_review_mobile_view{
     display: none;
   }
@@ -756,17 +776,7 @@
   .rating_button{
     font-size: 17px;
   }
-  .visitors_and_price .visitors_before{
-    padding: .5rem;
-    font-size: 17px;
-  }
-  .visitors_and_price .visitors_after{
-    padding: .5rem;
-    font-size: 17px;
-  }
-  .visitors_and_price .price_container{
-    font-size: 17px;
-  }
+  
   .nook_rating_and_close_button{
     gap: .5rem;
   }
@@ -1037,8 +1047,6 @@
     gap: 1rem;
     overflow-x: auto;
     padding: 0.75rem 2rem;
-    margin-left: -2rem;
-    margin-right: -2rem;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
   }

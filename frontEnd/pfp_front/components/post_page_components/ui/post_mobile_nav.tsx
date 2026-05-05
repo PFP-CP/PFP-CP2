@@ -38,7 +38,7 @@ export default function Post_mobile_nav({ isSaved, onSaveToggle, lat, lng }: { i
           </div>
           <div className={style.copy_link_container} onClick={handleCopyLink}>
             <div className={style.copy_link_logo}>{COPY_LINK_LOGO}</div>
-            <div className={style.copy_link}>{copied ? 'Copied!' : 'Copy Location Link'}</div>
+            <div className={style.copy_link}>{copied ? 'Copied!' : 'Copy Link'}</div>
           </div>
         </div>
       </nav>}

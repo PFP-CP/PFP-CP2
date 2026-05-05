@@ -543,9 +543,7 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
             <>
               <div className={style.visitors_and_price}>
                 <div className={style.price_container}><span>{post_data.house.Price} DA</span> <span id={style.perNight}>per night</span></div>
-                {visitorsActive?<input autoFocus onBlur={()=>setVisitorsActive(false)} value={visitorsNumber} onChange={handleVisitorsNumber} type="number" />:<div onClick={()=>{ setVisitorsActive(true); setVisitorsHint(false); }} className={`${style.visitors} ${visitors_style}`}>{visitors_value}</div>}
               </div>
-              {visitorsHint && <p style={{color:'orange', fontSize:'0.8rem', margin:'0'}}>Please enter the number of visitors.</p>}
               {bookingError && <p style={{color:'red', fontSize:'0.8rem', margin:'0'}}>{bookingError}</p>}
               {bookingSuccess && <p style={{color:'green', fontSize:'0.8rem', margin:'0'}}>Reservation confirmed!</p>}
               <div className={style.booking_buttons_row}>

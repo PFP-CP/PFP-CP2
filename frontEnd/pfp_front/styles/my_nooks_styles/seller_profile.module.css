@@ -256,6 +256,14 @@
 }
 
 @media (max-width: 768px) {
+    .stat_box {
+    padding: 15px 8px;
+    min-width: 0;
+  }
+    .stat_label{
+      font-size: .6rem;
+    }
+
     .profile_header {
         flex-direction: column;
         text-align: center;

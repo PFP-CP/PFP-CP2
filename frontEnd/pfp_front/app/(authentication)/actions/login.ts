@@ -2,7 +2,6 @@
 
 import { cookies } from "next/headers";
 
-<<<<<<< HEAD
 export async function login(Identifier: string, password: string) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/Account/Login`,
@@ -12,16 +11,6 @@ export async function login(Identifier: string, password: string) {
       body: JSON.stringify({ password, Identifier }),
     },
   );
-=======
-
-
-export async function login(Identifier:string, password:string){
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/Account/Login`,{
-    method:'POST',
-    headers:{'Content-Type': 'application/json'},
-    body: JSON.stringify({password,Identifier}),
-  });
->>>>>>> 389ae4d (fix)
   const data = await response.json();
   if (!data.Error) {
     const cookieStore = await cookies();
@@ -37,13 +26,8 @@ export async function login(Identifier:string, password:string){
 
     try {
       const verRes = await fetch(
-<<<<<<< HEAD
         `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/Account/isUserVerfied?mail=${encodeURIComponent(Identifier)}`,
         { method: "GET", headers: { Authorization: `Bearer ${data.tokens.access}` } },
-=======
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/Account/isUserVerfied?mail=${encodeURIComponent(Identifier)}`,
-        { method: 'GET', headers: { Authorization: `Bearer ${data.tokens.access}` } }
->>>>>>> 389ae4d (fix)
       );
       if (verRes.ok) {
         const verData = await verRes.json();

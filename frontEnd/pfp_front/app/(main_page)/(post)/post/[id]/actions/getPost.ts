@@ -338,6 +338,7 @@ export async function getSavedPosts(): Promise<
     cache: "no-store",
   });
   const data: any[] = await response.json();
+  console.log(data);
   return data.map((item) => ({
     id: item.post_id,
     title: item.title,

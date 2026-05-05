@@ -28,11 +28,12 @@ export async function searchPosts(criteria: SearchCriteria): Promise<SearchResul
     body: JSON.stringify(payload),
     cache: "no-store",
   });
-
+  const data = await response.json();
   if (!response.ok) {
     const body = await response.text().catch(() => "(unreadable)");
     console.error(`Search failed ${response.status}:`, body);
     return [];
   }
-  return response.json();
+  console.log(data);
+  return data;
 }

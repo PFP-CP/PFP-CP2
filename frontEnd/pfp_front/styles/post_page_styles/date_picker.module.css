@@ -61,7 +61,7 @@
   justify-content: center;
   align-items: center;
   display: flex;
-  min-height: 60px;
+  min-height: 64px;
 }
 
 .date_container_before_choice{
@@ -100,9 +100,9 @@
 }
 
 
-@media (max-width:500px) {
+@media (max-width:780px) {
   .date_container{
-    font-size:17px;
-  }
-  
+  font-size: 16px;
+  min-height: 41px;
+}
 }
