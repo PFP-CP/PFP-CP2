@@ -44,7 +44,8 @@ class SearchResult(Schema):
     contact: str
     creation_time: str
     picture: str
-    title : str
+    title: str
+
     class Config:
         from_attributes = True
 
@@ -98,9 +99,11 @@ class SearchResult(Schema):
         if first_pic:
             return first_pic.picture.url
         return Pictures.blank_house_image
+
     @staticmethod
     def resolve_title(obj):
         return obj.title
+
 
 class SellerRatingIn(Schema):
     rating: Decimal
@@ -150,7 +153,7 @@ class HouseMiniOut(Schema):
     num_bedroom: Optional[int]
     num_bathroom: Optional[int]
     Types_of_Renters: Optional[str]
-    num_beds : Optional[int]
+    num_beds: Optional[int]
     max_tenants: Optional[int]
 
     Description: str
@@ -395,7 +398,7 @@ class PostListOut(Schema):
     RoomNum: int
     Types_of_Renters: Optional[str]
     Country: Optional[str]
-    County: Optional[str] 
+    County: Optional[str]
     State: Optional[str]
     primary_image: Optional[str] = None  # URL of primary image
 
@@ -455,7 +458,7 @@ class SavedPostOut(Schema):
     price: Decimal
     state: Optional[str] = None
     primary_image: Optional[str] = None
-    rating : float
+    rating: float
 
     @staticmethod
     def resolve_post_id(obj):
@@ -479,6 +482,11 @@ class SavedPostOut(Schema):
         if not img or not img.picture:
             return Pictures.blank_house_image
         return img.picture.url
+
+    @staticmethod
+    def resolve_rating(obj):
+        return obj.post.rating
+
 
 # Utility
 
