@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "@/styles/search_styles/search.module.css";
 import { SearchResult } from "@/types/api_types";
@@ -17,14 +16,13 @@ function getFullImageUrl(url: string | null | undefined): string | null {
 }
 
 function SearchResultCard({ result }: { result: SearchResult }) {
-    const router = useRouter();
     const [imgError, setImgError] = useState(false);
     const imageUrl = getFullImageUrl(result.picture);
     const wilayaName = getWilayaName(result.wilaya) || result.wilaya || "—";
     const displayTitle = result.title || wilayaName;
 
     return (
-        <div className={styles.card} onClick={() => router.push(`/post/${result.id}`)}>
+        <div className={styles.card}>
             <div className={styles.cardImage}>
                 {imageUrl && !imgError ? (
                     <img
@@ -39,7 +37,9 @@ function SearchResultCard({ result }: { result: SearchResult }) {
             </div>
 
             <div className={styles.cardBody}>
-                <p className={styles.cardTitle}>{displayTitle}</p>
+                <p className={styles.cardTitle}>
+                    <Link href={`/post/${result.id}`} className={styles.cardTitleLink}>{displayTitle}</Link>
+                </p>
                 <p className={styles.cardLocation}>{wilayaName}</p>
 
                 <div className={styles.cardMeta}>
@@ -56,7 +56,6 @@ function SearchResultCard({ result }: { result: SearchResult }) {
                     <Link
                         href={`/profile/${result.renter_id}`}
                         className={styles.hostLink}
-                        onClick={(e) => e.stopPropagation()}
                     >
                         {result.renter_name}
                     </Link>

@@ -33,54 +33,54 @@ function MobileCard({ nook, onEdit, onDelete }: { nook: Property; onEdit: (id: s
 
     return (
         <div className={styles.card}>
-            <Link href={`/post/${nook.id}`} className={styles.card_link}>
-                <div className={styles.card_top}>
-                    <div className={styles.image_container}>
-                        {imageUrl && !imgError ? (
-                            <img
-                                src={imageUrl}
-                                alt={nook.title}
-                                onError={() => setImgError(true)}
-                                className={styles.card_image}
-                            />
-                        ) : (
-                            <div className={styles.image_placeholder}>🏠</div>
-                        )}
-                    </div>
+            <div className={styles.card_top}>
+                <div className={styles.image_container}>
+                    {imageUrl && !imgError ? (
+                        <img
+                            src={imageUrl}
+                            alt={nook.title}
+                            onError={() => setImgError(true)}
+                            className={styles.card_image}
+                        />
+                    ) : (
+                        <div className={styles.image_placeholder}>🏠</div>
+                    )}
+                </div>
 
-                    <div className={styles.card_info}>
+                <div className={styles.card_info}>
+                    <Link href={`/post/${nook.id}`} className={styles.card_title_link}>
                         <h4 className={styles.card_title}>{displayTitle}</h4>
-                        <div className={styles.card_meta}>
-                            <span className={styles.card_price}>{nook.price} DA/night</span>
-                            <span className={styles.dot}>·</span>
-                            <span className={styles.card_rating}>★ {nook.average_rating ?? "—"}</span>
-                        </div>
-                    </div>
-
-                    <div className={styles.badge_col}>
-                        <StatusBadge status={(nook.status as "reserved" | "available" | "reserved-today") || "available"} />
+                    </Link>
+                    <div className={styles.card_meta}>
+                        <span className={styles.card_price}>{nook.price} DA/night</span>
+                        <span className={styles.dot}>·</span>
+                        <span className={styles.card_rating}>★ {nook.average_rating ?? "—"}</span>
                     </div>
                 </div>
 
-                <div className={styles.card_tenant}>
-                    <span className={styles.tenant_row}>
-                        <span className={styles.tenant_label}>Tenant</span>
-                        {nook.tenant?.name && nook.tenant?.id ? (
-                            <Link href={`/profile/${nook.tenant.id}`} className={styles.tenant_name_link} onClick={e => e.stopPropagation()}>
-                                {nook.tenant.name}
-                            </Link>
-                        ) : (nook.tenant?.name || "—")}
-                    </span>
-                    <span className={styles.tenant_row}>
-                        <span className={styles.tenant_label}>Mobile</span>
-                        {nook.tenant?.mobile || "—"}
-                    </span>
-                    <span className={styles.tenant_row}>
-                        <span className={styles.tenant_label}>Email</span>
-                        {nook.tenant?.email || "—"}
-                    </span>
+                <div className={styles.badge_col}>
+                    <StatusBadge status={(nook.status as "reserved" | "available" | "reserved-today") || "available"} />
                 </div>
-            </Link>
+            </div>
+
+            <div className={styles.card_tenant}>
+                <span className={styles.tenant_row}>
+                    <span className={styles.tenant_label}>Tenant</span>
+                    {nook.tenant?.name && nook.tenant?.id ? (
+                        <Link href={`/profile/${nook.tenant.id}`} className={styles.tenant_name_link}>
+                            {nook.tenant.name}
+                        </Link>
+                    ) : (nook.tenant?.name || "—")}
+                </span>
+                <span className={styles.tenant_row}>
+                    <span className={styles.tenant_label}>Mobile</span>
+                    {nook.tenant?.mobile || "—"}
+                </span>
+                <span className={styles.tenant_row}>
+                    <span className={styles.tenant_label}>Email</span>
+                    {nook.tenant?.email || "—"}
+                </span>
+            </div>
 
             <div className={styles.card_actions}>
                 <button

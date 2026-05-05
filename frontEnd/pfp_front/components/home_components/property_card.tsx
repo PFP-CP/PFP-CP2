@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 import Image from "next/image"
 import styles from "@/styles/home_styles/property_card.module.css"
 import { Property } from "@/types/api_types"
@@ -22,17 +22,15 @@ type PropertyCardProps = {
 }
 
 export default function PropertyCard({ property }: PropertyCardProps) {
-    const router = useRouter()
     const { startLoading } = useNavigationLoader()
     const [imgError, setImgError] = useState(false)
     const imageUrl = getFullImageUrl(property.primary_image)
+    const type = property.title?.split(' in ')[0] || property.title
+    const w = getWilayaName(property.state)
+    const titleText = w ? `${type} in ${w}` : type
 
     return (
-        <div
-            className={styles.card}
-            onClick={() => { if (property.id) { startLoading(); router.push(`/post/${property.id}`) } }}
-            style={{ cursor: property.id ? "pointer" : "default" }}
-        >
+        <div className={styles.card}>
             <div className={styles.card_image}>
                 {imageUrl && !imgError ? (
                     <Image
@@ -49,11 +47,17 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                 )}
             </div>
             <div className={styles.card_info}>
-                <h3>{(() => { const type = property.title?.split(' in ')[0] || property.title; const w = getWilayaName(property.state); return w ? `${type} in ${w}` : type; })()}</h3>
+                {property.id ? (
+                    <Link href={`/post/${property.id}`} className={styles.card_title_link} onClick={startLoading}>
+                        <h3>{titleText}</h3>
+                    </Link>
+                ) : (
+                    <h3>{titleText}</h3>
+                )}
                 <p>{getWilayaName(property.state) || property.state}</p>
                 <div className={styles.card_footer}>
                     <span>{property.price} DA / night</span>
-                    <span><span className={styles.star}>★</span> {property.rating ?? "—"}</span>
+                    <span><span className={styles.star}>★</span> {property.average_rating ?? "—"}</span>
                 </div>
             </div>
         </div>

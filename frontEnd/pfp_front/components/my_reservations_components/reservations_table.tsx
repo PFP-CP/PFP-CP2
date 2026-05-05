@@ -29,7 +29,6 @@ function formatDate(dateString: string) {
 
 function MobileCard({ reservation }: { reservation: Reservation }) {
     const [imgError, setImgError] = useState(false)
-    const router = useRouter()
     const post = reservation?.post
     const house = post?.House
     const host = reservation?.renter
@@ -54,68 +53,65 @@ function MobileCard({ reservation }: { reservation: Reservation }) {
 
     return (
         <div className={styles.card}>
-            <Link href={navigationUrl} className={styles.card_link}>
-                <div className={styles.card_top}>
-                    <div className={styles.image_container}>
-                        {imageUrl && !imgError ? (
-                            <img
-                                src={imageUrl}
-                                alt={fullTitle}
-                                onError={() => setImgError(true)}
-                                className={styles.card_image}
-                            />
-                        ) : (
-                            <div className={styles.image_placeholder}>🏠</div>
-                        )}
-                    </div>
+            <div className={styles.card_top}>
+                <div className={styles.image_container}>
+                    {imageUrl && !imgError ? (
+                        <img
+                            src={imageUrl}
+                            alt={fullTitle}
+                            onError={() => setImgError(true)}
+                            className={styles.card_image}
+                        />
+                    ) : (
+                        <div className={styles.image_placeholder}>🏠</div>
+                    )}
+                </div>
 
-                    <div className={styles.card_info}>
+                <div className={styles.card_info}>
+                    <Link href={navigationUrl} className={styles.card_title_link}>
                         <h4 className={styles.card_title}>{displayTitle}</h4>
-                        <div className={styles.card_meta}>
-                            <span className={styles.card_price}>{house?.Price ?? "—"} DA/night</span>
-                            <span className={styles.dot}>·</span>
-                            <span className={styles.card_rating}>★ {house?.rating ?? "—"}</span>
-                        </div>
-                        <span className={styles.card_wilaya}>{wilayaName || house?.wilaya || "—"}</span>
+                    </Link>
+                    <div className={styles.card_meta}>
+                        <span className={styles.card_price}>{house?.Price ?? "—"} DA/night</span>
+                        <span className={styles.dot}>·</span>
+                        <span className={styles.card_rating}>★ {house?.rating ?? "—"}</span>
                     </div>
+                    <span className={styles.card_wilaya}>{wilayaName || house?.wilaya || "—"}</span>
                 </div>
+            </div>
 
-                <div className={styles.card_host}>
-                    <span className={styles.host_row}>
-                        <span className={styles.host_label}>Host</span>
-                        {host?.id ? (
-                            <button
-                                className={styles.renter_name_link}
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/profile/${host.id}`) }}
-                            >
-                                {host.full_name || "—"}
-                            </button>
-                        ) : (
-                            host?.full_name || "—"
-                        )}
-                    </span>
-                    <span className={styles.host_row}>
-                        <span className={styles.host_label}>Mobile</span>
-                        {host?.phone ? String(host.phone) : "—"}
-                    </span>
-                    <span className={styles.host_row}>
-                        <span className={styles.host_label}>Email</span>
-                        {host?.email || "—"}
-                    </span>
-                </div>
+            <div className={styles.card_host}>
+                <span className={styles.host_row}>
+                    <span className={styles.host_label}>Host</span>
+                    {host?.id ? (
+                        <Link href={`/profile/${host.id}`} className={styles.renter_name_link}>
+                            {host.full_name || "—"}
+                        </Link>
+                    ) : (
+                        host?.full_name || "—"
+                    )}
+                </span>
+                <span className={styles.host_row}>
+                    <span className={styles.host_label}>Mobile</span>
+                    {host?.phone ? String(host.phone) : "—"}
+                </span>
+                <span className={styles.host_row}>
+                    <span className={styles.host_label}>Email</span>
+                    {host?.email || "—"}
+                </span>
+            </div>
 
-                <div className={styles.card_dates}>
-                    <span className={styles.date_item}>
-                        <span className={styles.date_label}>Arrival</span>
-                        {formatDate(reservation.arrival_date)}
-                    </span>
-                    <span className={styles.date_arrow}>→</span>
-                    <span className={styles.date_item}>
-                        <span className={styles.date_label}>Departure</span>
-                        {formatDate(reservation.departure_date)}
-                    </span>
-                </div>
-            </Link>
+            <div className={styles.card_dates}>
+                <span className={styles.date_item}>
+                    <span className={styles.date_label}>Arrival</span>
+                    {formatDate(reservation.arrival_date)}
+                </span>
+                <span className={styles.date_arrow}>→</span>
+                <span className={styles.date_item}>
+                    <span className={styles.date_label}>Departure</span>
+                    {formatDate(reservation.departure_date)}
+                </span>
+            </div>
         </div>
     )
 }

@@ -40,6 +40,7 @@ async function authFetch(path: string): Promise<any[]> {
 
 export async function getRecommendedPosts(): Promise<Property[]> {
   const data = await authFetch("/api/Recommendations/recommended");
+  console.log(data);
   return data.map(mapPost);
 }
 

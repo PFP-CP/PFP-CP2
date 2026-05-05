@@ -197,8 +197,21 @@
     border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    cursor: pointer;
+    position: relative;
     transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.nook_title_link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.nook_title_link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
 }
 
 .nook_card:hover {

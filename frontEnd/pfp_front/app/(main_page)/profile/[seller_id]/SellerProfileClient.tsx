@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import Image from 'next/image'
 import styles from '@/styles/my_nooks_styles/seller_profile.module.css'
 import { changeProfilePicture } from '@/app/(main_page)/actions/profile'
@@ -18,7 +18,6 @@ function getFullImageUrl(url: string | null | undefined): string | null {
 }
 
 function NookCard({ nook }: { nook: PublicNookCard }) {
-  const router = useRouter()
   const [imgError, setImgError] = useState(false)
   const imageUrl = getFullImageUrl(nook.primary_image)
   const wilayaName = getWilayaName(nook.wilaya ?? '') || nook.wilaya || ''
@@ -27,7 +26,7 @@ function NookCard({ nook }: { nook: PublicNookCard }) {
     : nook.title
 
   return (
-    <div className={styles.nook_card} onClick={() => router.push(`/post/${nook.id}`)}>
+    <div className={styles.nook_card}>
       <div className={styles.nook_image_wrap}>
         {imageUrl && !imgError ? (
           <Image
@@ -42,7 +41,9 @@ function NookCard({ nook }: { nook: PublicNookCard }) {
         )}
       </div>
       <div className={styles.nook_info}>
-        <p className={styles.nook_title}>{displayTitle}</p>
+        <Link href={`/post/${nook.id}`} className={styles.nook_title_link}>
+          <p className={styles.nook_title}>{displayTitle}</p>
+        </Link>
         <div className={styles.nook_footer}>
           <span className={styles.nook_price}>{nook.price_per_night} DA / night</span>
           <span className={styles.nook_rating}>★ {nook.rating.toFixed(1)}</span>

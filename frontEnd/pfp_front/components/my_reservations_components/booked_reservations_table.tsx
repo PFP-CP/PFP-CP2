@@ -161,7 +161,6 @@ function MobileCard({
     isDeleting: boolean
 }) {
     const [imgError, setImgError] = useState(false)
-    const router = useRouter()
     const { post } = reservation
     const { seller } = post
 
@@ -170,67 +169,64 @@ function MobileCard({
 
     return (
         <div className={`${styles.card} ${isDeleting ? styles.card_deleting : ""}`}>
-            <Link href={`/post/${post.id}`} className={styles.card_link}>
-                <div className={styles.card_top}>
-                    <div className={styles.image_container}>
-                        {imageUrl && !imgError ? (
-                            <img
-                                src={imageUrl}
-                                alt={post.title}
-                                onError={() => setImgError(true)}
-                                className={styles.card_image}
-                            />
-                        ) : (
-                            <div className={styles.image_placeholder}>🏠</div>
-                        )}
-                    </div>
-                    <div className={styles.card_info}>
+            <div className={styles.card_top}>
+                <div className={styles.image_container}>
+                    {imageUrl && !imgError ? (
+                        <img
+                            src={imageUrl}
+                            alt={post.title}
+                            onError={() => setImgError(true)}
+                            className={styles.card_image}
+                        />
+                    ) : (
+                        <div className={styles.image_placeholder}>🏠</div>
+                    )}
+                </div>
+                <div className={styles.card_info}>
+                    <Link href={`/post/${post.id}`} className={styles.card_title_link}>
                         <h4 className={styles.card_title}>{post.title}</h4>
-                        <div className={styles.card_meta}>
-                            <span className={styles.card_price}>{post.price} DA/night</span>
-                            <span className={styles.dot}>·</span>
-                            <span className={styles.card_rating}>★ {post.rating || "—"}</span>
-                        </div>
-                        <span className={styles.card_wilaya}>{wilayaName || "—"}</span>
+                    </Link>
+                    <div className={styles.card_meta}>
+                        <span className={styles.card_price}>{post.price} DA/night</span>
+                        <span className={styles.dot}>·</span>
+                        <span className={styles.card_rating}>★ {post.rating || "—"}</span>
                     </div>
+                    <span className={styles.card_wilaya}>{wilayaName || "—"}</span>
                 </div>
+            </div>
 
-                <div className={styles.card_host}>
-                    <span className={styles.host_row}>
-                        <span className={styles.host_label}>Host</span>
-                        {seller?.id ? (
-                            <button
-                                className={styles.renter_name_link}
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/profile/${seller.id}`) }}
-                            >
-                                {seller.full_name || "—"}
-                            </button>
-                        ) : (
-                            seller?.full_name || "—"
-                        )}
-                    </span>
-                    <span className={styles.host_row}>
-                        <span className={styles.host_label}>Mobile</span>
-                        {seller?.mobile_number || "—"}
-                    </span>
-                    <span className={styles.host_row}>
-                        <span className={styles.host_label}>Email</span>
-                        {seller?.email || "—"}
-                    </span>
-                </div>
+            <div className={styles.card_host}>
+                <span className={styles.host_row}>
+                    <span className={styles.host_label}>Host</span>
+                    {seller?.id ? (
+                        <Link href={`/profile/${seller.id}`} className={styles.renter_name_link}>
+                            {seller.full_name || "—"}
+                        </Link>
+                    ) : (
+                        seller?.full_name || "—"
+                    )}
+                </span>
+                <span className={styles.host_row}>
+                    <span className={styles.host_label}>Mobile</span>
+                    {seller?.mobile_number || "—"}
+                </span>
+                <span className={styles.host_row}>
+                    <span className={styles.host_label}>Email</span>
+                    {seller?.email || "—"}
+                </span>
+            </div>
 
-                <div className={styles.card_dates}>
-                    <span className={styles.date_item}>
-                        <span className={styles.date_label}>Arrival</span>
-                        {formatDate(reservation.arrival_date)}
-                    </span>
-                    <span className={styles.date_arrow}>→</span>
-                    <span className={styles.date_item}>
-                        <span className={styles.date_label}>Departure</span>
-                        {formatDate(reservation.departure_date)}
-                    </span>
-                </div>
-            </Link>
+            <div className={styles.card_dates}>
+                <span className={styles.date_item}>
+                    <span className={styles.date_label}>Arrival</span>
+                    {formatDate(reservation.arrival_date)}
+                </span>
+                <span className={styles.date_arrow}>→</span>
+                <span className={styles.date_item}>
+                    <span className={styles.date_label}>Departure</span>
+                    {formatDate(reservation.departure_date)}
+                </span>
+            </div>
             <div className={styles.card_cancel}>
                 <button
                     className={styles.cancel_btn}

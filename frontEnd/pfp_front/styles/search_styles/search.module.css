@@ -160,9 +160,22 @@
   border-top: 3px solid #220E67;
   display: flex;
   flex-direction: column;
-  cursor: pointer;
+  position: relative;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cardTitleLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardTitleLink::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 .card:hover {
@@ -276,6 +289,8 @@
   text-decoration: none;
   cursor: pointer;
   transition: color 0.15s;
+  position: relative;
+  z-index: 2;
 }
 
 .hostLink:hover {

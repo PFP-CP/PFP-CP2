@@ -101,6 +101,8 @@
     font-size: 0.9rem;
     text-decoration: underline;
     text-underline-offset: 2px;
+    position: relative;
+    z-index: 2;
 }
 
 .tenant_name_link:hover {
@@ -141,6 +143,20 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.card_title_link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card_title_link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
 }
 
 .card_link {
@@ -247,6 +263,8 @@
     display: flex;
     gap: 4px;
     justify-content: flex-end;
+    position: relative;
+    z-index: 2;
 }
 
 /* ── Empty state ── */
