@@ -1,6 +1,10 @@
 import { imageItem } from "@/types/types";
 
+<<<<<<< HEAD
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+=======
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+>>>>>>> 389ae4d (fix)
 
 export async function uploadImagesFromClient(
   postId: string,

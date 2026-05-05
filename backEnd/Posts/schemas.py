@@ -64,7 +64,7 @@ class SearchResult(Schema):
     @staticmethod
     def resolve_wilaya(obj):
         # House → location (FK/related) → State
-        loc = obj.house.location.first()
+        loc = obj.house.location
         return loc.State if loc else None
 
     @staticmethod
@@ -82,7 +82,7 @@ class SearchResult(Schema):
 
     @staticmethod
     def resolve_phone_number(obj):
-        return obj.phone_number
+        return obj.seller.contact.Phone_Number
 
     @staticmethod
     def resolve_contact(obj):

@@ -16,9 +16,15 @@ export async function searchPosts(criteria: SearchCriteria): Promise<SearchResul
   };
   console.log(payload);
 
+<<<<<<< HEAD
   const response = await fetch("http://127.0.0.1:8000/api/Search/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+=======
+  const response = await fetch('http://127.0.0.1:8000/api/Search/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+>>>>>>> 389ae4d (fix)
     body: JSON.stringify(payload),
     cache: "no-store",
   });

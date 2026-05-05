@@ -9,7 +9,7 @@ import { PhotoProvider, PhotoView } from "react-photo-view";
 import Image from "next/image";
 import { HouseImage } from "@/types/api_types";
 
-const BACKEND_URL = "http://127.0.0.1:8000";
+const BACKEND_URL = 'http://127.0.0.1:8000';
 function getImageUrl(url: string): string {
   if (url.startsWith("http")) return url;
   return `${BACKEND_URL}${url}`;

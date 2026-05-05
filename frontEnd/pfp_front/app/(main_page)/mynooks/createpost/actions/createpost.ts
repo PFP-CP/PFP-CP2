@@ -16,7 +16,11 @@ export async function resolveShortUrl(url: string): Promise<string | null> {
 }
 
 export async function getNookDetail(postId: string) {
+<<<<<<< HEAD
   const token = (await cookies()).get("token")?.value;
+=======
+  const token = (await cookies()).get('token')?.value;
+>>>>>>> 389ae4d (fix)
   const res = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}`, {
     headers: {
       "Content-Type": "application/json",
@@ -71,9 +75,15 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
   if (data.max_tenants && Number(data.max_tenants) > 0)
     toSend.max_tenants = Number(data.max_tenants);
   console.log(toSend);
+<<<<<<< HEAD
   const token = (await cookies()).get("token")?.value;
   const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}`, {
     method: "PATCH",
+=======
+  const token = (await cookies()).get('token')?.value;
+  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}`, {
+    method: 'PATCH',
+>>>>>>> 389ae4d (fix)
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -99,16 +109,24 @@ export async function updateNook(postId: string, data: object, images: Blob[]) {
 }
 
 export async function uploadImage(postId: string, formData: FormData) {
+<<<<<<< HEAD
   const token = (await cookies()).get("token")?.value;
   const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
+=======
+  const token = (await cookies()).get('token')?.value;
+  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+>>>>>>> 389ae4d (fix)
     body: formData,
   });
   return res.ok;
 }
 
 export async function deleteNookPicture(postId: string, pictureId: number) {
+<<<<<<< HEAD
   const token = (await cookies()).get("token")?.value;
   const res = await fetch(
     `http://127.0.0.1:8000/api/Mynook/${postId}/pictures/${pictureId}`,
@@ -117,6 +135,13 @@ export async function deleteNookPicture(postId: string, pictureId: number) {
       headers: { Authorization: `Bearer ${token}` },
     },
   );
+=======
+  const token = (await cookies()).get('token')?.value;
+  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures/${pictureId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+>>>>>>> 389ae4d (fix)
   return res.ok;
 }
 

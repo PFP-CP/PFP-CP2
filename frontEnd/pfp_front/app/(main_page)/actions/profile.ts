@@ -3,7 +3,11 @@ import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { PublicSellerProfile } from "@/types/api_types";
 
+<<<<<<< HEAD
 const API = "http://127.0.0.1:8000";
+=======
+const API = 'http://127.0.0.1:8000';
+>>>>>>> 389ae4d (fix)
 
 export async function getMyProfile(): Promise<{
   id: number;

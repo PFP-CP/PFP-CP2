@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { Property } from "@/types/api_types";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
 function mapPost(item: any): Property {
   return {
