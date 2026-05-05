@@ -44,7 +44,7 @@ class SearchResult(Schema):
     contact: str
     creation_time: str
     picture: str
-
+    title : str
     class Config:
         from_attributes = True
 
@@ -98,7 +98,9 @@ class SearchResult(Schema):
         if first_pic:
             return first_pic.picture.url
         return Pictures.blank_house_image
-
+    @staticmethod
+    def resolve_title(obj):
+        return obj.title
 
 class SellerRatingIn(Schema):
     rating: Decimal
@@ -453,6 +455,7 @@ class SavedPostOut(Schema):
     price: Decimal
     state: Optional[str] = None
     primary_image: Optional[str] = None
+    rating : float
 
     @staticmethod
     def resolve_post_id(obj):
