@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import styles from "@/styles/search_styles/search.module.css";
 import { SearchResult } from "@/types/api_types";
 import { getWilayaName } from "@/data/auth_data/data";
@@ -15,60 +16,61 @@ function getFullImageUrl(url: string | null | undefined): string | null {
     return null;
 }
 
-interface SearchResultsTableProps {
-    results: SearchResult[];
-}
-
-function SearchResultRow({ result, idx }: { result: SearchResult; idx: number }) {
+function SearchResultCard({ result }: { result: SearchResult }) {
     const router = useRouter();
     const [imgError, setImgError] = useState(false);
     const imageUrl = getFullImageUrl(result.picture);
+    const wilayaName = getWilayaName(result.wilaya) || result.wilaya || "—";
+    const displayTitle = result.title || wilayaName;
 
     return (
-        <tr
-            key={idx}
-            onClick={() => router.push(`/post/${result.id}`)}
-            style={{ cursor: "pointer" }}
-        >
-            <td className={styles.td}>
+        <div className={styles.card} onClick={() => router.push(`/post/${result.id}`)}>
+            <div className={styles.cardImage}>
                 {imageUrl && !imgError ? (
                     <img
                         src={imageUrl}
                         alt="Property"
+                        className={styles.cardImg}
                         onError={() => setImgError(true)}
-                        className={styles.propertyPhoto}
-                        style={{ width: "120px", height: "80px", objectFit: "cover", borderRadius: "6px" }}
                     />
                 ) : (
-                    <div style={{
-                        width: "120px", height: "80px",
-                        background: "linear-gradient(135deg, #7c5cdb22, #7c5cdb44)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: "2rem", borderRadius: "6px"
-                    }}>
-                        🏠
-                    </div>
+                    <div className={styles.cardImgFallback}>🏠</div>
                 )}
-            </td>
-            <td className={styles.td}>
-                <div className={styles.descriptionCell}>
-                    <h2>hello</h2>
-                    <span className={styles.propertyPrice}>{result.price} DA per night</span>
-                    <div className={styles.rating}>
-                        <span>{result.rating}</span>
+            </div>
+
+            <div className={styles.cardBody}>
+                <p className={styles.cardTitle}>{displayTitle}</p>
+                <p className={styles.cardLocation}>{wilayaName}</p>
+
+                <div className={styles.cardMeta}>
+                    <span className={styles.cardPrice}>{result.price} DA / night</span>
+                    <span className={styles.cardRating}>
                         <span className={styles.star}>★</span>
-                    </div>
+                        {result.rating ?? "—"}
+                    </span>
                 </div>
-            </td>
-            <td className={styles.td}>{getWilayaName(result.wilaya) || "—"}</td>
-            <td className={styles.td}>{result.renter_name}</td>
-            <td className={styles.td}>{result.phone_number || "N/A"}</td>
-            <td className={styles.td}>{result.contact}</td>
-        </tr>
+            </div>
+
+            <div className={styles.cardFooter}>
+                {result.renter_id ? (
+                    <Link
+                        href={`/profile/${result.renter_id}`}
+                        className={styles.hostLink}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {result.renter_name}
+                    </Link>
+                ) : (
+                    <span className={styles.hostLink} style={{ cursor: "default", color: "#888" }}>
+                        {result.renter_name}
+                    </span>
+                )}
+            </div>
+        </div>
     );
 }
 
-const SearchResultsTable: React.FC<SearchResultsTableProps> = ({ results }) => {
+const SearchResultsTable: React.FC<{ results: SearchResult[] }> = ({ results }) => {
     if (results.length === 0) {
         return (
             <div style={{ textAlign: "center", padding: "3rem", color: "#666" }}>
@@ -80,23 +82,11 @@ const SearchResultsTable: React.FC<SearchResultsTableProps> = ({ results }) => {
     return (
         <div className={styles.resultsContainer}>
             <p className={styles.sortingNote}>Results shown according to your selected sort order</p>
-            <table className={styles.table}>
-                <thead>
-                    <tr>
-                        <th className={styles.th}>Photo</th>
-                        <th className={styles.th}>Information</th>
-                        <th className={styles.th}>Wilaya</th>
-                        <th className={styles.th}>Host&apos;s name</th>
-                        <th className={styles.th}>Mobile</th>
-                        <th className={styles.th}>Email</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {results.map((result, idx) => (
-                        <SearchResultRow key={idx} result={result} idx={idx} />
-                    ))}
-                </tbody>
-            </table>
+            <div className={styles.cardsGrid}>
+                {results.map((result) => (
+                    <SearchResultCard key={result.id} result={result} />
+                ))}
+            </div>
         </div>
     );
 };

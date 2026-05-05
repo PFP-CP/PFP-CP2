@@ -26,6 +26,7 @@
   border: 1px solid rgba(255, 255, 255, 0.6);
   margin-bottom: 3rem;
   transition: all 0.3s ease;
+  font-family: "sansation-700", sans-serif;
 }
 
 .filterGrid {
@@ -130,83 +131,156 @@
   background-size: 1.2rem;
 }
 
-/* Result Table Styles */
+/* Results Card Grid */
 .resultsContainer {
-  overflow-x: auto;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
+  margin-top: 1rem;
+  font-family: "sansation-700", sans-serif;
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.th {
-  padding: 1.2rem 1.5rem;
-  background: #f8f9fa;
-  color: #220E67;
-  font-family: 'sansation-700', sans-serif;
-  font-weight: normal;
-  border-bottom: 2px solid #eee;
-}
-
-.table tbody tr:hover {
-  background: #f4f0fd;
-  transition: background 0.15s;
-}
-
-.td {
-  padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
-  color: #444;
-  vertical-align: middle;
-    font-family: 'sansation-700', sans-serif;
-
-}
-
-.propertyPhoto {
-  width: 120px;
-  height: 80px;
-  border-radius: 10px;
-  object-fit: cover;
-  background: #eee;
-}
-
-.descriptionCell {
-  max-width: 300px;
-}
-
-.propertyType {
-  font-weight: 700;
-  color: #220E67;
-  display: block;
-}
-
-.propertyPrice {
-  color: #7c5cdb;
-  font-weight: 600;
-}
-
-.rating {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9rem;
-  margin-top: 0.4rem;
-}
-
-.star {
-  color: #ffc107;
 }
 
 .sortingNote {
   font-size: 0.8rem;
-  color: #ff4d4d;
-  margin-bottom: 1rem;
+  color: #888;
+  margin-bottom: 1.5rem;
   font-style: italic;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 3px solid #220E67;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(34, 14, 103, 0.14), 0 4px 10px rgba(0, 0, 0, 0.07);
+}
+
+.cardImage {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.cardImage::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.15));
+  pointer-events: none;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover .cardImg {
+  transform: scale(1.05);
+}
+
+.cardImgFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #cbd5e1;
+}
+
+.cardBody {
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 0.35rem;
+}
+
+.cardTitle {
+  font-family: 'sansation-700', sans-serif;
+  font-size: 1.05rem;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.cardLocation {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.cardMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.cardPrice {
+  font-family: 'sansation-700', sans-serif;
+  font-weight: 800;
+  color: #4f46e5;
+  font-size: 1rem;
+}
+
+.cardRating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.star {
+  color: #f59e0b;
+}
+
+.cardFooter {
+  padding: 0.7rem 1.2rem;
+  border-top: 1px solid #f1f5f9;
+  background: #fafafa;
+}
+
+.hostLink {
+  font-size: 0.85rem;
+  color: #7c5cdb;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.hostLink:hover {
+  color: #220E67;
+  text-decoration: underline;
 }
 
 .searchButtonContainer {

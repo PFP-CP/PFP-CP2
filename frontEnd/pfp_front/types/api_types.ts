@@ -413,7 +413,9 @@ export interface SearchCriteria {
 
 export interface SearchResult {
     id: string;
+    renter_id?: number;
     renter_name: string;
+    title?: string;
     wilaya?: string;
     price: number;
     rating: number;
