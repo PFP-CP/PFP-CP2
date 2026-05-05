@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import { logout } from "@/app/(authentication)/actions/login";
 import { FEATURES, wilayas, wilayaFrNameToCode } from "@/data/auth_data/data";
@@ -6,14 +6,9 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { refreshToken, verifyToken } from "@/lib/authorization_handling";
 
-
-
-
-
-
 export async function resolveShortUrl(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url, { redirect: 'follow', cache: 'no-store' });
+    const res = await fetch(url, { redirect: "follow", cache: "no-store" });
     return res.url;
   } catch (e) {
     return null;
@@ -21,11 +16,11 @@ export async function resolveShortUrl(url: string): Promise<string | null> {
 }
 
 export async function getNookDetail(postId: string) {
-  const token = (await cookies()).get('token')?.value;
-  const res = await fetch(`http://10.93.250.163:8000/api/Posts/${postId}`, {
+  const token = (await cookies()).get("token")?.value;
+  const res = await fetch(`http://127.0.0.1:8000/api/Posts/${postId}`, {
     headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
   if (!res.ok) return null;
@@ -34,15 +29,18 @@ export async function getNookDetail(postId: string) {
 
 export async function submitHouseUpdate(postId: string, data: CreatePostData) {
   let features_arr: number[] = [];
-  data.features.forEach((feat) => { const id = FEATURES.get(feat); if (id) features_arr.push(id); });
+  data.features.forEach((feat) => {
+    const id = FEATURES.get(feat);
+    if (id) features_arr.push(id);
+  });
 
-  const hasFamily = data.categories.includes('family');
-  const hasCouple = data.categories.includes('couple');
-  const hasSingle = data.categories.includes('single');
-  let types_code = 'AL';
-  if (hasFamily && !hasCouple && !hasSingle) types_code = 'FA';
-  else if (hasFamily && !hasCouple && hasSingle) types_code = 'NC';
-  else if (hasFamily && hasCouple && !hasSingle) types_code = 'NM';
+  const hasFamily = data.categories.includes("family");
+  const hasCouple = data.categories.includes("couple");
+  const hasSingle = data.categories.includes("single");
+  let types_code = "AL";
+  if (hasFamily && !hasCouple && !hasSingle) types_code = "FA";
+  else if (hasFamily && !hasCouple && hasSingle) types_code = "NC";
+  else if (hasFamily && hasCouple && !hasSingle) types_code = "NM";
   const toSend: Record<string, any> = {
     house_type: data.house_type,
     description: data.description,
@@ -50,38 +48,41 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
     num_bedroom: Number(data.bedrooms),
     num_bathroom: Number(data.bathrooms),
     types_of_renters: types_code,
-    county: data.county || '',
+    county: data.county || "",
     state: (() => {
-      if (wilayas.find(w => w.code === data.wilaya)) return data.wilaya;
-      const v = data.wilaya.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      if (wilayas.find((w) => w.code === data.wilaya)) return data.wilaya;
+      const v = data.wilaya.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
       const frMatch = wilayaFrNameToCode[v];
       if (frMatch) return frMatch;
-      const enMatch = wilayas.find(w => w.name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '') === v);
+      const enMatch = wilayas.find(
+        (w) => w.name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "") === v,
+      );
       return enMatch ? enMatch.code : data.wilaya;
     })(),
-    country: data.map_country || 'Algeria',
+    country: data.map_country || "Algeria",
     longitude: data.longitude ? Number(data.longitude) : 0,
     latitude: data.latitude ? Number(data.latitude) : 0,
     feature_ids: features_arr,
-    allows_animals: data.rules.includes('animals'),
-    allows_smoking: data.rules.includes('smoking'),
-    allows_noise: data.rules.includes('noise'),
+    allows_animals: data.rules.includes("animals"),
+    allows_smoking: data.rules.includes("smoking"),
+    allows_noise: data.rules.includes("noise"),
   };
   if (data.beds && Number(data.beds) > 0) toSend.num_beds = Number(data.beds);
-  if (data.max_tenants && Number(data.max_tenants) > 0) toSend.max_tenants = Number(data.max_tenants);
+  if (data.max_tenants && Number(data.max_tenants) > 0)
+    toSend.max_tenants = Number(data.max_tenants);
   console.log(toSend);
-  const token = (await cookies()).get('token')?.value;
-  const res = await fetch(`http://10.93.250.163:8000/api/Mynook/${postId}`, {
-    method: 'PATCH',
+  const token = (await cookies()).get("token")?.value;
+  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}`, {
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(toSend),
   });
   if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    console.error('updateNook error:', res.status, text);
+    const text = await res.text().catch(() => "");
+    console.error("updateNook error:", res.status, text);
     return { success: false };
   }
   const response = await res.json().catch(() => null);
@@ -98,43 +99,45 @@ export async function updateNook(postId: string, data: object, images: Blob[]) {
 }
 
 export async function uploadImage(postId: string, formData: FormData) {
-  const token = (await cookies()).get('token')?.value;
-  const res = await fetch(`http://10.93.250.163:8000/api/Mynook/${postId}/pictures`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}` },
+  const token = (await cookies()).get("token")?.value;
+  const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
     body: formData,
   });
   return res.ok;
 }
 
 export async function deleteNookPicture(postId: string, pictureId: number) {
-  const token = (await cookies()).get('token')?.value;
-  const res = await fetch(`http://10.93.250.163:8000/api/Mynook/${postId}/pictures/${pictureId}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` },
-  });
+  const token = (await cookies()).get("token")?.value;
+  const res = await fetch(
+    `http://127.0.0.1:8000/api/Mynook/${postId}/pictures/${pictureId}`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
   return res.ok;
 }
 
-
 export async function submitHouseImages(postId: string, images: Array<Blob>) {
-  const token = (await cookies()).get('token')?.value;
+  const token = (await cookies()).get("token")?.value;
   const uploadPromises = images.map((img, i) => {
     const formData = new FormData();
-    formData.append('file', img, `image_${i}.webp`);
+    formData.append("file", img, `image_${i}.webp`);
 
-    return fetch(`http://10.93.250.163:8000/api/Mynook/${postId}/pictures`, {
+    return fetch(`http://127.0.0.1:8000/api/Mynook/${postId}/pictures`, {
       method: "POST",
-      headers: { 'Authorization': `Bearer ${token}` },
-      body: formData
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
     }).then((res) => {
-      const data = res.json()
+      const data = res.json();
       if (!res.ok) {
         console.error(`Upload failed for image ${i}`);
       }
       return data;
     });
-  })
+  });
   try {
     await Promise.all(uploadPromises);
   } catch (err) {
@@ -143,7 +146,6 @@ export async function submitHouseImages(postId: string, images: Array<Blob>) {
   }
   //if all pictures got uploaded correctly return true
   return true;
-
 }
 
 interface CreatePostData {
@@ -180,57 +182,54 @@ export async function submitHouseInformation(data: CreatePostData) {
     max_tenants: Number(data.max_tenants),
     surface: 1,
     types_of_renters: {
-      Families: data.categories.includes('family'),
-      Couple: data.categories.includes('couple'),
-      Single: data.categories.includes('single'),
+      Families: data.categories.includes("family"),
+      Couple: data.categories.includes("couple"),
+      Single: data.categories.includes("single"),
     },
-    county: data.county || '',
+    county: data.county || "",
     state: data.wilaya,
     country: data.map_country || "Algeria",
     longitude: data.longitude ? Number(data.longitude) : 0,
     latitude: data.latitude ? Number(data.latitude) : 0,
     feature_ids: features_arr,
-    allows_animals: data.rules.includes('animals'),
-    allows_smoking: data.rules.includes('smoking'),
-    allows_noise: data.rules.includes('noise')
-  }
+    allows_animals: data.rules.includes("animals"),
+    allows_smoking: data.rules.includes("smoking"),
+    allows_noise: data.rules.includes("noise"),
+  };
 
-  let token = (await cookies()).get('token')?.value;
+  let token = (await cookies()).get("token")?.value;
 
   if (token) {
     const tokenValid = await verifyToken(token);
     if (!(await tokenValid)) {
-      const refresh = (await cookies()).get('refresh')?.value
+      const refresh = (await cookies()).get("refresh")?.value;
       const refreshed = await refreshToken(refresh!);
 
       if (!(await refreshed.success)) {
         logout();
-        redirect('/authentication');
+        redirect("/authentication");
       }
-
     }
   }
 
-  token = (await cookies()).get('token')?.value;
+  token = (await cookies()).get("token")?.value;
 
-  const res = await fetch("http://10.93.250.163:8000/api/Mynook/", {
+  const res = await fetch("http://127.0.0.1:8000/api/Mynook/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(toSend),
-
-  })
+  });
   if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    console.error('createPost error:', res.status, text)
-    return { success: false }
+    const text = await res.text().catch(() => "");
+    console.error("createPost error:", res.status, text);
+    return { success: false };
   }
-  const response = await res.json().catch(() => null)
-  if (!response?.id) return { success: false }
-  return { success: true, post_id: response.id }
-
+  const response = await res.json().catch(() => null);
+  if (!response?.id) return { success: false };
+  return { success: true, post_id: response.id };
 }
 
 export async function createPost(data: object, images: any) {
@@ -241,5 +240,4 @@ export async function createPost(data: object, images: any) {
     return false;
   }
   return false;
-
 }

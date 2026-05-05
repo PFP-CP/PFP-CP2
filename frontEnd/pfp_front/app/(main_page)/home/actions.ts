@@ -1,24 +1,24 @@
-'use server'
+"use server";
 
-import { cookies } from 'next/headers';
-import { Property } from '@/types/api_types';
+import { cookies } from "next/headers";
+import { Property } from "@/types/api_types";
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://10.93.250.163:8000';
+const API = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 function mapPost(item: any): Property {
   return {
     id: item.id,
     title: item.title,
     price: Number(item.Price ?? item.price ?? 0),
-    state: item.State ?? item.state ?? '',
+    state: item.State ?? item.state ?? "",
     average_rating: Number(item.average_rating ?? 0),
     primary_image: item.primary_image ?? null,
-    status: 'available',
+    status: "available",
   };
 }
 
 async function authFetch(path: string): Promise<any[]> {
-  const token = (await cookies()).get('token')?.value;
+  const token = (await cookies()).get("token")?.value;
   if (!token) return [];
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
@@ -39,7 +39,7 @@ async function authFetch(path: string): Promise<any[]> {
 }
 
 export async function getRecommendedPosts(): Promise<Property[]> {
-  const data = await authFetch('/api/Recommendations/recommended');
+  const data = await authFetch("/api/Recommendations/recommended");
   return data.map(mapPost);
 }
 

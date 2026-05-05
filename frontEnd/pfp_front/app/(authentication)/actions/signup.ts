@@ -1,31 +1,44 @@
 import { wilayas } from "@/data/auth_data/data";
 
+export async function signup(
+  gender: string,
+  state: string,
+  type_of_user: string,
+  phone_number: string,
+  full_name: string,
+  email: string,
+  password: string,
+  date_of_birth: string,
+) {
+  wilayas.forEach((item) => {
+    if (item.name === state) state = item.code;
+  });
 
-export async function signup(gender:string,state:string,type_of_user:string,phone_number:string,full_name:string,email:string,password:string,date_of_birth:string){
-  wilayas.forEach((item)=>{
-    if(item.name===state) state = item.code;
-  })
-
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://10.93.250.163:8000'}/api/Account/Signup`,{
-    method:'POST',
-    headers:{'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      gender,
-      state,
-      type_of_user,
-      phone_number,
-      full_name,
-      email,
-      password,
-      date_of_birth
-    }),
-  })
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/api/Account/Signup`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        gender,
+        state,
+        type_of_user,
+        phone_number,
+        full_name,
+        email,
+        password,
+        date_of_birth,
+      }),
+    },
+  );
 
   const data = await response.json();
-  if(!data.Error){
-    return {success:true};
+  if (!data.Error) {
+    return { success: true };
   }
-  return {success:false, error: typeof data.Error === 'string' ? data.Error : 'Signup failed. Please try again.'};
-
+  return {
+    success: false,
+    error:
+      typeof data.Error === "string" ? data.Error : "Signup failed. Please try again.",
+  };
 }
-
