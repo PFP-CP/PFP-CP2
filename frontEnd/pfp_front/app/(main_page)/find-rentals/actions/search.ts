@@ -14,7 +14,6 @@ export async function searchPosts(criteria: SearchCriteria): Promise<SearchResul
     // posts are titled "apartment in X" (lowercase) — match case-insensitively
     house_type: criteria.house_type?.toLowerCase() || undefined,
   };
-  console.log(payload);
 
   const response = await fetch("http://127.0.0.1:8000/api/Search/", {
     method: "POST",
@@ -29,6 +28,5 @@ export async function searchPosts(criteria: SearchCriteria): Promise<SearchResul
     console.error(`Search failed ${response.status}:`, body);
     return [];
   }
-  console.log(data);
   return data;
 }

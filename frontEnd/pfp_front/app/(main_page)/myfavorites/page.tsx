@@ -8,7 +8,6 @@ export default async function MyFavoritesPage() {
     let favorites: Property[] = []
     try {
         favorites = await getSavedPosts() as Property[]
-        console.log(favorites);
     } catch (err: any) {
         if (String(err?.message).includes('401')) redirect('/authentication')
     }

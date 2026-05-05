@@ -40,13 +40,11 @@ async function authFetch(path: string): Promise<any[]> {
 
 export async function getRecommendedPosts(): Promise<Property[]> {
   const data = await authFetch("/api/Recommendations/recommended");
-  console.log(data);
   return data.map(mapPost);
 }
 
 export async function getPostsByWilaya(code: string, limit = 10): Promise<Property[]> {
   // sort_by=none bypasses a backend sorting bug (sorting() expects dicts but gets model instances)
-  console.log(code);
   const data = await authFetch(`/api/Posts/?city=${code}`);
   return data.map(mapPost);
 }

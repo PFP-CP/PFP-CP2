@@ -70,7 +70,6 @@ export async function submitHouseUpdate(postId: string, data: CreatePostData) {
   if (data.beds && Number(data.beds) > 0) toSend.num_beds = Number(data.beds);
   if (data.max_tenants && Number(data.max_tenants) > 0)
     toSend.max_tenants = Number(data.max_tenants);
-  console.log(toSend);
   const token = (await cookies()).get("token")?.value;
   const res = await fetch(`http://127.0.0.1:8000/api/Mynook/${postId}`, {
     method: "PATCH",

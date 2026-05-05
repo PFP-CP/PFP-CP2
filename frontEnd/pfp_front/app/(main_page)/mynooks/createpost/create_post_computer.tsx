@@ -118,7 +118,6 @@ export default function CreatePost() {
       if (post.house_rules?.allows_animals) rules.push('animals');
       if (post.house_rules?.allows_smoking) rules.push('smoking');
       if (post.house_rules?.allows_noise) rules.push('noise');
-      console.log(post)
       reset({
         house_type: houseType,
         wilaya: post.location?.State ?? '01',

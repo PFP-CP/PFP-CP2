@@ -51,7 +51,6 @@ export async function checkEmailVerified(email: string): Promise<{ verified: boo
     body: JSON.stringify({ email, key: "" }),
     cache: "no-store",
   });
-  console.log(response);
   // 400 means is_active is already true → verified
   return { verified: response.status === 400 };
 }
@@ -67,7 +66,6 @@ export async function sendVerificationEmail(
     body: JSON.stringify({ email }),
     cache: "no-store",
   });
-  console.log(response);
   if (response.status === 400) {
     const data = await response.json().catch(() => ({}));
     if ((data.detail as string)?.includes("already active"))

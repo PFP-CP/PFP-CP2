@@ -373,7 +373,6 @@ function Comments_invisible({setShowComments,sectionData,onCommentAdded,comment_
 
 
 function Comments_visible({setShowComments,sectionData,currentUserId,onCommentAdded}:{setShowComments:React.Dispatch<React.SetStateAction<boolean>>,sectionData:any,currentUserId:number|null,onCommentAdded:()=>Promise<void>}){
-  console.log(sectionData)
   return(
     
           <div className={style.nook_and_renter_rating}>

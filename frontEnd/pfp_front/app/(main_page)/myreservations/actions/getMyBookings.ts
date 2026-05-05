@@ -75,6 +75,5 @@ export async function getMyBookings(): Promise<BookedReservation[]> {
       },
     }))
   )
-
   return results.flat()
 }

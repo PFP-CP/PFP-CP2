@@ -132,18 +132,19 @@ def get_recommendations(request):
     profile = profile_create(saved) 
     # if user has no history, return newest posts as fallback
     if not saved:
-        qs = Post.objects.filter(status = "active").order_by('-created_at')[:20]
+        qs = Post.objects.filter(status="available").order_by('-created_at')[:20]
         return qs
        
     # exclude posts the user already saved
     saved_post_ids = saved.values_list('post_id', flat=True)
     candidates = Post.objects.exclude(
-        id__in=saved_post_ids , seller = user
+        id__in=saved_post_ids ).exclude( seller = user
     ).select_related(
         'house__location', 
         'house__rules'
     ).prefetch_related(
-        'house__features__features'
+        'house__features__features',
+        'house__pictures'
     )
 
     # score and sort

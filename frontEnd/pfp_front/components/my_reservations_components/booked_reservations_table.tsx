@@ -100,7 +100,7 @@ function BookedReservationRow({
                         {houseType}{wilayaName ? ` in ${wilayaName}` : post.wilaya ? ` in ${post.wilaya}` : ""}
                     </h4>
                     <p className={styles.price}>{post.price} DA per night</p>
-                    <span className={styles.rating}>{post.rating || "—"} ★</span>
+                    <span className={styles.rating}>{String(post.rating) || "—"} ★</span>
                 </div>
             </td>
 

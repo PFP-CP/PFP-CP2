@@ -186,7 +186,7 @@ def sorting(post_results: list[dict], ordering_by: str) -> list[dict]:
 # Search endpoint
 
 
-@search_router.post("", tags=["Search"])
+@search_router.post("", tags=["Search"] ,auth=JWTAuth())
 def search(request, Criteria: SearchCriteria):
     # Cache key excludes order_by — sorting is in-memory after retrieval
     criteria_dict = Criteria.dict(exclude={"order_by"})
@@ -205,7 +205,7 @@ def search(request, Criteria: SearchCriteria):
             "house__pictures",
             "house__location",
             "house__features__features",
-        )
+        ).exclude(seller = request.user)
 
         # Apply all filters
         results_query = post_rating_query(results_query, Criteria.post_rating)
@@ -228,7 +228,7 @@ def search(request, Criteria: SearchCriteria):
 
 
 # List Post with query parameter
-@router.get("/", response=List[PostListOut], tags=["List post"])
+@router.get("/", response=List[PostListOut], tags=["List post"], auth=JWTAuth())
 def list_posts(
     request,
     # Filters
@@ -241,7 +241,7 @@ def list_posts(
     """
     qs = Post.objects.select_related("house").prefetch_related(
         "house__pictures",
-    ).order_by("updated_at")
+    ).order_by("updated_at").exclude(seller = request.user)
 
     # ── Filters
     if city:

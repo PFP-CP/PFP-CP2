@@ -10,7 +10,6 @@ export async function verify() {
     body: JSON.stringify({ password: "Angharok123?", email: "ba.tetbirt@ensta.edu.dz" }),
   });
   const data = await response.json();
-  console.log(data);
 }
 const postData = {
   title: "Modern Apartment in Hydra",
@@ -40,7 +39,6 @@ export async function createPost() {
     body: JSON.stringify(postData),
   });
 
-  console.log(response);
 }
 
 export async function deleteComment(postId: string, commentId: string) {
@@ -224,7 +222,6 @@ export async function savePost(
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(await response);
   if (response.status === 201) return { success: true, alreadySaved: true };
   if (!response.ok) return { success: false };
   return { success: true };
@@ -253,7 +250,6 @@ export async function getSavedPosts(): Promise<
   }[]
 > {
   const token = (await cookies()).get("token")?.value;
-  console.log(token);
   const response = await authedFetch("/api/Posts/saved", {
     method: "GET",
     cache: "no-store",
@@ -264,7 +260,6 @@ export async function getSavedPosts(): Promise<
     
   });
   const data: any[] = await response.json();
-  console.log(data);
   return data.map((item) => ({
     id: item.post_id,
     title: item.title,
