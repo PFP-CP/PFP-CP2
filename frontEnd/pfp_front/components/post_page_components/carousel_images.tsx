@@ -39,9 +39,9 @@ const LEFT_ARROW = (
     viewBox="0 0 24 24"
     fill="none"
     stroke="white"
-    stroke-width="3.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="3.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
   >
     <polyline points="15 18 9 12 15 6"></polyline>
   </svg>

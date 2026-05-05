@@ -71,7 +71,7 @@ export default function Mobile_nav(){
           <div className={style.upper_container}>
             <Link href="/home" id={style.logo_container}>
               {LOGO}
-              <div className={style.nook} style={{position:'relative', height:'14px', width:'50px'}}>
+              <div className={style.nook} style={{position:'relative',height:'14px', width:'50px'}}>
                {NOOK}
               </div>
             </Link>

@@ -49,7 +49,11 @@
 
 .upper_container #logo_container{
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+}
+
+.upper_container #logo_container .nook{
+  padding: 10px;
 }
 
 .upper_container #user_controls{
@@ -99,6 +103,9 @@
 
 
 @media (min-width:500px) {
+  .upper_container #logo_container .nook{
+    padding: 12px;
+}
   .user_profile, .settings{
     height: 25px ;
     width: 25px ;
@@ -112,8 +119,8 @@
     width: 33px;
   }
   .nook{
-    height: 20px !important;
-    width: 60px !important;
+    height: 28px !important;
+    width: 72px !important;
   }
   .upper_container .nav_search{
     max-width: 150px;

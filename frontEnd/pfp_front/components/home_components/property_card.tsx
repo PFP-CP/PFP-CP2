@@ -53,7 +53,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                 <p>{getWilayaName(property.state) || property.state}</p>
                 <div className={styles.card_footer}>
                     <span>{property.price} DA / night</span>
-                    <span><span className={styles.star}>★</span> {property.average_rating ?? "—"}</span>
+                    <span><span className={styles.star}>★</span> {property.rating ?? "—"}</span>
                 </div>
             </div>
         </div>

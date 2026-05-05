@@ -1,5 +1,5 @@
 'use client'
-import { ChangeEvent, useState,useRef, useEffect } from 'react'
+import { useState,useRef, useEffect } from 'react'
 import style from '@/styles/post_page_styles/house_information_and_booking.module.css'
 import { STAR_LOGO,STAR_LOGO_SMALL,LEAVE_TAB,CONFIRM, LEAVE_TAB_WHITE, FEATURE_ICONS } from '@/public/svg/svg'
 import Comment from './house_information_components/Comment'
@@ -18,7 +18,7 @@ const ALLOW = <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns=
 </svg>
 
 const NOT_ALLOW = <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_506_984)">
+<g clipPath="url(#clip0_506_984)">
 <path d="M33 16.5C33 25.6127 25.6127 33 16.5 33C7.3873 33 0 25.6127 0 16.5C0 7.3873 7.3873 0 16.5 0C25.6127 0 33 7.3873 33 16.5ZM11.0417 9.5833C10.639 9.18057 9.98602 9.18057 9.5833 9.5833C9.18057 9.98602 9.18057 10.639 9.5833 11.0417L15.0416 16.5L9.5833 21.9583C9.18057 22.361 9.18057 23.014 9.5833 23.4167C9.98602 23.8194 10.639 23.8194 11.0417 23.4167L16.5 17.9584L21.9583 23.4167C22.361 23.8194 23.014 23.8194 23.4167 23.4167C23.8194 23.014 23.8194 22.361 23.4167 21.9583L17.9584 16.5L23.4167 11.0417C23.8194 10.639 23.8194 9.98602 23.4167 9.5833C23.014 9.18057 22.361 9.18057 21.9583 9.5833L16.5 15.0416L11.0417 9.5833Z" fill="#D00000"/>
 </g>
 <defs>
@@ -453,43 +453,21 @@ function CancelBookingModal({
 
 export default function HouseInformationAndBooking({post_data,onCommentAdded,onReservationCreated,currentUserId,initialReservations}:{post_data:any,onCommentAdded:()=>Promise<void>,onReservationCreated:()=>Promise<void>,currentUserId:number|null,initialReservations:MyReservation[]}){
   const [showComments, setShowComments] = useState(false);
-  const [visitorsActive, setVisitorsActive] = useState(false);
-  const [visitorsNumber, setVisitorsNumber] = useState<string>('0');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [bookedDates, setBookedDates] = useState<{ start: Date; end: Date } | null>(null);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
-  const [visitorsHint, setVisitorsHint] = useState(false);
   const [myReservations, setMyReservations] = useState<MyReservation[]>(initialReservations);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancellingId, setCancellingId] = useState<number | null>(null);
   const [cancelError, setCancelError] = useState<string | null>(null);
-
-  const handleVisitorsNumber = (e:React.ChangeEvent<HTMLInputElement>)=>{
-    if(Number(e.currentTarget.value)<1){
-      setVisitorsNumber('0');
-      return;
-    }
-    if(e.currentTarget.value.charAt(0)==='0'){
-      const new_visitors =e.currentTarget.value.slice(1);
-      setVisitorsNumber(new_visitors);
-      return;
-    }
-    setVisitorsNumber(e.currentTarget.value);
-  }
-
 
   const handleBook = async () => {
     if (!bookedDates) {
       setBookingError('Please select arrival and departure dates before booking.');
       return;
     }
-    if (Number(visitorsNumber) < 1) {
-      setVisitorsHint(true);
-      return;
-    }
-    setVisitorsHint(false);
     setBookingError(null);
     setBookingSuccess(false);
     setBookingLoading(true);
@@ -522,9 +500,6 @@ export default function HouseInformationAndBooking({post_data,onCommentAdded,onR
     }
   };
 
-  //some conditions for readability
-  const visitors_value = Number(visitorsNumber)>0?visitorsNumber:<>Visitors</>
-  const visitors_style = Number(visitorsNumber)>0? style.visitors_after:style.visitors_before;
   return(
     <section className={style.nook_data_and_scheduler}>
         <div className={style.nook_data}>

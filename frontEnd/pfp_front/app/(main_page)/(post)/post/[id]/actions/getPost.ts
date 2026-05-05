@@ -224,7 +224,8 @@ export async function savePost(
       Authorization: `Bearer ${token}`,
     },
   });
-  if (response.status === 409) return { success: true, alreadySaved: true };
+  console.log(await response);
+  if (response.status === 201) return { success: true, alreadySaved: true };
   if (!response.ok) return { success: false };
   return { success: true };
 }
@@ -251,9 +252,16 @@ export async function getSavedPosts(): Promise<
     primary_image: string | null;
   }[]
 > {
+  const token = (await cookies()).get("token")?.value;
+  console.log(token);
   const response = await authedFetch("/api/Posts/saved", {
     method: "GET",
     cache: "no-store",
+    headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      }
+    
   });
   const data: any[] = await response.json();
   console.log(data);
@@ -263,6 +271,7 @@ export async function getSavedPosts(): Promise<
     price: item.price ?? 0,
     state: item.state || "blid",
     primary_image: item.primary_image || null,
+    rating: item.rating
   }));
 }
 
