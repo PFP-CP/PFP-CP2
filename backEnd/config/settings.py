@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.93.250.163']
+ALLOWED_HOSTS = ['*']
 TIME_ZONE = "Africa/Algiers"  # UTC+1
 USE_TZ = True
 
