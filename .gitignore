@@ -15,6 +15,7 @@ env/
 db.sqlite3
 media/
 staticfiles/
+*.rdb
 
 # Environment variables
 .env
