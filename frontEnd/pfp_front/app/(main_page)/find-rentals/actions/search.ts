@@ -1,7 +1,9 @@
 "use server";
 import { SearchCriteria, SearchResult } from "@/types/api_types";
+import { cookies } from "next/headers";
 
 export async function searchPosts(criteria: SearchCriteria): Promise<SearchResult[]> {
+  const token = (await cookies()).get("token")?.value;
   const ap = criteria.allowed_people;
   const noneSelected = ap && !ap.Families && !ap.Couple && !ap.Single;
 
@@ -17,7 +19,9 @@ export async function searchPosts(criteria: SearchCriteria): Promise<SearchResul
 
   const response = await fetch("http://127.0.0.1:8000/api/Search/", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+     },
 
     body: JSON.stringify(payload),
     cache: "no-store",

@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 
 import utilitymethods.Pictures as Pic
 from Accounts.models import Account
@@ -76,6 +76,61 @@ def _reservation_to_dict(r: Reservation) -> dict:
         "created_at": r.created_at.isoformat(),
     }
 
+def mail_notification(post , user):
+    post_url = f"https://fragrant-defender-gusto.ngrok-free.dev//post/{post.id}"
+    renter_profile_url = f"https://fragrant-defender-gusto.ngrok-free.dev//profile/{user.id}"
+    phone_number = user.contact.Phone_Number if hasattr(user, 'contact') else "N/A"
+
+    html_content = f"""
+    <h2>A new reservation has been made on your listing</h2>
+
+    <h3>Renter Details:</h3>
+    <ul>
+        <li><strong>Name:</strong> {user.full_name}</li>
+        <li><strong>Email:</strong> <a href="mailto:{user.email}">{user.email}</a></li>
+        <li><strong>Phone:</strong> {phone_number}</li>
+    </ul>
+
+    <p>
+        <a href="{renter_profile_url}" style="
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        ">View Renter Profile</a>
+
+        <a href="{post_url}" style="
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        ">View Your Post</a>
+    </p>
+    """
+
+    plain_text = f"""
+    A new reservation has been made on your listing.
+
+    Renter Details:
+    - Name: {user.full_name}
+    - Email: {user.email}
+    - Phone: {phone_number}
+
+    View renter profile: {renter_profile_url}
+    View your post: {post_url}
+    """
+
+    email = EmailMultiAlternatives(
+        subject="A Reservation has been made",
+        body=plain_text,
+        from_email="nook.app1@gmail.com",
+        to=[post.seller.email],
+    )
+    email.attach_alternative(html_content, "text/html")
+    email.send()
 
 @router.get("/", response=list[ReservationOut], auth=JWTAuth(), tags=["Reservations"])
 def list_reservations(request):
@@ -124,13 +179,7 @@ def create_reservation(request, payload: ReservationIn):
         arrival_date=payload.arrival_date,
         departure_date=payload.departure_date,
     )
-    message = f"{user.full_name} has made a reservation on your Posting "
-    send_mail(
-        "A Reservation has been made ",
-        message,
-        "nook.app1@gmail.com",
-        [post.seller.email],
-    )
+
     # select_related so _reservation_to_dict can access renter/post/House without N+1
     reservation = (
         Reservation.objects.select_related(
@@ -139,8 +188,7 @@ def create_reservation(request, payload: ReservationIn):
         .prefetch_related("post__house__pictures")
         .get(pk=reservation.pk)
     )
-
-
+    mail_notification(post,user)
     # Auto-save the post to the user's favorites
     saved_post, created = SavedPost.objects.get_or_create(user=user, post=post)
     if created:

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+   allowedDevOrigins: [
+    "fragrant-defender-gusto.ngrok-free.dev",
+  ],
   experimental: {
     staleTimes: {
       dynamic: 30,
@@ -37,5 +40,4 @@ const nextConfig: NextConfig = {
     unoptimized: process.env.NODE_ENV === 'development',
   },
 };
-
 export default nextConfig;

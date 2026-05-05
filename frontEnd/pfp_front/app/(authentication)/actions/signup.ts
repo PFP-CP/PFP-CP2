@@ -1,3 +1,5 @@
+
+"use server";
 import { wilayas } from "@/data/auth_data/data";
 
 export async function signup(
