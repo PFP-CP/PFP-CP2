@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { wilayaFrNameToCode } from '@/data/auth_data/data';
 import { imageItem } from '@/types/types';
-import { submitHouseInformation, submitHouseUpdate, getNookDetail, deleteNookPicture, resolveShortUrl, uploadImage } from './actions/createpost';
+import { submitHouseInformation, submitHouseUpdate, getNookDetail, deleteNookPicture, uploadImage } from './actions/createpost';
 import { getCompressedNookImages } from '@/lib/functions';
 import { useMediaQuery } from '@mui/material';
 import Create_post_mobile_nav from '@/components/create_post_page_components/create_post_page_mobile_nav';
@@ -36,20 +36,6 @@ const TYPES_TO_CATEGORIES: Record<string, string[]> = {
   'NM': ['family', 'couple'],
 };
 
-function parseGoogleMapsUrl(url: string): { lat: number; lng: number } | null {
-  try {
-    // Most common: /place/Name/@lat,lng,zoom or /@lat,lng,zoom
-    const atMatch = url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
-    if (atMatch) return { lat: parseFloat(atMatch[1]), lng: parseFloat(atMatch[2]) };
-    // ?q=lat,lng
-    const qMatch = url.match(/[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
-    if (qMatch) return { lat: parseFloat(qMatch[1]), lng: parseFloat(qMatch[2]) };
-    // ?ll=lat,lng
-    const llMatch = url.match(/[?&]ll=(-?\d+\.?\d*),(-?\d+\.?\d*)/);
-    if (llMatch) return { lat: parseFloat(llMatch[1]), lng: parseFloat(llMatch[2]) };
-  } catch (e) { /* ignore */ }
-  return null;
-}
 
 export default function CreatePost() {
   const searchParams = useSearchParams();
@@ -87,7 +73,6 @@ export default function CreatePost() {
     1: getValues('max_tenants'),
     2: getValues('price_per_night')
   }
-  const location = watch('location');
   const toggleCheckbox = (section_name: string, item: string) => {
     if (watchedCheckBoxes[section_name].includes(`${item}`)) {
       setValue(`${section_name}`, watchedCheckBoxes[section_name].filter((el) => el !== item))
@@ -134,7 +119,6 @@ export default function CreatePost() {
         longitude: String(post.location?.Longitude ?? ''),
         county: post.location?.County ?? '',
         map_country: post.location?.Country ?? '',
-        location: '',
       });
       if (post.location) {
         setMapLabel([post.location.County, post.location.State, post.location.Country].filter(Boolean).join(', '));
@@ -147,50 +131,6 @@ export default function CreatePost() {
       }
     });
   }, [editId]);
-
-  useEffect(() => {
-    const isGoogleMaps = location && (location.includes('google.com/maps') || location.includes('goo.gl'));
-    if (!isGoogleMaps) return;
-
-    const run = async () => {
-      let fullUrl = location;
-      if (!location.includes('google.com/maps')) {
-        const resolved = await resolveShortUrl(location);
-        if (!resolved) return;
-        fullUrl = resolved;
-      }
-      const coords = parseGoogleMapsUrl(fullUrl);
-      if (!coords) return;
-      setValue('latitude', String(coords.lat));
-      setValue('longitude', String(coords.lng));
-      fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&accept-language=en`,
-        { headers: { 'Accept-Language': 'en' } }
-      )
-        .then(r => r.json())
-        .then(data => {
-          const addr = data.address || {};
-          const label = [
-            addr.city || addr.town || addr.municipality || addr.village,
-            addr.state,
-            addr.country,
-          ].filter(Boolean).join(', ');
-          if (label) setMapLabel(label);
-          setValue('county', addr.city || addr.town || addr.county || '');
-          setValue('map_country', addr.country || 'Algeria');
-          if (addr.state) {
-            const matched = wilayas.find(w =>
-              (addr.state as string).toLowerCase().includes(w.name.toLowerCase()) ||
-              w.name.toLowerCase().includes((addr.state as string).toLowerCase())
-            );
-            if (matched) setValue('wilaya', matched.code);
-          }
-        })
-        .catch(() => setMapLabel(`${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`));
-    };
-
-    run();
-  }, [location]);
 
   const handleSubmitForm = async (data) => {
     if (!isEditMode && images.length === 0) {
@@ -291,14 +231,13 @@ export default function CreatePost() {
                   <div className={style.section_title}>
                     Location
                   </div>
-                  <div className={style.location_input_row}>
-                    <input className={location ? style.filled_input : undefined} type="url" {...register('location')} placeholder='Paste a Google Maps link (optional)' />
-                    <button type="button" className={`${style.map_icon_btn} ${mapLabel ? style.map_icon_btn_active : ''}`} onClick={() => setMapOpen(true)} title="Pick location on map">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
-                      </svg>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className={`${style.location_pick_btn} ${mapLabel ? style.location_pick_btn_active : ''}`}
+                    onClick={() => setMapOpen(true)}
+                  >
+                    Click to choose a location
+                  </button>
                   {mapLabel && <span className={style.map_confirmed_label}>{mapLabel}</span>}
                   <input type="hidden" {...register('latitude', isEditMode ? {} : { required: true })} />
                   <input type="hidden" {...register('longitude', isEditMode ? {} : { required: true })} />

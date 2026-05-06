@@ -1,36 +1,45 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendVerificationEmail, verifyEmailCode } from '@/app/(main_page)/actions/profile'
 import styles from './verify.module.css'
 
-export default function VerifyEmail({
-    email,
-    initialCodeSent,
-    initialError,
-}: {
-    email: string
-    initialCodeSent: boolean
-    initialError?: string
-}) {
+export default function VerifyEmail({ email }: { email: string }) {
     const router = useRouter()
-    const [codeSent, setCodeSent] = useState(initialCodeSent)
+    const [codeSent, setCodeSent] = useState(false)
     const [code, setCode] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(initialError ?? null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
+    useEffect(() => {
+        const key = `verif_sent:${email}`
+        const sentAt = sessionStorage.getItem(key)
+        // skip if sent within the last 5 min (matches backend code TTL)
+        if (sentAt && Date.now() - parseInt(sentAt) < 5 * 60 * 1000) {
+            setLoading(false)
+            setCodeSent(true)
+            return
+        }
+        sessionStorage.setItem(key, Date.now().toString())
+        sendVerificationEmail(email).then(result => {
+            setLoading(false)
+            if (result.alreadyVerified) { router.push('/home'); return }
+            if (result.success) setCodeSent(true)
+            else setError(result.error ?? 'Failed to send email.')
+        })
+    }, [])
 
     const handleResend = async () => {
         setLoading(true)
         setError(null)
+        sessionStorage.removeItem(`verif_sent:${email}`)
         const result = await sendVerificationEmail(email)
         setLoading(false)
         if (result.alreadyVerified) { router.push('/home'); return }
         if (result.success) setCodeSent(true)
         else setError(result.error ?? 'Failed to resend email.')
     }
-
     const handleVerify = async () => {
         if (!code.replace(/\s+/g, '')) return
         setLoading(true)

@@ -62,12 +62,12 @@ export async function sendVerificationEmail(
   if (!token) return { success: false, error: "Not authenticated" };
   const response = await fetch(`${API}/api/Account/email_confirmation`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ email }),
     cache: "no-store",
   });
+
   if (response.status === 400) {
-    const data = await response.json().catch(() => ({}));
+    const data = await response.json();
     if ((data.detail as string)?.includes("already active"))
       return { success: true, alreadyVerified: true };
     return { success: false, error: data.detail ?? "Failed to send email." };

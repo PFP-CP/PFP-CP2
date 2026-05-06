@@ -21,6 +21,7 @@ type PropertyCardProps = {
     property: Property;
 }
 
+
 export default function PropertyCard({ property }: PropertyCardProps) {
     const { startLoading } = useNavigationLoader()
     const [imgError, setImgError] = useState(false)
@@ -28,7 +29,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     const type = property.title?.split(' in ')[0] || property.title
     const w = getWilayaName(property.state)
     const titleText = w ? `${type} in ${w}` : type
-
+    console.log(property)
     return (
         <div className={styles.card}>
             <div className={styles.card_image}>

@@ -70,6 +70,7 @@ def _reservation_to_dict(r: Reservation) -> dict:
                 "wilaya": wilaya,
                 "photo": photo,
             },
+        "rating": r.post.rating
         },
         "arrival_date": r.arrival_date.isoformat(),
         "departure_date": r.departure_date.isoformat(),
@@ -181,6 +182,7 @@ def create_reservation(request, payload: ReservationIn):
     )
 
     # select_related so _reservation_to_dict can access renter/post/House without N+1
+    mail_notification(post,user)
     reservation = (
         Reservation.objects.select_related(
             "renter", "renter__contact", "post", "post__house", "post__house__location"
@@ -188,7 +190,6 @@ def create_reservation(request, payload: ReservationIn):
         .prefetch_related("post__house__pictures")
         .get(pk=reservation.pk)
     )
-    mail_notification(post,user)
     # Auto-save the post to the user's favorites
     saved_post, created = SavedPost.objects.get_or_create(user=user, post=post)
     if created:

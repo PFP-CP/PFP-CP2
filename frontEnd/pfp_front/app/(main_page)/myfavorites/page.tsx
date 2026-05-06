@@ -3,6 +3,7 @@ import { Property } from '@/types/api_types'
 import PropertyCard from '@/components/home_components/property_card'
 import styles from '@/styles/my_favorites_styles/favorites_page.module.css'
 import { redirect } from 'next/navigation'
+import PropertyCard2 from '@/components/home_components/property_card2'
 
 export default async function MyFavoritesPage() {
     let favorites: Property[] = []
@@ -22,7 +23,7 @@ export default async function MyFavoritesPage() {
             {favorites.length > 0 ? (
                 <div className={styles.grid}>
                     {favorites.map((property) => (
-                        <PropertyCard key={property.id} property={property} />
+                        <PropertyCard2 key={property.id} property={property} />
                     ))}
                 </div>
             ) : (

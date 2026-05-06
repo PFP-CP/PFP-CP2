@@ -148,18 +148,6 @@ const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
         </div>
 
         {/* Number of tenants */}
-        <div className={styles.filterSection}>
-          <div className={styles.sectionHeader}>
-            <span className={styles.sectionTitle}>Number of tenants</span>
-          </div>
-          <input
-            type="number"
-            placeholder="max"
-            className={styles.textInput}
-            value={criteria.number_of_rooms || ""}
-            onChange={(e) => handleInputChange("number_of_rooms", parseInt(e.target.value))}
-          />
-        </div>
 
         {/* Categories */}
         <div className={styles.filterSection}>

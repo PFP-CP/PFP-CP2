@@ -61,21 +61,24 @@ def get_house_list(request, filter_by: str = "newest",size:int = 20):
 
 # Filter helpers — all updated to teammate's lowercase field names    #
 def post_rating_query(
-    previous_search: QuerySet, rating: float | None = None
+    previous_search: QuerySet, rating_max: float | None = None , rating_min: float | None = None  
 ) -> QuerySet:
-    if rating is not None:
-        previous_search = previous_search.filter(rating__gte=rating)
+    if rating_min is not None:
+        previous_search = previous_search.filter(rating__gte=rating_min)
+    if rating_max is not None:
+        previous_search = previous_search.filter(rating__lte=rating_max)
     return previous_search
 
 
 def renter_rating_query(
-    previous_search: QuerySet, rating: float | None = None
+    previous_search: QuerySet, rating_max: float | None = None , rating_min: float | None = None
 ) -> QuerySet:
     """Filter by seller's Account.rating field (updated by Comment._update_seller_rating)."""
-    if rating is not None:
-        previous_search = previous_search.filter(seller__rating__gte=rating)
+    if rating_min is not None:
+        previous_search = previous_search.filter(seller__rating__gte=rating_min)
+    if rating_max is not None:
+        previous_search = previous_search.filter(seller__rating__lte=rating_max)
     return previous_search
-
 
 def price_query(
     previous_search: QuerySet,
@@ -154,6 +157,16 @@ def type_query(previous_search: QuerySet, House_type: str) -> QuerySet:
     return previous_search
 
 
+def rules_query(previous_search: QuerySet, rules: list[str] = []) -> QuerySet:
+    if "Animals" in rules:
+        previous_search = previous_search.filter(house__rules__allows_animals=True)
+    if "Smoking" in rules:
+        previous_search = previous_search.filter(house__rules__allows_smoking=True)
+    if "Noise" in rules:
+        previous_search = previous_search.filter(house__rules__allows_noise=True)
+    return previous_search
+
+
 # Sorting — operates on serialised dicts, keys are SearchResult names #
 
 
@@ -205,11 +218,12 @@ def search(request, Criteria: SearchCriteria):
             "house__pictures",
             "house__location",
             "house__features__features",
+            "house__rules",
         ).exclude(seller = request.user)
 
         # Apply all filters
-        results_query = post_rating_query(results_query, Criteria.post_rating)
-        results_query = renter_rating_query(results_query, Criteria.renter_rating)
+        results_query = post_rating_query(results_query, Criteria.post_rating_max ,Criteria.post_rating_min )
+        results_query = renter_rating_query(results_query, Criteria.renter_rating_max ,Criteria.renter_rating_min  )
         results_query = price_query(
             results_query, Criteria.min_price, Criteria.max_price
         )
@@ -217,12 +231,13 @@ def search(request, Criteria: SearchCriteria):
         results_query = wilaya_query(results_query, Criteria.wilaya)
         results_query = allowed_people_query(results_query, Criteria.allowed_people)
         results_query = features_query(results_query, Criteria.features)
+        results_query = rules_query(results_query, Criteria.rules)
         results_query = type_query(results_query, Criteria.house_type)
         # Serialise to plain dicts for caching
         results = [SearchResult.from_orm(post).dict() for post in results_query]
 
 
-    cache.set(cache_key, results, timeout=300)  # 5-minute cache
+    cache.set(cache_key, results, timeout=60)  # 5-minute cache
     results = sorting(results, Criteria.order_by)
     return results
 

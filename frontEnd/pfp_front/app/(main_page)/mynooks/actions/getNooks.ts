@@ -36,7 +36,7 @@ export async function getMyNooks() {
       title: nook.title,
       primary_image: nook.primary_image || nook.image,
       price: nook.price_per_night || nook.price || nook.Price || 0,
-      average_rating: nook.rating || nook.average_rating || 0,
+      average_rating: nook.rating || 0,
       state: nook.wilaya || nook.state || '—',
       status: active ? 'reserved-today' : 'available',
       tenant: active

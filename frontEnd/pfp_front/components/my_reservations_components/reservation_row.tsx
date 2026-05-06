@@ -60,7 +60,6 @@ export default function ReservationRow({ reservation, onCancel }: ReservationRow
 
     const imageUrl = getFullImageUrl(house?.photo)
     const navigationUrl = post?.id ? `/post/${post.id}` : "#"
-
     return (
         <tr
             className={styles.table_row}
@@ -101,7 +100,7 @@ export default function ReservationRow({ reservation, onCancel }: ReservationRow
                     </h4>
                     <p className={styles.price}>{house?.Price ?? "—"} DA per night</p>
                     <span className={styles.rating}>
-                        {house?.rating ?? "—"} ★
+                        {`${post?.rating}`} ★
                     </span>
                 </div>
             </td>

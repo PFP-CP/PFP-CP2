@@ -94,6 +94,7 @@ export interface Property {
     price: number | string;
     city?: string;
     average_rating: number;
+    rating: number;
     primary_image: string | null;
     images?: string[];
     description?: string;

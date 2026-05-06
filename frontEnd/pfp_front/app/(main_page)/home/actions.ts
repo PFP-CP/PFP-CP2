@@ -11,7 +11,7 @@ function mapPost(item: any): Property {
     title: item.title,
     price: Number(item.Price ?? item.price ?? 0),
     state: item.State ?? item.state ?? "",
-    average_rating: Number(item.average_rating ?? 0),
+    average_rating: Number(item.rating ?? 0),
     primary_image: item.primary_image ?? null,
     status: "available",
   };

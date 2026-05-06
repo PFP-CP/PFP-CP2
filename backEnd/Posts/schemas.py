@@ -23,8 +23,10 @@ class SearchCriteria(Schema):
     house_type: Optional[str] = None
     number_of_rooms: Optional[int] = None
     wilaya: Optional[str] = None
-    renter_rating: Optional[float] = None
-    post_rating: Optional[float] = None
+    renter_rating_max: Optional[float] = None
+    renter_rating_min: Optional[float] = None
+    post_rating_max: Optional[float] = None
+    post_rating_min: Optional[float] = None
     min_price: Optional[int] = None
     max_price: Optional[int] = None
     features: Optional[list[str]] = []
@@ -392,7 +394,7 @@ class PostListOut(Schema):
     views_count: int
     saves_count: int
     comments_count: int
-    average_rating: Decimal
+    rating: float
 
     Price: Decimal
     Surface: Decimal
@@ -435,7 +437,7 @@ class PostListOut(Schema):
         return loc.County if loc else None
 
     @staticmethod
-    def resolve_average_rating(obj):
+    def resolve_rating(obj):
         return obj.rating
 
     @staticmethod

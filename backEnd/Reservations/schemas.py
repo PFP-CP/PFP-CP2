@@ -35,9 +35,8 @@ class PostOut(Schema):
 
     @staticmethod
     def resolve_rating(obj):
-        # obj might be a dict or a Post instance
         if isinstance(obj, dict):
-            return obj.get('rating', 0.0)
+            return obj.get('rating', None)
         return obj.rating
 
 class SimpleReservationOut(Schema):
@@ -56,7 +55,7 @@ class ReservationOut(Schema):
     arrival_date: date
     departure_date: date
     created_at: str
-    
+
 
 
 # Input body for POST /Reservations/

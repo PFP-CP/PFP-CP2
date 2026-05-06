@@ -17,6 +17,7 @@ export default async function HomePage() {
 
   const wilayaPosts: Record<string, Property[]> = {}
   WILAYAS.forEach((w, i) => { wilayaPosts[w.name] = wilayaResults[i] })
+  console.log(wilayaPosts);
 
   return <HomeClient recommended={recommended} wilayaPosts={wilayaPosts} wilayaNames={WILAYAS.map(w => w.name)} />
 }

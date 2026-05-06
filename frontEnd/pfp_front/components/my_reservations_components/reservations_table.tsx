@@ -50,7 +50,6 @@ function MobileCard({ reservation }: { reservation: Reservation }) {
     }
     const wilayaName = getWilayaName(house?.wilaya)
     const displayTitle = wilayaName ? `${houseType} in ${wilayaName}` : location
-
     return (
         <div className={styles.card}>
             <div className={styles.card_top}>
@@ -74,7 +73,7 @@ function MobileCard({ reservation }: { reservation: Reservation }) {
                     <div className={styles.card_meta}>
                         <span className={styles.card_price}>{house?.Price ?? "—"} DA/night</span>
                         <span className={styles.dot}>·</span>
-                        <span className={styles.card_rating}>★ {house?.rating ?? "—"}</span>
+                        <span className={styles.card_rating}>★ {post?.rating ?? "—"}</span>
                     </div>
                     <span className={styles.card_wilaya}>{wilayaName || house?.wilaya || "—"}</span>
                 </div>

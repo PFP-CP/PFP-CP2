@@ -111,6 +111,31 @@
   box-shadow: 0 8px 20px rgba(34, 14, 103, 0.55);
 }
 
+.location_pick_btn {
+  width: 100%;
+  max-width: 447px;
+  padding: 0.75rem 1.25rem;
+  background-color: #220E67;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: "sansation-400", sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 3px 10px rgba(34, 14, 103, 0.25);
+}
+
+.location_pick_btn:hover {
+  background-color: #3a1a99;
+  box-shadow: 0 6px 18px rgba(34, 14, 103, 0.35);
+}
+
+.location_pick_btn_active {
+  background-color: #3a1a99;
+  box-shadow: 0 4px 14px rgba(34, 14, 103, 0.45);
+}
+
 .map_confirmed_label {
   font-family: "sansation-400", sans-serif;
   font-size: 13px;

@@ -16,7 +16,7 @@ class PostListOut(Schema):
     comments_count: int
     
     # Map directly to the rating field on Post
-    average_rating: float = Field(..., alias="rating")
+    rating: float = Field(..., alias="rating")
 
     # Map directly to House attributes
     Price: int = Field(..., alias="house.Price")
@@ -69,7 +69,7 @@ class PostListOut(Schema):
         return None
 
     @staticmethod
-    def resolve_average_rating(obj):
+    def resolve_rating(obj):
         return obj.rating
 
     @staticmethod
